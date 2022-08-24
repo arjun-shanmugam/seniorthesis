@@ -4,15 +4,22 @@ clean_evictions.py
 Cleans eviction dataset from MassLandlords.
 """
 import pandas as pd
-INPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/03_build/input/shanmugam_aug_v2.csv"
-OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/03_build/intermediate/evictions.dta"
+INPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/shanmugam_aug_v2.csv"
+OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions.dta"
+PLACBEO_OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_placebo.dta"
+RANDOM_STATE = 7
 evictions_df = pd.read_csv(INPUT_DATA)
 
 # Clean inconsistencies in judge names.
 evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].str.replace("&#039;",  # Apostrophes represented as mojibake.
                                                                                       "",
                                                                                       regex=False)
+
+# Consider only rows where the court_person_type == judge.
+evictions_df = evictions_df.loc[evictions_df['court_person_type'] == "judge", :]
+
 # TODO: Deal with rows where court_person_name == "Del"
+# evictions_df = evictions_df.drop(labels=(evictions_df['court_person'] == "Del").index)
 
 # TODO: Deal with rows where court_person_name begins with "III"
 # TODO: Deal with rows where court_person_name begins with "Jr"
@@ -44,8 +51,6 @@ evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].replac
 rows_with_two_dispositions = evictions_df['disposition'].str.count("/") == 4  # Identify them as containing two dates.
 evictions_df.loc[rows_with_two_dispositions, 'disposition'] = evictions_df.loc[rows_with_two_dispositions, 'disposition'].str.split(pat="\d+/\d+/\d+").str[-2]
 
-# TODO: Deal with row 20793, where disposition is missing!
-evictions_df = evictions_df.drop(index=20793)
 
 # If there was a voluntary dismissal according to disposition, specify that in disposition_found
 mask = (evictions_df['disposition'].str.contains("Voluntary Dismissal")) | (evictions_df['disposition'].str.contains("Voluntary Dismissa"))
@@ -71,5 +76,15 @@ mask = (
 )
 evictions_df.loc[mask, 'defendant_victory'] = 1
 
+# Clean court division.
+court_division_replacement_dict = {"central": "Central",
+                                   "eastern": "Eastern",
+                                   "metro_south": "Metro South",
+                                   "northeast": "Northeast",
+                                   "southeast": "Southeast",
+                                   "western": "Western"}
+
+evictions_df.loc[:, 'court_division'] = evictions_df.loc[:, 'court_division'].replace(court_division_replacement_dict)
 
 evictions_df.to_stata(OUTPUT_DATA, write_index=False)
+

@@ -4,7 +4,7 @@
 * This file runs preliminary analysis of the first stage.
 /**********************************************************************/
 
-include /Users/arjunshanmugam/Documents/GitHub/seniorthesis/04_analysis/code/analysis_locals.do
+include /Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/analysis_locals.do
 
 use `cleaned_eviction_data', clear
 
@@ -15,8 +15,11 @@ keep if inlist(disposition_found, "Heard", "Defaulted", "Involuntary Dismissal")
 keep if court_person_type == "judge"
 
 // Keep cases corresponding to judges who saw at least 5 cases
+drop if court_person == "Del "
 egen cases_seen_by_judge = count(court_person), by(court_person)
-keep if cases_seen_by_judge >= 5
+keep if cases_seen_by_judge >= 10
+
+
 
 // Calculate leave-one-out average for each individual.
 egen sum_defendant_victory_by_judge = total(defendant_victory), by(court_person)
@@ -27,6 +30,9 @@ generate filing_date = date(file_date, "MDY")
 drop file_date
 generate filing_month = month(filing_date)
 generate filing_year = year(filing_date)
+
+
+keep if inlist(court_division, "Central", "Eastern", "Metro South", "Northeast", "Southeast", "Western")
 
 // Residualize leave-one-out average 
 encode court_division, generate(court_division_encoded)
@@ -43,3 +49,5 @@ esttab using `output_tables'/first_stage.tex, booktabs scalar(F) replace collabe
 // Histogram of resideuals
 histogram residualized_leniency, title("Histogram: Residualized Leniency")
 graph export `output_figures'/histogram_residualized_leniency.png, replace
+
+gen judge_id = id(court_person)
