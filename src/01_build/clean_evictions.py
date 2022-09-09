@@ -15,8 +15,7 @@ evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].str.re
                                                                                       "",
                                                                                       regex=False)
 
-# Consider only rows where the court_person_type == judge.
-evictions_df = evictions_df.loc[evictions_df['court_person_type'] == "judge", :]
+
 
 # TODO: Deal with rows where court_person_name == "Del"
 # evictions_df = evictions_df.drop(labels=(evictions_df['court_person'] == "Del").index)
@@ -37,13 +36,17 @@ name_replacement_dict = {"Alex Valderrama": "Alex J Valderrama",
                          "Gregory; span Bartlett": "Gregory Bartlett",
                          "Gustavo A": "Gustavo A Del Puerto",
                          "Gustavo del Puerto": "Gustavo A Del Puerto",
+                         "Del ": "Gustavo A Del Puerto",
                          "Kara; span Cunha": "Kara Cunha",
                          "Michael; 02 Neville": "Michael T Neville",
+                         "Michae Malamut": "Michael Malamut",
                          "Robert T": "Robert T Santaniello",
                          "Sergio Carvajal": "Sergio E Carvajal",
                          "Shelly Sankar": "Shelly Ann Sankar",
                          "Stephen; 08 Poitrast": "Stephen Poitrast",
-                         "Steven E  Thomas": "Steven E Thomas"}
+                         "Steven E  Thomas": "Steven E Thomas",
+                         "III Joseph ": "Joseph Kelleher III",
+                         "III, Kelleher": "Joseph Kelleher III"}
 evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].replace(name_replacement_dict)
 
 # Clean dispositions.

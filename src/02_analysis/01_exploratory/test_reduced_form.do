@@ -1,7 +1,7 @@
 /**********************************************************************/
 /* test_first_stage.do  */
 
-* This file runs preliminary analysis of the first stage.
+* This file runs preliminary analysis of the reduced form.
 /**********************************************************************/
 
 include /Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/01_exploratory/exploratory_locals.do
@@ -41,23 +41,10 @@ encode property_address_city, generate(property_address_city_encoded)
 regress leave_one_out_avg i.filing_year i.property_address_city_encoded, robust
 predict residualized_leniency, residuals
 
-// Perform first stage regression using residualized judge leniency.
-eststo clear
-eststo: regress defendant_victory residualized_leniency, robust
-label variable residualized_leniency "Residualized Leniency"
-esttab using `output_tables'/first_stage_residualized_leniency.tex, booktabs scalar(F) replace collabels("Defendant Victory") label nomtitles
+// Collapse dataset to the city-year level.
+collapse (mean) mean_defendant_victory=defendant_victory (sd) sd_defendant_victory=defendant_victory (count) n=defendant_victory, by(filing_year property_address_city)
 
-// Perform first stage regression using judge dummies.
-eststo clear
-tabulate court_person, generate(court_person)
-eststo: regress defendant_victory court_person1-court_person17 i.filing_month i.property_address_city_encoded
-testparm court_person1-court_person17
+// Drop missing data.
+drop if mean_defendant_victory == . | sd_defendant_victory == . | n < 10
 
-
-
-test residualized_leniency
-// Histogram of resideuals
-histogram residualized_leniency, title("Histogram: Residualized Leniency")
-graph export `output_figures'/histogram_residualized_leniency.png, replace
-
-
+save `intermediate_data'/city_level_evictions.dta, replace

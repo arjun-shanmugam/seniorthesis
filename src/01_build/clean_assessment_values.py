@@ -5,12 +5,15 @@ Cleans property assessment values from MassGIS.
 """
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 import os
+from src.utilities.dataframe_utilities import reduce_mem_usage
+
 INPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/AllParcelData_SHP_20220810"
-OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data.dta"
+OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data.csv"
 town_folders = os.listdir(INPUT_DATA)
 
-dataframes = []
+dfs = []
 for town_folder in town_folders:
     if town_folder == '.DS_Store':  # ignore folder metadata
         continue
@@ -21,13 +24,19 @@ for town_folder in town_folders:
     fiscal_year = data[5][2:]
     assessor_filename = town_id + "Assess" + "_" + data[4] + "_" + data[5] + ".dbf"
     df = gpd.read_file(os.path.join(INPUT_DATA, town_folder, assessor_filename))
-    df.loc[:, 'calendar_year'] = int(calendar_year)
-    df.loc[:, 'fiscal_year'] = int(fiscal_year)
-    df.loc[:, 'town_name'] = town_name
-    dataframes.append(df)
+    df.loc[:, 'CY'] = int(calendar_year)  # save calendar year as its own column
+    df = df.drop(columns='geometry')  # drop the geomtry columnn from the assessor database
+
+    df, columns_containing_nans = reduce_mem_usage(df)
+
+    # Convert object type columns to string.
+    object_type_columns = df.columns[df.dtypes == "object"].tolist()
+    df.loc[:, object_type_columns] = df[object_type_columns].astype("string")
+
+    dfs.append(df)
 
 # concatenate municipality-year level DataFrames.
-assessor_data = pd.concat(dataframes, axis=0)
+assessor_data = pd.concat(dfs, axis=0)
 
 # save to CSV
-assessor_data.to_csv(OUTPUT_DATA)
+assessor_data.to_csv(OUTPUT_DATA, index=False)
