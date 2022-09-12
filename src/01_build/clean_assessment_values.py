@@ -25,6 +25,7 @@ for town_folder in town_folders:
     assessor_filename = town_id + "Assess" + "_" + data[4] + "_" + data[5] + ".dbf"
     df = gpd.read_file(os.path.join(INPUT_DATA, town_folder, assessor_filename))
     df.loc[:, 'CY'] = int(calendar_year)  # save calendar year as its own column
+    df.loc[:, 'TOWN_NAME'] = town_name
     df = df.drop(columns='geometry')  # drop the geomtry columnn from the assessor database
 
     df, columns_containing_nans = reduce_mem_usage(df)

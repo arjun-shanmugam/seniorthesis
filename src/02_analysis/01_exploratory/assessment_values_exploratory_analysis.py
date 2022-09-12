@@ -19,18 +19,20 @@ OUTPUT_FIGURES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/output/01_
 OUTPUT_TABLES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/output/01_exploratory/tables"
 
 df = pd.read_csv(ASSESSOR_FILE)
-fiona.listlayers(TAX_PARCELS_GDB)
-gdf = gdf.read_file(TAX_PARCELS_GDB)
+print(df.columns)
+gdf = gpd.read_file(TAX_PARCELS_GDB, layer='L3_TAXPAR_POLY')
 
-print(penis)
-# Drop rows where TOTAL_VA  L == -1
+print(gdf)
+print(gdf.head())
+print(gdf.columns)
+# Drop rows where TOTAL_VAL == -1
 mask = (df['TOTAL_VAL'] != -1)
-print(len(mask))
+print(mask.sum())
 df = df.loc[mask, :]
 
 # Drop rows where SITE_ADDR = NaN
 mask = ~(df['SITE_ADDR'].isna())
-print(len(mask))
+print(mask.sum())
 df = df.loc[mask, :]
 
 """
@@ -44,9 +46,7 @@ plt.savefig(os.path.join(OUTPUT_FIGURES, "hist_TOTAL_VAL.png"), bbox_inches='tig
 plt.close(fig)
 """
 
-# Aggregate data to city year level.
-df_town_year_level = df.groupby(by=['CITY', 'TOWN_ID', 'CY'])['TOTAL_VAL'].mean()
-print(df_town_year_level)
-print(df_town_year_level.columns)
-print(gdf.columns)
+gdf = gpd.GeoDataFrame(df.merge(gdf, on=['LOC_ID', 'TOWN_ID'], validate='m:1'))
 
+print(gdf)
+print(gdf.dissolve('TOWN_ID'))
