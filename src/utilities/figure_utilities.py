@@ -15,6 +15,42 @@ from src.utilities import figure_and_table_constants
 from typing import List
 import matplotlib.transforms as transforms
 
+def plot_pie_chart(ax: Axes,
+                   x: pd.Series,
+                   title: str,
+                   colors=None,
+                   explode_amount=0.05):
+    # Produce series where index gives labels and values give counts.
+    x = x.astype(str)  # Convert to string so that we can sort Series which contain both numerics and alphabetic strings.
+    N = len(x)
+    counts = x.groupby(x).count().sort_index()
+    labels = counts.index.tolist()
+
+    # Choose color scheme.
+    if colors is None:
+        if len(labels) <= 10:
+            # Use pre-specified colors.
+            colors = [figure_and_table_constants.Colors.P1,
+                      figure_and_table_constants.Colors.P3,
+                      figure_and_table_constants.Colors.P6,
+                      figure_and_table_constants.Colors.P7,
+                      figure_and_table_constants.Colors.P2,
+                      figure_and_table_constants.Colors.P4,
+                      figure_and_table_constants.Colors.P5,
+                      figure_and_table_constants.Colors.P8,
+                      figure_and_table_constants.Colors.P9,
+                      figure_and_table_constants.Colors.P10][:len(labels)]
+        else:
+            # Let Matplotlib auto-assign colors.
+            colors = None
+
+    # Plot pie chart.
+    ax.pie(counts,
+           labels=labels,
+           colors=colors,
+           explode=[explode_amount]*len(labels),
+           autopct='%2.2f%%')
+    ax.set_title(f'{title} (N={N})')
 
 def plot_labeled_hline(ax: Axes,
                        y: float,
