@@ -62,5 +62,14 @@ plt.savefig(os.path.join(OUTPUT_FIGURES, "pie_USE_CODE_for_SITE_ADDR_NaN.png"), 
 plt.close(fig)
 assessor_data = assessor_data.loc[mask, :]
 
+# Drop rows where zip code = NaN
+mask = ~(assessor_data['ZIP'].isna())
+assessor_data = assessor_data.loc[mask, :]
+
+# Drop rows where zip code column does not contain a real Massachusetts zip code.
+assessor_data.loc[:, 'ZIP'] = assessor_data['ZIP'].str.split("-", regex=False).str[0]  # Select first 5 digits of zip code.
+
+
+
 # save to CSV
 assessor_data.to_csv(OUTPUT_DATA, index=False)

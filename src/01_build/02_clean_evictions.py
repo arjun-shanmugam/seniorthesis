@@ -6,11 +6,13 @@ Cleans eviction dataset from MassLandlords.
 import pandas as pd
 INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/shanmugam_2022_08_03_aug.csv"
 INPUT_DATA_JUDGES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/judges.xlsx"
+INPUT_DATA_ZIPCODES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/zip_codes.csv"
 OUTPUT_DATA_UNRESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_unrestricted.csv"
 OUTPUT_DATA_RESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_restricted.csv"
 
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, encoding='unicode_escape')
 judges_df = pd.read_excel(INPUT_DATA_JUDGES)
+zipcodes_df = pd.read_csv(INPUT_DATA_ZIPCODES)
 
 # Clean court division.
 court_division_replacement_dict = {"central": "Central",
@@ -50,6 +52,12 @@ name_replacement_dict = {"David D Kerman": "David Kerman",
                          "on. Donna Salvidio": "Donna Salvidio"}
 evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].replace(name_replacement_dict)
 
+# Clean zip codes.
+evictions_df.loc[:, 'genuine_zipcode_present'] = 0  # Generate dummy indicating whether zip is present
+zipcode_exists_mask = evictions_df['property_address_zip'].isin(zipcodes_df['zipcode'])
+evictions_df.loc[zipcode_exists_mask, 'genuine_zipcode_present'] = 1
+
+
 # Save unrestricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
 
@@ -87,6 +95,7 @@ evictions_df = evictions_df.loc[mask, :]
 evictions_df.loc[:, 'judgment_for_defendant'] = 0
 mask = (evictions_df['disposition_found'] == "Dismissed") | (evictions_df['judgment_for_pdu'] == "Defendant")
 evictions_df.loc[mask, 'judgment_for_defendant'] = 1
+
 
 # Save restricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_RESTRICTED, index=False)
