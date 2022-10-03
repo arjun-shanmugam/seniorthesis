@@ -4,15 +4,18 @@
 Cleans eviction dataset from MassLandlords.
 """
 import pandas as pd
+import census_geocoder as geocoder
+
 INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/shanmugam_2022_08_03_aug.csv"
 INPUT_DATA_JUDGES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/judges.xlsx"
-INPUT_DATA_ZIPCODES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/zip_codes.csv"
+INPUT_DATA_ZIPCODES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/zipcodes.csv"
+INTERMEDIATE_DATA_GEOCODING = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/to_geocode"
 OUTPUT_DATA_UNRESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_unrestricted.csv"
 OUTPUT_DATA_RESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_restricted.csv"
 
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, encoding='unicode_escape')
 judges_df = pd.read_excel(INPUT_DATA_JUDGES)
-zipcodes_df = pd.read_csv(INPUT_DATA_ZIPCODES)
+zipcodes_df = pd.read_csv(INPUT_DATA_ZIPCODES, dtype={'zipcode': str})
 
 # Clean court division.
 court_division_replacement_dict = {"central": "Central",
@@ -52,10 +55,32 @@ name_replacement_dict = {"David D Kerman": "David Kerman",
                          "on. Donna Salvidio": "Donna Salvidio"}
 evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].replace(name_replacement_dict)
 
-# Clean zip codes.
-evictions_df.loc[:, 'genuine_zipcode_present'] = 0  # Generate dummy indicating whether zip is present
-zipcode_exists_mask = evictions_df['property_address_zip'].isin(zipcodes_df['zipcode'])
-evictions_df.loc[zipcode_exists_mask, 'genuine_zipcode_present'] = 1
+# Generate zipcodes.
+evictions_df = evictions_df.reset_index(drop=True)
+# evictions_df = evictions_df.loc[0:5000]  # TODO: DELETE THIS LINE. ONLY FOR TESTING PURPOSES.
+address_present_mask = ~(evictions_df['property_address_full'].isna())
+
+# Select the street address, city, and state columns and put them in a separate DataFrame.
+columns = ['property_address_street', 'property_address_city', 'property_address_state']
+data_to_geocode = evictions_df.loc[address_present_mask, columns]
+
+# Group the data into separate batches of 5000 objects each.
+num_batches = len(data_to_geocode) // 5000
+batched_data = []
+for batch in range(0, num_batches + 1):
+    if batch < num_batches:
+        start = batch * 5000
+        end = (batch + 1) * 5000
+    else:
+        start = batch * 5000
+        end = len(data_to_geocode)
+
+    current_batch = data_to_geocode.iloc[start:end]
+    print(len(current_batch))
+    batched_data.append(current_batch)
+
+# Save as separate CSV files.
+for batch in batched_data:
 
 
 # Save unrestricted eviction data.
@@ -96,7 +121,5 @@ evictions_df.loc[:, 'judgment_for_defendant'] = 0
 mask = (evictions_df['disposition_found'] == "Dismissed") | (evictions_df['judgment_for_pdu'] == "Defendant")
 evictions_df.loc[mask, 'judgment_for_defendant'] = 1
 
-
 # Save restricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_RESTRICTED, index=False)
-

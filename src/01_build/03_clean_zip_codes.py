@@ -20,4 +20,5 @@ zipcodes_df = zipcodes_df.drop(columns=["NAME", "STATE", "SQMI", "_ID"])
 # Rename the zip code column.
 zipcodes_df = zipcodes_df.rename(columns={"ZIP_CODE": "zipcode"})
 
+# Save file.
 zipcodes_df.to_csv(OUTPUT_PATH)
