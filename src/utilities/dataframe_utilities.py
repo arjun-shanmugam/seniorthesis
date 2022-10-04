@@ -4,6 +4,25 @@ Defines useful helper functions for us with Pandas DataFrames.
 import pandas as pd
 import numpy as np
 
+def batch_df(df: pd.DataFrame, batch_size: int):
+    """
+
+    :param df: DataFrame to create batches out of.
+    :param batch_size: Number of observations in each batch.
+    """
+    num_batches = len(df) // batch_size
+    batched_dataframes = []
+    for batch in range(0, num_batches + 1):
+        if batch < num_batches:
+            start = batch * batch_size
+            end = (batch + 1) * batch_size
+        else:
+            start = batch * batch_size
+            end = len(df)
+
+        current_batch = df.iloc[start:end]
+        batched_dataframes.append(current_batch)
+    return batched_dataframes
 
 def reduce_mem_usage(df: pd.DataFrame):
     """

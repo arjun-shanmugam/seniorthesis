@@ -3,8 +3,11 @@
 
 Cleans eviction dataset from MassLandlords.
 """
+import os
+
+import numpy as np
 import pandas as pd
-import census_geocoder as geocoder
+import censusgeocode
 
 INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/shanmugam_2022_08_03_aug.csv"
 INPUT_DATA_JUDGES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/judges.xlsx"
@@ -56,32 +59,23 @@ name_replacement_dict = {"David D Kerman": "David Kerman",
 evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].replace(name_replacement_dict)
 
 # Generate zipcodes.
-evictions_df = evictions_df.reset_index(drop=True)
-# evictions_df = evictions_df.loc[0:5000]  # TODO: DELETE THIS LINE. ONLY FOR TESTING PURPOSES.
-address_present_mask = ~(evictions_df['property_address_full'].isna())
 
-# Select the street address, city, and state columns and put them in a separate DataFrame.
-columns = ['property_address_street', 'property_address_city', 'property_address_state']
-data_to_geocode = evictions_df.loc[address_present_mask, columns]
 
-# Group the data into separate batches of 5000 objects each.
-num_batches = len(data_to_geocode) // 5000
-batched_data = []
-for batch in range(0, num_batches + 1):
-    if batch < num_batches:
-        start = batch * 5000
-        end = (batch + 1) * 5000
-    else:
-        start = batch * 5000
-        end = len(data_to_geocode)
-
-    current_batch = data_to_geocode.iloc[start:end]
-    print(len(current_batch))
-    batched_data.append(current_batch)
 
 # Save as separate CSV files.
-for batch in batched_data:
+filepaths = []
+for i, batch in enumerate(batched_data):
+    path = os.path.join(INTERMEDIATE_DATA_GEOCODING, f"batch{i}.csv")
+    filepaths.append(path)
+    print(batch)
+    batch.to_csv(path, header=False)
 
+# Send CSVs to the census geocoder.
+cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
+k = cg.addressbatch(filepaths[0])
+df = pd.DataFrame(k, columns=k[0].keys())
+print(df)
+df.to_csv("~/Desktop/results.csv")
 
 # Save unrestricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
