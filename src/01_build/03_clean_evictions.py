@@ -1,5 +1,5 @@
 """
-02_clean_evictions.py
+03_clean_evictions.py
 
 Cleans eviction dataset from MassLandlords.
 """
@@ -12,7 +12,6 @@ import censusgeocode
 INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/shanmugam_2022_08_03_aug.csv"
 INPUT_DATA_JUDGES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/judges.xlsx"
 INPUT_DATA_ZIPCODES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/zipcodes.csv"
-INTERMEDIATE_DATA_GEOCODING = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/to_geocode"
 OUTPUT_DATA_UNRESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_unrestricted.csv"
 OUTPUT_DATA_RESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_restricted.csv"
 
@@ -58,24 +57,13 @@ name_replacement_dict = {"David D Kerman": "David Kerman",
                          "on. Donna Salvidio": "Donna Salvidio"}
 evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].replace(name_replacement_dict)
 
-# Generate zipcodes.
+# Clean zipcodes
+zipcode_is_span_mask = (evictions_df['property_address_zip'] == "span")
+evictions_df = evictions_df.loc[~zipcode_is_span_mask, :]  # Drop rows where zipcode == "span"
+evictions_df.loc[:, 'property_address_zip'] = evictions_df['property_address_zip'].str[0:5]  # Select the first 5 digits of 9 digit zipcodes.
 
 
 
-# Save as separate CSV files.
-filepaths = []
-for i, batch in enumerate(batched_data):
-    path = os.path.join(INTERMEDIATE_DATA_GEOCODING, f"batch{i}.csv")
-    filepaths.append(path)
-    print(batch)
-    batch.to_csv(path, header=False)
-
-# Send CSVs to the census geocoder.
-cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
-k = cg.addressbatch(filepaths[0])
-df = pd.DataFrame(k, columns=k[0].keys())
-print(df)
-df.to_csv("~/Desktop/results.csv")
 
 # Save unrestricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
