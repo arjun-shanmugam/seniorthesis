@@ -69,55 +69,8 @@ assessor_data = assessor_data.loc[mask, :]
 MA_zipcodes = pd.read_csv(INPUT_DATA_ZIPCODES, dtype={'zipcode': str})['zipcode']
 correct_zipcode_mask = assessor_data['ZIP'].str[0:5].isin(MA_zipcodes)
 
-# Store rows with bad zipcodes separately.
-assessor_data_bad_zipcodes = assessor_data[~correct_zipcode_mask]
-print(assessor_data_bad_zipcodes.index)
-
-# Drop from original DataFrame and prepare for geocoding.
+# Drop those rows from the data.
 assessor_data = assessor_data.loc[correct_zipcode_mask, :]
-to_geocode = assessor_data_bad_zipcodes.loc[:, ['SITE_ADDR', 'CITY']]
-to_geocode.loc[:, 'STATE'] = "MA"
-to_geocode.loc[:, 'ZIPCODE'] = "-"
-
-# Geocode addresses with bad zipcodes.
-to_geocode_batched = batch_df(to_geocode, batch_size=5000)  # Batch data.
-filepaths = []  # Save each batch as a separate CSV file.
-for i, batch in enumerate(to_geocode_batched):
-    path = os.path.join(INTERMEDIATE_DATA_GEOCODING, f"batch{i}.csv")
-    filepaths.append(path)
-    batch.to_csv(path, header=False)
-# Send CSVs to the census geocoder.
-cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
-geocoded_dfs = []
-for filepath in filepaths:
-    k = cg.addressbatch(filepath)
-    df = pd.DataFrame(k, columns=k[0].keys())
-    geocoded_dfs.append(df)
-result = pd.concat(geocoded_dfs, axis=0)  # Store returned, geocoded data.
-
-# Select the addresses and index for which the geocoder could find a match
-match_found = (result['match'] == "TRUE")
-result = result.loc[match_found, ['id', 'parsed']]
-result.loc[:, 'parsed'] = result['parsed'].str.split(" ").str[-1]  # Select only the zip code
-result = result.rename(columns={'parsed': 'geocoded_zip'})
-result.loc[:, 'id'] = result.loc[:, 'id'].astype(int)
-
-
-result.to_csv("~/Desktop/result.csv", index=False)
-assessor_data_bad_zipcodes.to_csv("~/Desktop/assessor_data_bad_zipcodes.csv")
-
-# Merge corrected zipcodes with their original rows
-assessor_data_bad_zipcodes = assessor_data_bad_zipcodes.merge(result,
-                                                              left_index=True,
-                                                              right_on='id',
-                                                              how='outer',
-                                                              validate='1:1',
-                                                              indicator=True)
-print(assessor_data_bad_zipcodes['_merge'].value_counts())
-assessor_data_bad_zipcodes.to_csv("~/Desktop/bad_zipcodes_re_geocoded.csv", index=False)
-
-# Merge the rows with newly-corrected zipcodes with the rows that already had correct zipcodes.
-assessor_data = pd.concat([assessor_data, assessor_data_bad_zipcodes], axis=0)
 
 # save to CSV
-assessor_data.to_csv(OUTPUT_DATA + "2", index=False)
+assessor_data.to_csv(OUTPUT_DATA, index=False)

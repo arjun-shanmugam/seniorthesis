@@ -62,9 +62,6 @@ zipcode_is_span_mask = (evictions_df['property_address_zip'] == "span")
 evictions_df = evictions_df.loc[~zipcode_is_span_mask, :]  # Drop rows where zipcode == "span"
 evictions_df.loc[:, 'property_address_zip'] = evictions_df['property_address_zip'].str[0:5]  # Select the first 5 digits of 9 digit zipcodes.
 
-
-
-
 # Save unrestricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
 
