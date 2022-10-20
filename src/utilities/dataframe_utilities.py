@@ -1,8 +1,79 @@
 """
 Defines useful helper functions for us with Pandas DataFrames.
 """
+import os
+
 import pandas as pd
 import numpy as np
+import censusgeocode
+
+
+def geocode_single_address(row,
+                           street_adr_column: str,
+                           city_column: str,
+                           state_column: str,
+                           zip_column: str):
+    """
+    Function meant to be applied to a DataFrame to geocode addresses individually.
+    :param street_adr_column:
+    :param city_column:
+    :param state_column:
+    :param zip_column:
+    """
+    street_address = row[street_adr_column]
+    city = row[city_column]
+    state = row[state_column]
+    zipcode = row[zip_column]
+    result = censusgeocode.address(street_address, city=city, state=state, zip=zipcode)
+
+    if len(result) > 0:
+        row['parsed'] =
+        row['match'] = "True"
+
+
+
+
+
+def geocode_addresses(df: pd.DataFrame, path_to_intermediate_data: str):
+    """
+    Geocodes a DataFrame containing addresses.
+    :param df: A DataFrame containing 4 columns, ID, street address, city, state, zip, in that order.
+    :param path_to_intermediate_data: Location to store CSV files before sending to batch geocoder.
+    """
+
+    geocoded_dfs = []
+    df_to_geocode = df
+    iterations = 0
+    while len(df_to_geocode) > 0 and iterations < 3:
+        batched_df = batch_df(df_to_geocode, batch_size=5000)
+        filepaths = []  # Save each batch as a separate CSV file.
+        for i, batch in enumerate(batched_df):
+            path = os.path.join(path_to_intermediate_data, f"batch{i}.csv")
+            filepaths.append(path)
+            batch.to_csv(path, header=False)
+        # Send CSVs to the census geocoder.
+        cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
+        curr_iteration_geocoded_results = []
+        for filepath in filepaths:
+            returned_from_api = cg.addressbatch(filepath)
+            returned_from_api_as_df = pd.DataFrame(returned_from_api, columns=returned_from_api[0].keys())
+            curr_iteration_geocoded_results.append(returned_from_api_as_df)
+        result = pd.concat(curr_iteration_geocoded_results, axis=0)  # Store returned, geocoded data.
+        print(result['match'].value_counts(normalize=True))
+        # Select addresses which could not be geocoded.
+        address_matches_mask = (result['match'] == "True")
+        matched_addresses = result.loc[address_matches_mask, :]
+        unmatched_addresses = result.loc[~address_matches_mask, :]
+
+        geocoded_dfs.append(matched_addresses)
+        df_to_geocode = unmatched_addresses
+        iterations = iterations + 1
+
+    # Attempt to geocoding remaining unmatched addresses.
+
+
+    return pd.concat(geocoded_dfs, axis=0)
+
 
 def batch_df(df: pd.DataFrame, batch_size: int):
     """
@@ -23,6 +94,7 @@ def batch_df(df: pd.DataFrame, batch_size: int):
         current_batch = df.iloc[start:end]
         batched_dataframes.append(current_batch)
     return batched_dataframes
+
 
 def reduce_mem_usage(df: pd.DataFrame):
     """
