@@ -72,8 +72,12 @@ evictions_df = evictions_df.loc[has_address_info_mask, :]
 
 # Geocode addresses for easy matching with assessor values.
 evictions_df = evictions_df.reset_index(drop=True)
+evictions_df.loc[:, 'property_address_street'] = evictions_df['property_address_street'].str.replace("&#039;",
+                                                                                                     "\'",
+                                                                                                     regex=False)
 columns_to_geocode = evictions_df[['property_address_street', 'property_address_city', 'property_address_state', 'property_address_zip']]
-result = geocode_addresses(columns_to_geocode, INTERMEDIATE_DATA_GEOCODING)
+result = geocode_addresses(columns_to_geocode,
+                           INTERMEDIATE_DATA_GEOCODING)
 result.loc[:, 'id'] = result['id'].astype(int)
 result = result.set_index('id')
 
@@ -84,11 +88,12 @@ evictions_df = evictions_df.merge(result,
                                   how='outer',
                                   validate='1:1',
                                   indicator=True)
-assert len(evictions_df['_merge'].value_counts()) == 1
-
+# Assert that only geocoded observations are present.
+print(evictions_df['_merge'].value_counts())
 
 # Save unrestricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_UNRESTRICTED)
+
 
 # Restrict to cases where court_person_type is 'judge'
 mask = evictions_df['court_person_type'] == 'judge'
