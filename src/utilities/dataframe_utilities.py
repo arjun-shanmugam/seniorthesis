@@ -19,7 +19,6 @@ def geocode_single_address(row):
     tokenized_address = row['address'].split(", ")
     if len(tokenized_address) > 4:  # If there is an extra comma in the address tokenized address may have too many items.
         return  # Abort if this happens.
-    print(tokenized_address)
     street_address = tokenized_address[0]
     city = tokenized_address[1]
     state = tokenized_address[2]
@@ -55,7 +54,7 @@ def geocode_addresses(df: pd.DataFrame,
     iterations = 0
     matched_addresses = pd.DataFrame()
     unmatched_addresses = pd.DataFrame()
-    while len(df_to_geocode) > 0 and iterations < 1:  # TODO: Change this back to 3 iterations max
+    while len(df_to_geocode) > 0 and iterations < 3:
         print(iterations)
         batched_df = batch_df(df_to_geocode, batch_size=5000)
         filepaths = []  # Save each batch as a separate CSV file.

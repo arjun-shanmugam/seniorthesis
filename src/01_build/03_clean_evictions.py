@@ -89,7 +89,10 @@ evictions_df = evictions_df.merge(result,
                                   validate='1:1',
                                   indicator=True)
 # Assert that only geocoded observations are present.
-print(evictions_df['_merge'].value_counts())
+assert evictions_df['_merge'].value_counts()['left only'] == 0
+
+# Rename "parsed" column.
+evictions_df = evictions_df.rename(columns={'parsed': 'full_geocoded_address'})
 
 # Save unrestricted eviction data.
 evictions_df.to_csv(OUTPUT_DATA_UNRESTRICTED)
