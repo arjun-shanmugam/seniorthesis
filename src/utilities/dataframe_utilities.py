@@ -7,6 +7,9 @@ from time import sleep
 import pandas as pd
 import numpy as np
 import censusgeocode
+from typing import List
+from joblib import Parallel, delayed
+from multiprocessing import Manager
 
 
 def geocode_single_address(row):
@@ -44,11 +47,28 @@ def geocode_single_address(row):
     return row
 
 
+def geocode_helper(cg: censusgeocode.CensusGeocode,
+                   master_list: List[pd.DataFrame],
+                   filepath: str):
+    """
+    Helper function to allow parallelization of batch geocoding.
+    :param cg: A CensusGeocode object.
+    :param master_list: A list which will hold all the geocoded DataFrames.
+    :param filepath: Path to a CSV file containing the records to geocode.
+    """
+    returned_from_api = cg.addressbatch(filepath)
+    returned_from_api_as_df = pd.DataFrame(returned_from_api, columns=returned_from_api[0].keys())
+    master_list.append(returned_from_api_as_df)
+    print(f"Geocoded batch: {filepath[-7:-4]}")
+
+
 def geocode_addresses(df: pd.DataFrame,
                       path_to_intermediate_data: str,
-                      num_iterations=1):
+                      num_iterations=1,
+                      n_jobs=-1):
     """
     Geocodes a DataFrame containing addresses.
+    :param n_jobs: Number of processors to use.
     :param num_iterations: Number of iterations if multiple attempts to geocode are needed.
     :param df: A DataFrame containing 4 columns, ID, street address, city, state, zip, in that order.
     :param path_to_intermediate_data: Location to store CSV files before sending to batch geocoder.
@@ -69,13 +89,12 @@ def geocode_addresses(df: pd.DataFrame,
             print(f"Saving batch number to CSV: {i}")
         # Send CSVs to the census geocoder.
         cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
-        curr_iteration_geocoded_results = []
-        for i, filepath in enumerate(filepaths):
-            returned_from_api = cg.addressbatch(filepath)
-            returned_from_api_as_df = pd.DataFrame(returned_from_api, columns=returned_from_api[0].keys())
-            curr_iteration_geocoded_results.append(returned_from_api_as_df)
-            print(f"Geocoding batch number: {i}")
-        result = pd.concat(curr_iteration_geocoded_results, axis=0)  # Store returned, geocoded data.
+
+        manager = Manager()
+        curr_iteration_geocoded_results = manager.list()
+        Parallel(n_jobs=n_jobs)(delayed(geocode_helper)(cg, curr_iteration_geocoded_results, filepath) for filepath in filepaths)
+
+        result = pd.concat(list(curr_iteration_geocoded_results), axis=0)  # Store returned, geocoded data.
         # Select addresses which could not be geocoded.
         address_matches_mask = (result['match'] == True)
         matched_addresses = result.loc[address_matches_mask, :]
