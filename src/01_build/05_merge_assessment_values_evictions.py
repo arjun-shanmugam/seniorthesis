@@ -14,12 +14,6 @@ OUTPUT_DATA_ASSESSOR_VALUES_UNRESTRICTED = "/Users/arjunshanmugam/Documents/GitH
 # 1. Produce restricted version of assessor values file.
 assessment_df = pd.read_csv(INPUT_DATA_ASSESSMENT_VALUES, dtype={'ZIP': str})
 
-# TODO: Delete the next 4 rows after re-running 02_clean_assessment_values.py
-# Select rows where fiscal year is malformed or doesn't make sense.
-missing_fy_mask = (assessment_df['FY'] == 0) | (assessment_df['FY'] == 19180)
-# Drop those rows from the data.
-assessment_df = assessment_df.loc[~missing_fy_mask, :].reset_index(drop=True)
-
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS_RESTRICTED)
 
 # Build date columns in eviction dataset.
