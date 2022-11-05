@@ -43,7 +43,7 @@ keep if inlist(court_person,
 			   "Michael Doherty");
 #delimit cr
 egen cases_heard_by_judge = count(court_person), by(court_person)
-drop if cases_heard_by_judge < 5
+drop if cases_heard_by_judge < 50
 drop cases_heard_by_judge
 tabulate(court_person), generate(court_person)
 
@@ -55,9 +55,9 @@ tabulate property_address_city, generate(property_address_city)
  
 
 // Run regression using judge dummies. 
-regress judgment_for_defendant court_person1-court_person14, robust nocons
-testparm court_person1-court_person14
-ivregress 2sls total_val (judgment_for_defendant = court_person1-court_person14) i.file_year property_address_city1-property_address_city32, robust
+regress judgment_for_defendant court_person1-court_person13 i.file_year property_address_city1-property_address_city32, robust nocons
+testparm court_person1-court_person13
+ivregress 2sls total_val (judgment_for_defendant = court_person1-court_person13) i.file_year property_address_city1-property_address_city32, robust
 
 // Run regression using residualized leniency measure. 
 // Calculate leave-one-out average for each individual.
