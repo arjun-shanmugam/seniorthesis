@@ -8,13 +8,12 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import os
-from src.utilities.dataframe_utilities import reduce_mem_usage, batch_df
+from src.utilities.dataframe_utilities import geocode_addresses, reduce_mem_usage, batch_df
 import matplotlib.pyplot as plt
 from src.utilities.figure_utilities import plot_pie_chart
 
 INPUT_DATA_ASSESSOR = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/AllParcelData_SHP_20220810"
 INPUT_DATA_ZIPCODES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/zipcodes.csv"
-INTERMEDIATE_DATA_GEOCODING = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/to_geocode"
 OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data.csv"
 OUTPUT_FIGURES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/output/01_exploratory/figures"
 town_folders = os.listdir(INPUT_DATA_ASSESSOR)
@@ -38,7 +37,6 @@ for town_folder in town_folders:
 
     dfs.append(df)
 
-# concatenate municipality-year level DataFrames.
 assessor_data = pd.concat(dfs, axis=0).reset_index(drop=True)
 
 # Drop rows where TOTAL_VAL == -1
@@ -64,9 +62,13 @@ assessor_data = assessor_data.loc[mask, :]
 # Select rows where zip code column does not contain a real Massachusetts zip code.
 MA_zipcodes = pd.read_csv(INPUT_DATA_ZIPCODES, dtype={'zipcode': str})['zipcode']
 correct_zipcode_mask = assessor_data['ZIP'].str[0:5].isin(MA_zipcodes)
-
 # Drop those rows from the data.
 assessor_data = assessor_data.loc[correct_zipcode_mask, :]
+
+# Select rows where fiscal year is malformed or doesn't make sense.
+missing_fy_mask = (assessor_data['FY'] == 0) | (assessor_data['FY'] == 19180)
+# Drop those rows from the data.
+assessor_data = assessor_data.loc[~missing_fy_mask, :]
 
 # save to CSV
 assessor_data.to_csv(OUTPUT_DATA, index=False)

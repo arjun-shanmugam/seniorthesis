@@ -18,18 +18,18 @@ def geocode_single_address(row):
     id_num = int(row['id'])
     tokenized_address = row['address'].split(", ")
     if len(tokenized_address) > 4:  # If there is an extra comma in the address tokenized address may have too many items.
-        return  # Abort if this happens.
+        return row  # Abort if this happens.
     street_address = tokenized_address[0]
     city = tokenized_address[1]
     state = tokenized_address[2]
     zipcode = tokenized_address[3]
     if len(zipcode) > 10:
-        return  # Abort if zipcode is longer than 10 characters.
+        return row  # Abort if zipcode is longer than 10 characters.
     result = censusgeocode.address(street_address, city=city, state=state, zip=zipcode)
-
+    print(result)
     if len(result) > 0:  # If a match is found:
         row['parsed'] = result[0]['matchedAddress']
-        row['match'] = "True"
+        row['match'] = True
         row['tigerlineid'] = result[0]['tigerLine']['tigerLineId']
         row['side'] = result[0]['tigerLine']['side']
         row['statefp'] = result[0]['geographies']['Census Tracts'][0]['STATE']
@@ -38,13 +38,18 @@ def geocode_single_address(row):
         row['block'] = result[0]['geographies']['2020 Census Blocks'][0]['BLOCK']
         row['lat'] = result[0]['coordinates']['y']
         row['lon'] = result[0]['coordinates']['x']
+    else:
+        row['match'] = False
+    print(row)
     return row
 
 
 def geocode_addresses(df: pd.DataFrame,
-                      path_to_intermediate_data: str):
+                      path_to_intermediate_data: str,
+                      num_iterations=1):
     """
     Geocodes a DataFrame containing addresses.
+    :param num_iterations: Number of iterations if multiple attempts to geocode are needed.
     :param df: A DataFrame containing 4 columns, ID, street address, city, state, zip, in that order.
     :param path_to_intermediate_data: Location to store CSV files before sending to batch geocoder.
     """
@@ -54,22 +59,22 @@ def geocode_addresses(df: pd.DataFrame,
     iterations = 0
     matched_addresses = pd.DataFrame()
     unmatched_addresses = pd.DataFrame()
-    while len(df_to_geocode) > 0 and iterations < 3:
-        print(iterations)
-        batched_df = batch_df(df_to_geocode, batch_size=5000)
+    while len(df_to_geocode) > 0 and iterations < num_iterations:
+        batched_df = batch_df(df_to_geocode, batch_size=9999)
         filepaths = []  # Save each batch as a separate CSV file.
         for i, batch in enumerate(batched_df):
             path = os.path.join(path_to_intermediate_data, f"batch{i}.csv")
             filepaths.append(path)
             batch.to_csv(path, header=False)
+            print(f"Saving batch number to CSV: {i}")
         # Send CSVs to the census geocoder.
         cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
         curr_iteration_geocoded_results = []
-        for filepath in filepaths:
-            sleep(30)
+        for i, filepath in enumerate(filepaths):
             returned_from_api = cg.addressbatch(filepath)
             returned_from_api_as_df = pd.DataFrame(returned_from_api, columns=returned_from_api[0].keys())
             curr_iteration_geocoded_results.append(returned_from_api_as_df)
+            print(f"Geocoding batch number: {i}")
         result = pd.concat(curr_iteration_geocoded_results, axis=0)  # Store returned, geocoded data.
         # Select addresses which could not be geocoded.
         address_matches_mask = (result['match'] == True)
@@ -80,15 +85,7 @@ def geocode_addresses(df: pd.DataFrame,
         df_to_geocode = unmatched_addresses
         iterations = iterations + 1
 
-    # Attempt to geocoding remaining unmatched addresses line-by-line.
-    result_second_attempt = unmatched_addresses[0:10].apply(lambda row: geocode_single_address(row),
-                                                      axis=1)
-    # Separate the matched and unmatched rows from the result of this second attempt.
-    address_matches_second_attempt_mask = (result_second_attempt['match'] == True)
-    matched_addresses_second_attempt = result_second_attempt.loc[address_matches_second_attempt_mask, :]
-    unmatched_addresses_second_attempt = result_second_attempt.loc[~address_matches_second_attempt_mask, :]  # Throw away
-    print(matched_addresses_second_attempt)
-    return pd.concat(geocoded_dfs + [matched_addresses_second_attempt], axis=0)
+    return pd.concat(geocoded_dfs, axis=0)
 
 
 def batch_df(df: pd.DataFrame, batch_size: int):
