@@ -5,5 +5,5 @@
 /**********************************************************************/
 
 * Data
-local assessor_values_restricted "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/03_cleaned/assessor_values_restricted.csv"
+local assessor_values_restricted "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/03_cleaned/cross_section_restricted.csv"
 

@@ -10,7 +10,7 @@ from src.utilities.dataframe_utilities import geocode_addresses
 if __name__ == '__main__':
     INPUT_DATA_ASSESSMENT_VALUES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data.csv"
     INTERMEDIATE_DATA_GEOCODING = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessment_data_to_geocode"
-    OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data.csv"
+    OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data_geocoded.csv"
     assessor_data = pd.read_csv(INPUT_DATA_ASSESSMENT_VALUES)
 
     # Geocode addresses for easy matching with eviction values.

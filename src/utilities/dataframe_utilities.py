@@ -104,7 +104,7 @@ def geocode_addresses(df: pd.DataFrame,
         df_to_geocode = unmatched_addresses
         iterations = iterations + 1
 
-    return pd.concat(geocoded_dfs, axis=0)
+    return pd.concat(geocoded_dfs + [df_to_geocode], axis=0)
 
 
 def batch_df(df: pd.DataFrame, batch_size: int):

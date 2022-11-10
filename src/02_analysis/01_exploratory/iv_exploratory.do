@@ -15,6 +15,12 @@ import delimited "`assessor_values_restricted'", bindquote(strict)
 // Drop observations where total_val == 0.
 drop if total_val == 0
 
+// Generate property values, adjusted by unit counts. 
+replace units = 1 if units == 0
+generate unit_adjusted_total_val = total_val / units
+generate unit_adjusted_bldg_val = bldg_val / units
+generate unit_adjusted_land_val = land_val / units
+generate unit_adusted_other_val = other_val / units
 
 // Generate judge dummies and drop rows w/ judges who heard few cases.
 #delimit ;
@@ -58,9 +64,9 @@ tabulate file_month, generate(file_month)
  
 
 // Run regression using judge dummies. 
-regress judgment_for_plaintiff court_person1-court_person13 file_month1-file_month21 property_address_city1-property_address_city32, robust nocons
+regress judgment_for_plaintiff court_person1-court_person13 i.file_year property_address_city1-property_address_city40, robust nocons
 testparm court_person1-court_person13
-ivregress 2sls bldg_val (judgment_for_plaintiff = court_person1-court_person13) file_month1-file_month21 property_address_city1-property_address_city32, robust
+ivregress 2sls bldg_val (judgment_for_plaintiff = court_person1-court_person13) file_month1-file_month20 property_address_city1-property_address_city40, robust
 
 // Run regression using residualized leniency measure. 
 // Calculate leave-one-out average for each individual.
@@ -69,7 +75,7 @@ egen cases_seen_by_judge = count(court_person), by(court_person)
 generate leave_one_out_avg = (sum_defendant_victory_by_judge - judgment_for_plaintiff) / (cases_seen_by_judge - 1)
 
 // Calculate residuals.
-regress leave_one_out_avg file_month1-file_month21 property_address_city1-property_address_city32, robust
+regress leave_one_out_avg i.file_year property_address_city1-property_address_city40, robust
 predict residualized_leniency, residuals
 
 // Run first stage.
@@ -77,3 +83,15 @@ regress judgment_for_plaintiff residualized_leniency, robust
 
 // Run second stage.
 ivregress 2sls bldg_val (judgment_for_plaintiff = residualized_leniency), robust
+
+/*
+// Attempt to re-run the above, but collapse dataset so that evictions in the same building are not separate records.
+local outcomes unit_adjusted_total_val unit_adjusted_bldg_val unit_adjusted_land_val unit_adusted_other_val
+collapse (mean) `outcomes' residualized_leniency (sum) judgment_for_plaintiff, by(geocoded_zipcode geocoded_street_address assessment_value_decided_date)
+
+// Run first stage.
+regress judgment_for_plaintiff residualized_leniency, robust
+
+// Run second stage.
+ivregress 2sls unit_adjusted_bldg_val (judgment_for_plaintiff = residualized_leniency), robust
+*/

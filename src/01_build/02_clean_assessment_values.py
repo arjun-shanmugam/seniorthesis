@@ -3,10 +3,8 @@
 
 Cleans property assessment values from MassGIS.
 """
-import censusgeocode
 import geopandas as gpd
 import pandas as pd
-import numpy as np
 import os
 from src.utilities.dataframe_utilities import geocode_addresses, reduce_mem_usage, batch_df
 import matplotlib.pyplot as plt
@@ -34,7 +32,6 @@ for town_folder in town_folders:
     # Convert object type columns to string.
     object_type_columns = df.columns[df.dtypes == "object"].tolist()
     df.loc[:, object_type_columns] = df[object_type_columns].astype("string")
-
     dfs.append(df)
 
 assessor_data = pd.concat(dfs, axis=0).reset_index(drop=True)
