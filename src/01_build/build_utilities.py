@@ -78,51 +78,34 @@ def geocode_helper(cg: censusgeocode.CensusGeocode,
     returned_from_api_as_df = pd.DataFrame(returned_from_api, columns=returned_from_api[0].keys())
     master_list.append(returned_from_api_as_df)
     print(f"Geocoded batch: {filepath[-7:-4]}")
+    os.remove(filepath)
 
 
 def geocode_addresses(df: pd.DataFrame,
                       path_to_intermediate_data: str,
-                      num_iterations=1,
                       n_jobs=-1):
     """
     Geocodes a DataFrame containing addresses.
-    :param n_jobs: Number of processors to use.
-    :param num_iterations: Number of iterations if multiple attempts to geocode are needed.
     :param df: A DataFrame containing 4 columns, ID, street address, city, state, zip, in that order.
+    :param n_jobs: Number of processors to use.
     :param path_to_intermediate_data: Location to store CSV files before sending to batch geocoder.
     """
+    batched_df = batch_df(df=df, batch_size=9999)
+    filepaths = []  # Save each batch as a separate CSV file.
+    for i, batch in enumerate(batched_df):
+        path = os.path.join(path_to_intermediate_data, f"batch{i}.csv")
+        filepaths.append(path)
+        batch.to_csv(path, header=False)
+        print(f"Saving batch number to CSV: {i}")
+    # Send CSVs to the census geocoder.
+    cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
 
-    geocoded_dfs = []
-    df_to_geocode = df
-    iterations = 0
-    matched_addresses = pd.DataFrame()
-    unmatched_addresses = pd.DataFrame()
-    while len(df_to_geocode) > 0 and iterations < num_iterations:
-        batched_df = batch_df(df_to_geocode, batch_size=9999)
-        filepaths = []  # Save each batch as a separate CSV file.
-        for i, batch in enumerate(batched_df):
-            path = os.path.join(path_to_intermediate_data, f"batch{i}.csv")
-            filepaths.append(path)
-            batch.to_csv(path, header=False)
-            print(f"Saving batch number to CSV: {i}")
-        # Send CSVs to the census geocoder.
-        cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
+    manager = Manager()
+    geocoded_results = manager.list()
+    Parallel(n_jobs=n_jobs)(delayed(geocode_helper)(cg, geocoded_results, filepath) for filepath in filepaths)
+    result = pd.concat(list(geocoded_results), axis=0)  # Store returned, geocoded data.
 
-        manager = Manager()
-        curr_iteration_geocoded_results = manager.list()
-        Parallel(n_jobs=n_jobs)(delayed(geocode_helper)(cg, curr_iteration_geocoded_results, filepath) for filepath in filepaths)
-
-        result = pd.concat(list(curr_iteration_geocoded_results), axis=0)  # Store returned, geocoded data.
-        # Select addresses which could not be geocoded.
-        address_matches_mask = (result['match'] == True)
-        matched_addresses = result.loc[address_matches_mask, :]
-        unmatched_addresses = result.loc[~address_matches_mask, :]
-
-        geocoded_dfs.append(matched_addresses)
-        df_to_geocode = unmatched_addresses
-        iterations = iterations + 1
-
-    return pd.concat(geocoded_dfs + [df_to_geocode], axis=0)
+    return result
 
 
 def batch_df(df: pd.DataFrame, batch_size: int):

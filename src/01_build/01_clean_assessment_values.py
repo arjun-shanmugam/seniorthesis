@@ -1,5 +1,5 @@
 """
-02_clean_assessment_values.py
+01_clean_assessment_values.py
 
 Cleans property assessment values from MassGIS.
 """
@@ -36,14 +36,23 @@ assessor_data = pd.concat(dfs, axis=0)
 missing_fy_mask = ((assessor_data['FY'] == 0) | (assessor_data['FY'] == 19180))
 # Drop those rows from the data.
 assessor_data = assessor_data.loc[~missing_fy_mask, :]
-print(f"Dropping {missing_fy_mask.sum()} rows where fiscal year is malformed or doesn't make sense ({missing_fy_mask.sum() / len(assessor_data)}"
+print(f"Dropping {missing_fy_mask.sum()} rows where FY is malformed or doesn't make sense ({missing_fy_mask.sum() / len(assessor_data)}"
       f"percent of original dataset).")
 
 # Drop rows where SITE_ADDR = NaN
 missing_site_addr_mask = ((assessor_data['SITE_ADDR'].isna()) | (assessor_data['SITE_ADDR'] == ""))
 assessor_data = assessor_data.loc[~missing_site_addr_mask, :]
-print(f"Dropping {missing_site_addr_mask.sum()} rows where site address is missing ({missing_site_addr_mask.sum() / len(assessor_data)}"
+print(f"Dropping {missing_site_addr_mask.sum()} rows where SITE_ADDR is missing ({missing_site_addr_mask.sum() / len(assessor_data)}"
       f"percent of original dataset).")
+
+# Drop rows where LOC_ID is missing.
+missing_LOC_ID_mask = ((assessor_data['LOC_ID'].isna()) | (assessor_data['LOC_ID'] == ""))
+assessor_data = assessor_data.loc[~missing_LOC_ID_mask, :]
+print(f"Dropping {missing_LOC_ID_mask.sum()} rows where LOC_ID is missing ({missing_LOC_ID_mask.sum() / len(assessor_data)}"
+      f"percent of original dataset).")
+
+
+
 
 # save to CSV
 assessor_data.to_csv(OUTPUT_DATA, index=False)
