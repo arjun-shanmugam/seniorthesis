@@ -6,14 +6,11 @@ Cleans property assessment values from MassGIS.
 import geopandas as gpd
 import pandas as pd
 import os
-from src.utilities.dataframe_utilities import geocode_addresses, reduce_mem_usage, batch_df
-import matplotlib.pyplot as plt
-from src.utilities.figure_utilities import plot_pie_chart
+from build_utilities import reduce_mem_usage
 
 INPUT_DATA_ASSESSOR = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/AllParcelData_SHP_20220810"
 INPUT_DATA_ZIPCODES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/zipcodes.csv"
-OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data.csv"
-OUTPUT_FIGURES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/output/01_exploratory/figures"
+OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data2.csv"
 town_folders = os.listdir(INPUT_DATA_ASSESSOR)
 
 dfs = []
@@ -25,8 +22,7 @@ for town_folder in town_folders:
     fiscal_year = data[5][2:]
     assessor_filename = town_id + "Assess" + "_" + data[4] + "_" + data[5] + ".dbf"
     df = gpd.read_file(os.path.join(INPUT_DATA_ASSESSOR, town_folder, assessor_filename))
-    df = df.drop(columns='geometry')  # drop the geometry column from the assessor database
-
+    df = df.drop(columns=['geometry', 'OWNER1', 'OWN_ADDR', 'OWN_CITY', 'OWN_STATE', 'OWN_ZIP', 'OWN_CO', 'BLD_AREA', 'STYLE'])
     df, columns_containing_nans = reduce_mem_usage(df)
 
     # Convert object type columns to string.
@@ -34,38 +30,20 @@ for town_folder in town_folders:
     df.loc[:, object_type_columns] = df[object_type_columns].astype("string")
     dfs.append(df)
 
-assessor_data = pd.concat(dfs, axis=0).reset_index(drop=True)
-
-# Drop rows where TOTAL_VAL == -1
-mask = (assessor_data['TOTAL_VAL'] != -1)
-fig, ax = plt.subplots(1, 1)  # Plot a pie chart giving the use code of properties with TOTAL_VAL == -1
-plot_pie_chart(ax,
-               x=assessor_data.loc[mask, 'USE_CODE'],
-               title="Use Codes of Properties with TOTAL_VAL == -1")
-plt.savefig(os.path.join(OUTPUT_FIGURES, "pie_USE_CODE_for_TOTAL_VAL_-1.png"), bbox_inches='tight')
-plt.close(fig)
-assessor_data = assessor_data.loc[mask, :]
-
-# Drop rows where SITE_ADDR = NaN
-mask = ~(assessor_data['SITE_ADDR'].isna())
-fig, ax = plt.subplots(1, 1)  # Plot a pie chart giving the use code of properties with SITE_ADDR == NaN
-plot_pie_chart(ax,
-               x=assessor_data.loc[mask, 'USE_CODE'],
-               title="Use Codes of Properties with SITE_ADDR == NaN")
-plt.savefig(os.path.join(OUTPUT_FIGURES, "pie_USE_CODE_for_SITE_ADDR_NaN.png"), bbox_inches='tight')
-plt.close(fig)
-assessor_data = assessor_data.loc[mask, :]
-
-# Select rows where zip code column does not contain a real Massachusetts zip code.
-MA_zipcodes = pd.read_csv(INPUT_DATA_ZIPCODES, dtype={'zipcode': str})['zipcode']
-correct_zipcode_mask = assessor_data['ZIP'].str[0:5].isin(MA_zipcodes)
-# Drop those rows from the data.
-assessor_data = assessor_data.loc[correct_zipcode_mask, :]
+assessor_data = pd.concat(dfs, axis=0)
 
 # Select rows where fiscal year is malformed or doesn't make sense.
-missing_fy_mask = (assessor_data['FY'] == 0) | (assessor_data['FY'] == 19180)
+missing_fy_mask = ((assessor_data['FY'] == 0) | (assessor_data['FY'] == 19180))
 # Drop those rows from the data.
 assessor_data = assessor_data.loc[~missing_fy_mask, :]
+print(f"Dropping {missing_fy_mask.sum()} rows where fiscal year is malformed or doesn't make sense ({missing_fy_mask.sum() / len(assessor_data)}"
+      f"percent of original dataset).")
+
+# Drop rows where SITE_ADDR = NaN
+missing_site_addr_mask = ((assessor_data['SITE_ADDR'].isna()) | (assessor_data['SITE_ADDR'] == ""))
+assessor_data = assessor_data.loc[~missing_site_addr_mask, :]
+print(f"Dropping {missing_site_addr_mask.sum()} rows where site address is missing ({missing_site_addr_mask.sum() / len(assessor_data)}"
+      f"percent of original dataset).")
 
 # save to CSV
 assessor_data.to_csv(OUTPUT_DATA, index=False)
