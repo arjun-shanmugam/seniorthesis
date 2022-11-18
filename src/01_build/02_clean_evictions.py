@@ -5,21 +5,19 @@ Cleans eviction dataset from MassLandlords.
 """
 import os
 
-import numpy as np
 import pandas as pd
-import censusgeocode
+from geocodio import GeocodioClient
 
-from build_utilities import geocode_addresses
+from src.utilities.dataframe_utilities import batch_df
 
 if __name__ == '__main__':
     INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/shanmugam_2022_08_03_aug.csv"
-    INPUT_DATA_JUDGES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/judges.xlsx"
-    INTERMEDIATE_DATA_GEOCODING = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/batched_evictions_to_geocode"
     OUTPUT_DATA_UNRESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_unrestricted.csv"
     OUTPUT_DATA_RESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_restricted.csv"
-
+    GEOCODIO_API_KEY = "060167a66c7587887a81c38077996a71c963638"
     evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, encoding='unicode_escape')
     original_N = len(evictions_df)
+    verbose = True
 
     # Clean court division.
     court_division_replacement_dict = {"central": "Central",
@@ -59,17 +57,28 @@ if __name__ == '__main__':
                              "on. Donna Salvidio": "Donna Salvidio"}
     evictions_df.loc[:, 'court_person'] = evictions_df['court_person'].replace(name_replacement_dict)
 
-    # Drop rows missing street address, city, or state.
-    no_address_info_mask = ((evictions_df['property_address_street'].isna()) |
-                            (evictions_df['property_address_city'].isna()) |
-                            (evictions_df['property_address_state'].isna()))
+    # Drop rows missing property address.
+    no_address_info_mask = (evictions_df['property_address_full'].isna())
+    if verbose:
+        print(
+            f"Dropping {no_address_info_mask.sum()} rows missing property_address_full ({100*(no_address_info_mask.sum() / original_N):.3} "
+            f"percent of original dataset).")
+    evictions_df = evictions_df.loc[~no_address_info_mask, :].reset_index(drop=True)
 
-    print(
-        f"Dropping {no_address_info_mask.sum()} rows missing street address, city, or state ({100*(no_address_info_mask.sum() / original_N):.3} "
-        f"percent of original dataset).")
-    evictions_df = evictions_df.loc[~no_address_info_mask, :]
+    # Geocode addresses for matching with tax parcels.
+    evictions_df = evictions_df.iloc[:50]  # TODO: Delete this! For testing purposes.
+    client = GeocodioClient(GEOCODIO_API_KEY)
+    batched_addresses = batch_df(evictions_df['property_address_full'], batch_size=10000)
+    list_of_coordinates = []
+    for batch in batched_addresses:
+        list_of_coordinates += client.batch_geocode(batch.tolist()).coords
+    coordinates = pd.DataFrame(list_of_coordinates, columns=['longitude', 'latitude'])
+    evictions_df = pd.concat([evictions_df, coordinates], axis=1)
 
-    # Geocode addresses for easier matching with assessor values.
+
+
+
+    """ Geocode addresses for easier matching with assessor values.
     evictions_df = evictions_df.reset_index(drop=True)
     evictions_df.loc[:, 'property_address_street'] = evictions_df['property_address_street'].str.replace("&#039;",
                                                                                                          "\'",
@@ -77,12 +86,13 @@ if __name__ == '__main__':
     columns_to_geocode = evictions_df[['property_address_street', 'property_address_city', 'property_address_state', 'property_address_zip']]
     print(f"Sending {len(columns_to_geocode)} observations to geocoder.")
     result = geocode_addresses(columns_to_geocode,
-                               INTERMEDIATE_DATA_GEOCODING,
-                               num_iterations=2)
+                               INTERMEDIATE_DATA_GEOCODING)
     result.loc[:, 'id'] = result['id'].astype(int)
     result = result.set_index('id')
     number_of_successfully_geocoded_obs = result['match'].sum()
-    print(f"Successfully geocoded {100 * (number_of_successfully_geocoded_obs / len(evictions_df)):.3} percent of remaining rows.")
+    print(f"Successfully geocoded {100 * (number_of_successfully_geocoded_obs / len(evictions_df)):.3} percent of remaining rows."
+          f" Dropping failed rows.")
+    evictions_df = evictions_df.loc[evictions_df['match'], :]
 
     # Concatenate the geocoded data with the original evictions data.
     evictions_df = evictions_df.merge(result,
@@ -92,7 +102,7 @@ if __name__ == '__main__':
                                       validate='1:1')
 
     # Rename "parsed" column.
-    evictions_df = evictions_df.rename(columns={'parsed': 'full_geocoded_address'})
+    evictions_df = evictions_df.rename(columns={'parsed': 'full_geocoded_address'})"""
 
     # Save unrestricted eviction data.
     print("Saving unrestricted evictions dataset.")

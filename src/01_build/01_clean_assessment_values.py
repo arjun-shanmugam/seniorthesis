@@ -51,8 +51,7 @@ assessor_data = assessor_data.loc[~missing_LOC_ID_mask, :]
 print(f"Dropping {missing_LOC_ID_mask.sum()} rows where LOC_ID is missing ({missing_LOC_ID_mask.sum() / len(assessor_data)}"
       f"percent of original dataset).")
 
-
-
+# TODO: Aggregate according to LOC_ID
 
 # save to CSV
 assessor_data.to_csv(OUTPUT_DATA, index=False)
