@@ -128,7 +128,7 @@ esttab totsample treatment control groupdiff using "`tables_output'/balance_tabl
 		 nolabel)
 	
     cell( 
-        mean(pattern(1 1 1 0) fmt(4)) & se(pattern(0 0 0 1) fmt(2)) 
+        mean(pattern(1 1 1 0) fmt(2)) & p(pattern(0 0 0 1) fmt(2)) 
     ) mtitle("Full sample" "Training" "Control" "Difference (3)-(2)");
 	
 #delimit cr
