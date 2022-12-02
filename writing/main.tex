@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{graphicx, setspace, booktabs, float, xcolor, rotating, lscape, lscape, sectsty, rotating}
+\usepackage{graphicx, setspace, booktabs, float, xcolor, rotating, lscape, lscape, sectsty, rotating, pdflscape}
 \usepackage[utf8]{inputenc}
 \usepackage[letterpaper, portrait, margin=0.8in]{geometry}
 \usepackage[shortlabels]{enumitem}
@@ -17,6 +17,8 @@
 \begin{document}
 \input{output/01_exploratory/tables/summary_statistics.tex}
 
+\begin{landscape}
 \input{output/01_exploratory/tables/balance_table.tex}
+\end{landscape}
     
 \end{document}
