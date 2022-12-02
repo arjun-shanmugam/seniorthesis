@@ -127,7 +127,7 @@ esttab full_sample treatment control difference using "`tables_output'/balance_t
 		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From First Post-Filing F.Y.}",
 		 nolabel)
 	title("Balance Table")
-	mlabels(none) collabels(none)
-    cells("mean(pattern(1 1 1 1) fmt(2)) & b(pattern(0 0 0 1) fmt(2))") mtitles("Full sample" "Cases Won by Plantiff" "Cases Won by Defendant" "Difference");
+	collabels(none)
+    cells("mean(pattern(1 1 1 1) fmt(2)) & b(pattern(0 0 0 1) fmt(2)) & p(pattern(0 0 0 1) fmt(2))") mtitles("Full sample" "Cases Won by Plantiff" "Cases Won by Defendant" "Difference");
 	
 #delimit cr
