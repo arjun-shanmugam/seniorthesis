@@ -113,19 +113,21 @@ label variable no_cause_transfer "\hspace{0.25cm}No cause; transfer from BMC or 
 
 // Produce balance table.
 eststo clear
-eststo totsample: estpost summarize `descriptive_statistics'
+eststo full_sample: estpost summarize `descriptive_statistics'
 eststo treatment: estpost summarize `descriptive_statistics' if judgment_for_plaintiff==1
 eststo control: estpost summarize `descriptive_statistics' if judgment_for_plaintiff==0
-eststo groupdiff: estpost ttest `descriptive_statistics', by(judgment_for_plaintiff)
+eststo difference: estpost ttest `descriptive_statistics', by(judgment_for_plaintiff)
 
 #delimit ;
-esttab totsample treatment control groupdiff using "`tables_output'/balance_table.tex", 
+esttab full_sample treatment control difference using "`tables_output'/balance_table.tex", 
 	`universal_esttab_options'
 	refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
 		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From First Post-Filing F.Y.}",
 		 nolabel)
-    cell(mean(pattern(1 1 1 1) fmt(2))) mtitles("Full sample" "Plaintiff Victory" "Defendant Victory" "Difference");
+	title("Balance Table")
+
+    cells("mean(pattern(1 1 1 1) fmt(2)) & b(pattern(0 0 0 1) fmt(2))") mtitles("Full sample" "Plaintiff Victory" "Defendant Victory" "Difference");
 	
 #delimit cr

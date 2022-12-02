@@ -1,38 +1,39 @@
-{
+\begin{table}[htbp]\centering
 \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Balance Table}
 \begin{tabular}{l*{4}{c}}
 \toprule
                     &\multicolumn{1}{c}{Full sample}&\multicolumn{1}{c}{Plaintiff Victory}&\multicolumn{1}{c}{Defendant Victory}&\multicolumn{1}{c}{Difference}\\
-                    &        mean&        mean&        mean&        mean\\
+                    &      mean/b&      mean/b&      mean/b&      mean/b\\
 \midrule
 \emph{Panel A: Case Initiation}&            &            &            &            \\
-\hspace{0.25cm}For cause&        0.10&        0.10&        0.11&            \\
-\hspace{0.25cm}Forclosure&        0.03&        0.04&        0.02&            \\
-\hspace{0.25cm}No cause&        0.11&        0.10&        0.11&            \\
-\hspace{0.25cm}Non-payment of rent&        0.73&        0.75&        0.70&            \\
-\hspace{0.25cm}For cause; transfer from BMC or D.C.&        0.01&        0.00&        0.01&            \\
-\hspace{0.25cm}Foreclosure; transfer from BMC or D.C.&        0.00&        0.00&        0.00&            \\
-\hspace{0.25cm}Non-payment of rent; transfer from BMC or D.C.&        0.01&        0.01&        0.03&            \\
-\hspace{0.25cm}No cause; transfer from BMC or D.C.&        0.01&        0.00&        0.01&            \\
+\hspace{0.25cm}For cause&       0.10 &       0.10 &       0.11 &        0.02\\
+\hspace{0.25cm}Forclosure&       0.03 &       0.04 &       0.02 &       -0.01\\
+\hspace{0.25cm}No cause&       0.11 &       0.10 &       0.11 &        0.01\\
+\hspace{0.25cm}Non-payment of rent&       0.73 &       0.75 &       0.70 &       -0.05\\
+\hspace{0.25cm}For cause; transfer from BMC or D.C.&       0.01 &       0.00 &       0.01 &        0.01\\
+\hspace{0.25cm}Foreclosure; transfer from BMC or D.C.&       0.00 &       0.00 &       0.00 &        0.00\\
+\hspace{0.25cm}Non-payment of rent; transfer from BMC or D.C.&       0.01 &       0.01 &       0.03 &        0.02\\
+\hspace{0.25cm}No cause; transfer from BMC or D.C.&       0.01 &       0.00 &       0.01 &        0.01\\
 \vspace{0.1em} \\ \emph{Panel B: Case Resolution}&            &            &            &            \\
-\hspace{0.25cm}Case defaulted&        0.61&        0.78&        0.00&            \\
-\hspace{0.25cm}Case dismissed&        0.22&        0.00&        0.99&            \\
-\hspace{0.25cm}Case heard&        0.17&        0.22&        0.01&            \\
-\hspace{0.25cm}Case resolved through mediation&        0.00&        0.00&        0.00&            \\
+\hspace{0.25cm}Case defaulted&       0.61 &       0.78 &       0.00 &       -0.78\\
+\hspace{0.25cm}Case dismissed&       0.22 &       0.00 &       0.99 &        0.99\\
+\hspace{0.25cm}Case heard&       0.17 &       0.22 &       0.01 &       -0.21\\
+\hspace{0.25cm}Case resolved through mediation&       0.00 &       0.00 &       0.00 &        0.00\\
 \vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}&            &            &            &            \\
-\hspace{0.25cm}Defendant has attorney&        0.08&        0.05&        0.19&            \\
-\hspace{0.25cm}Defendant is an entity&        0.00&        0.00&        0.01&            \\
-\hspace{0.25cm}Money judgement&     4428.80&     4424.31&     5691.26&            \\
-\hspace{0.25cm}Plaintiff has attorney&        0.78&        0.78&        0.75&            \\
-\hspace{0.25cm}Plaintiff is an entity&        0.63&        0.63&        0.61&            \\
+\hspace{0.25cm}Defendant has attorney&       0.08 &       0.05 &       0.19 &        0.14\\
+\hspace{0.25cm}Defendant is an entity&       0.00 &       0.00 &       0.01 &        0.00\\
+\hspace{0.25cm}Money judgement&    4428.80 &    4424.31 &    5691.26 &     1266.95\\
+\hspace{0.25cm}Plaintiff has attorney&       0.78 &       0.78 &       0.75 &       -0.03\\
+\hspace{0.25cm}Plaintiff is an entity&       0.63 &       0.63 &       0.61 &       -0.02\\
 \vspace{0.1em} \\ \emph{Panel D: Assessor Data From First Post-Filing F.Y.}&            &            &            &            \\
-\hspace{0.25cm}Total property value& 10019269.67& 10757933.84&  7420105.31&            \\
-\hspace{0.25cm}Building value&  7909854.75&  8465855.20&  5953435.83&            \\
-\hspace{0.25cm}Land value&  2029976.91&  2202666.30&  1422328.52&            \\
-\hspace{0.25cm}Other value&    90916.82&   102163.53&    51342.62&            \\
-\hspace{0.25cm}Units&       39.50&       39.23&       40.44&            \\
+\hspace{0.25cm}Total property value&10019269.67 &10757933.84 & 7420105.31 & -3337828.53\\
+\hspace{0.25cm}Building value& 7909854.75 & 8465855.20 & 5953435.83 & -2512419.37\\
+\hspace{0.25cm}Land value& 2029976.91 & 2202666.30 & 1422328.52 &  -780337.78\\
+\hspace{0.25cm}Other value&   90916.82 &  102163.53 &   51342.62 &   -50820.91\\
+\hspace{0.25cm}Units&      39.50 &      39.23 &      40.44 &        1.21\\
 \midrule
 Observations        &        6150&        4789&        1361&        6150\\
 \bottomrule
 \end{tabular}
-}
+\end{table}
