@@ -128,7 +128,6 @@ esttab full_sample treatment control difference using "`tables_output'/balance_t
 		 nolabel)
 	title("Balance Table")
 	collabels(none)
-    cells(mean(pattern(1 1 1 0) fmt(2)) & b(pattern(0 0 0 1) fmt(2))
-		  sd(pattern(1 1 1 0) fmt(2))   & p(pattern(0 0 0 1) fmt(2))) mtitles("Full sample" "Cases Won by Plantiff" "Cases Won by Defendant" "Difference");
+    cells(mean(pattern(1 1 1 0) fmt(2)) & b(pattern(0 0 0 1) fmt(2)) & p(pattern(0 0 0 1) fmt(2))) mtitles("Full sample" "Cases Won by Plantiff" "Cases Won by Defendant" "Difference (Mean, p-value)");
 	
 #delimit cr
