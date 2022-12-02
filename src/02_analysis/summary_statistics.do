@@ -71,10 +71,9 @@ esttab using "`tables_output'/summary_statistics.tex",
 // Load restricted cross section to produce balance table.
 import delimited "`cross_section_restricted'", clear bindquote(strict)
 
-
-
-//
-// eststo totsample: estpost summarize $COVS
-// eststo treatment: estpost summarize $COVS if train==1
-//     eststo control: estpost summarize $COVS if train==0
-//     eststo groupdiff: estpost ttest $COVS, by(train)
+// Produce balance table.
+eststo clear
+eststo totsample: estpost summarize $COVS
+eststo treatment: estpost summarize $COVS if train==1
+eststo control: estpost summarize $COVS if train==0
+eststo groupdiff: estpost ttest $COVS, by(train)
