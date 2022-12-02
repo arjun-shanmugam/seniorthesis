@@ -36,6 +36,7 @@ if VERBOSE:
     print(f"Successfully matched {successfully_matched_observations} evictions ({successfully_matched_observations / len(evictions_gdf)}"
           f" percent of observations) to parcels.")
 
+tax_parcels_gdf.loc[:, 'file_month'] = pd.to_datetime(tax_parcels_gdf['file_date']).dt.month
 tax_parcels_gdf.loc[:, 'file_year'] = pd.to_datetime(tax_parcels_gdf['file_date']).dt.year
 tax_parcels_gdf.loc[:, 'next_fiscal_year'] = tax_parcels_gdf['file_year'] + 2
 merged_df = tax_parcels_gdf.merge(pd.read_csv(INPUT_DATA_ASSESSMENT_VALUES),

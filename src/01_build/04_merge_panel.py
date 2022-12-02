@@ -3,6 +3,7 @@
 
 Merge eviction data with assessment values, producing a panel dataset..
 """
+import numpy as np
 import pandas as pd
 import geopandas as gpd
 
@@ -101,4 +102,8 @@ merged_df.loc[mask, 'judgment_for_defendant'] = 1
 # Generate a variable indicating judgement in favor of plaintiff.
 merged_df.loc[:, 'judgment_for_plaintiff'] = 1 - merged_df['judgment_for_defendant']
 # Save restricted eviction data.
+
+# Generate a variable indicating post-treatment for use in DiD analysis.
+merged_df.loc[:, 'post'] = np.where(pd.to_datetime(merged_df['file_date']).dt.year + 2 < merged_df['FY'], 0, 1)
+
 merged_df.to_csv(OUTPUT_DATA_RESTRICTED)

@@ -10,7 +10,7 @@ clear
 
 // Load data.
 include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/01_exploratory/exploratory_locals.do"
-import delimited "`assessor_values_restricted'", bindquote(strict)
+import delimited "`cross_section_restricted'", bindquote(strict)
 
 // Drop observations where total_val == 0.
 // drop if total_val == 0
@@ -25,9 +25,9 @@ replace unit_adjusted_total_val = total_val / num_records_combined if units == 0
 replace unit_adjusted_bldg_val = bldg_val / num_records_combined if units == 0
 replace unit_adjusted_land_val = land_val / num_records_combined if units == 0
 replace unit_adusted_other_val = other_val / num_records_combined if units == 0
-drop if units == 0 & bldg_val > 1000000
+// drop if units == 0 & bldg_val > 1000000
 
-// // Generate judge dummies and drop rows w/ judges who heard few cases.
+// Generate judge dummies and drop rows w/ judges who heard few cases.
 #delimit ;
 keep if inlist(court_person,
 			   "Alex Mitchell",
