@@ -46,10 +46,10 @@ label variable for_cause "\hspace{0.25cm}For cause"
 label variable foreclosure "\hspace{0.25cm}Forclosure"
 label variable no_cause "\hspace{0.25cm}No cause"
 label variable non_payment "\hspace{0.25cm}Non-payment of rent"
-label variable for_cause_transfer "\hspace{0.25cm}For cause; transferred from BMC or District Court"
-label variable foreclosure_transfer "\hspace{0.25cm}Foreclosure; transferred from BMC or District Court"
-label variable non_payment_transfer "\hspace{0.25cm}Non-payment of rent; transferred from BMC or District Court"
-label variable no_cause_transfer "\hspace{0.25cm}No cause; transferred from BMC or District Court"
+label variable for_cause_transfer "\hspace{0.25cm}For cause; transfer from BMC or D.C."
+label variable foreclosure_transfer "\hspace{0.25cm}Foreclosure; transfer from BMC or D.C."
+label variable non_payment_transfer "\hspace{0.25cm}Non-payment of rent; transfer from BMC or D.C."
+label variable no_cause_transfer "\hspace{0.25cm}No cause; transfer from BMC or D.C."
 
 // Produce summary statistics table.
 #delimit ;
@@ -67,7 +67,7 @@ esttab using "`tables_output'/summary_statistics.tex",
   refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
-		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Eviction Filing}",
+		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Filing}",
 		 nolabel);
 #delimit cr
 		 
@@ -106,10 +106,10 @@ label variable for_cause "\hspace{0.25cm}For cause"
 label variable foreclosure "\hspace{0.25cm}Forclosure"
 label variable no_cause "\hspace{0.25cm}No cause"
 label variable non_payment "\hspace{0.25cm}Non-payment of rent"
-label variable for_cause_transfer "\hspace{0.25cm}For cause; transferred from BMC or District Court"
-label variable foreclosure_transfer "\hspace{0.25cm}Foreclosure; transferred from BMC or District Court"
-label variable non_payment_transfer "\hspace{0.25cm}Non-payment of rent; transferred from BMC or District Court"
-label variable no_cause_transfer "\hspace{0.25cm}No cause; transferred from BMC or District Court"
+label variable for_cause_transfer "\hspace{0.25cm}For cause; transfer from BMC or D.C."
+label variable foreclosure_transfer "\hspace{0.25cm}Foreclosure; transfer from BMC or D.C."
+label variable non_payment_transfer "\hspace{0.25cm}Non-payment of rent; transfer from BMC or D.C."
+label variable no_cause_transfer "\hspace{0.25cm}No cause; transfer from BMC or D.C."
 
 // Produce balance table.
 eststo clear
@@ -124,7 +124,7 @@ esttab totsample treatment control groupdiff using "`tables_output'/balance_tabl
 	refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
-		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Eviction Filing}",
+		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Filing}",
 		 nolabel)
 	
     cell( 
