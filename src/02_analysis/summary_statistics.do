@@ -62,7 +62,6 @@ estpost tabstat `descriptive_statistics', c(stat) stat(mean sd n);
 esttab using "`tables_output'/summary_statistics.tex",
   `universal_esttab_options' collabels("Mean" "S.D." "N")
   title("Summary Statistics") cells("mean(fmt(2)) sd(fmt(2)) count(fmt(0))")
-  nomtitles
   noobs
   refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
@@ -124,9 +123,8 @@ esttab totsample treatment control groupdiff using "`tables_output'/balance_tabl
 	refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
-		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Filing}",
+		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From First Post-Filing F.Y.}",
 		 nolabel)
-	
-    cell(mean(pattern(1 1 1 1) fmt(2))) mtitle("Full sample" "Plaintiff Victory" "Defendant Victory" "Difference");
-	
+	collabels("Mean" "S.D." "N")
+    cell(mean(pattern(1 1 1 0) fmt(2)) p(pattern(0 0 0 1) fmt(2)));
 #delimit cr
