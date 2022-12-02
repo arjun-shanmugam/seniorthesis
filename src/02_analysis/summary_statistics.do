@@ -67,7 +67,7 @@ esttab using "`tables_output'/summary_statistics.tex",
   refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
-		 total_val "\vspace{0.1em} \\ \emph{Panel D: Asessor Data From Fiscal Year Following Eviction Filing'}",
+		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Eviction Filing}",
 		 nolabel);
 #delimit cr
 		 
@@ -124,11 +124,11 @@ esttab totsample treatment control groupdiff using "`tables_output'/balance_tabl
 	refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
-		 total_val "\vspace{0.1em} \\ \emph{Panel D: Asessor Data From Fiscal Year Following Eviction Filing'}",
+		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Eviction Filing}",
 		 nolabel)
 	
     cell( 
         mean(pattern(1 1 1 0) fmt(2)) & p(pattern(0 0 0 1) fmt(2)) 
-    ) mtitle("Full sample" "Training" "Control" "Difference (3)-(2)");
+    ) mtitle("Full sample" "Plaintiff Victory" "Defendant Victory" "Difference (3)-(2)");
 	
 #delimit cr
