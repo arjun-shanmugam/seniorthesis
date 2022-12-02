@@ -67,13 +67,20 @@ esttab using "`tables_output'/summary_statistics.tex",
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
 		 total_val "\vspace{0.1em} \\ \emph{Panel D: Asessor Data From Fiscal Year Following Eviction Filing'}", nolabel);
-
+#delimit cr
+		 
 // Load restricted cross section to produce balance table.
 import delimited "`cross_section_restricted'", clear bindquote(strict)
 
 // Produce balance table.
 eststo clear
-eststo totsample: estpost summarize $COVS
-eststo treatment: estpost summarize $COVS if train==1
-eststo control: estpost summarize $COVS if train==0
-eststo groupdiff: estpost ttest $COVS, by(train)
+eststo totsample: estpost summarize `descriptive_statistics'
+eststo treatment: estpost summarize descriptive_statistics if judgment_for_plaintiff==1
+eststo control: estpost summarize descriptive_statistics if judgment_for_plaintiff==0
+eststo groupdiff: estpost ttest descriptive_statistics, by(judgment_for_plaintiff)
+
+esttab totsample treatment control groupdiff using "`tables_output'/balance_table.tex", replace ///
+    cell( ///
+        mean(pattern(1 1 1 0) fmt(4)) & b(pattern(0 0 0 1) fmt(4)) ///
+        sd(pattern(1 1 1 0) fmt(4)) & se(pattern(0 0 0 1) fmt(2)) ///
+    ) mtitle("Full sample" "Training" "Control" "Difference (3)-(2)")
