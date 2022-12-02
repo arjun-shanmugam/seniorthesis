@@ -117,8 +117,17 @@ eststo treatment: estpost summarize `descriptive_statistics' if judgment_for_pla
 eststo control: estpost summarize `descriptive_statistics' if judgment_for_plaintiff==0
 eststo groupdiff: estpost ttest `descriptive_statistics', by(judgment_for_plaintiff)
 
-esttab totsample treatment control groupdiff using "`tables_output'/balance_table.tex", replace ///
-    cell( ///
-        mean(pattern(1 1 1 0) fmt(4)) & b(pattern(0 0 0 1) fmt(4)) ///
-        sd(pattern(1 1 1 0) fmt(4)) & se(pattern(0 0 0 1) fmt(2)) ///
-    ) mtitle("Full sample" "Training" "Control" "Difference (3)-(2)")
+#delimit ;
+esttab totsample treatment control groupdiff using "`tables_output'/balance_table.tex", replace 
+	  refcat(for_cause "\emph{Panel A: Case Initiation}"
+		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
+		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
+		 total_val "\vspace{0.1em} \\ \emph{Panel D: Asessor Data From Fiscal Year Following Eviction Filing'}",
+		 nolabel)
+	nonumbers
+    cell( 
+        mean(pattern(1 1 1 0) fmt(4)) & b(pattern(0 0 0 1) fmt(4)) 
+        sd(pattern(1 1 1 0) fmt(4)) & se(pattern(0 0 0 1) fmt(2)) 
+    ) mtitle("Full sample" "Training" "Control" "Difference (3)-(2)");
+	
+#delimit cr
