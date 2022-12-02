@@ -28,6 +28,16 @@ evictions_df.loc[:, 'court_division'] = evictions_df.loc[:, 'court_division'].re
 mask = evictions_df['court_division'].isin(["Central", "Eastern", "Metro South", "Southeast", "Northeast", "Western"])
 evictions_df = evictions_df.loc[mask, :]
 
+# Clean initiating actions.
+initiating_action_replacement_dict = {"Efiled SP Summons and Complaint - Cause": "SP Summons and Complaint - Cause",
+                                      "Efiled SP Summons and Complaint - Foreclosure": "SP Summons and Complaint - Foreclosure",
+                                      "SP Summons and Complaint - Non-payment": "SP Summons and Complaint - Non-payment of Rent",
+                                      "Efiled SP Summons and Complaint - Non-payment": "SP Summons and Complaint - Non-payment of Rent",
+                                      "Efiled SP Summons and Complaint - Non-payment of Rent": "SP Summons and Complaint - Non-payment of Rent",
+                                      "Efiled SP Summons and Complaint - No Cause": "SP Summons and Complaint - No Cause",
+                                      "Poah Communities, Managing Agent For Poah Central Annex Preservation Associates, Lp": ""}
+evictions_df.loc[:, 'initiating_action'] = evictions_df.replace(initiating_action_replacement_dict)
+
 # Clean inconsistencies in judge names.
 evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].str.replace("&#039;",  # Apostrophes represented as mojibake.
                                                                                       "",

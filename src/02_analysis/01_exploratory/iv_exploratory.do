@@ -12,9 +12,7 @@ clear
 include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/01_exploratory/exploratory_locals.do"
 import delimited "`cross_section_restricted'", bindquote(strict)
 
-// Drop observations where total_val == 0.
-// drop if total_val == 0
-drop if bldg_val == 0
+
 
 // Generate property values, adjusted by unit counts. 
 generate unit_adjusted_total_val = total_val / units if units != 0
