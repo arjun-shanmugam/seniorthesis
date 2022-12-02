@@ -126,6 +126,6 @@ esttab totsample treatment control groupdiff using "`tables_output'/balance_tabl
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
 		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From First Post-Filing F.Y.}",
 		 nolabel)
-    cell(mean(pattern(1 1 1 0) fmt(2)) & p(pattern(0 0 0 1) fmt(2))) mtitles("Full sample" "Plaintiff Victory" "Defendant Victory" "Difference");
+    cell(mean(pattern(1 1 1 1) fmt(2))) mtitles("Full sample" "Plaintiff Victory" "Defendant Victory" "Difference");
 	
 #delimit cr
