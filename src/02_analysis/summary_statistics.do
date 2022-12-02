@@ -121,15 +121,14 @@ eststo groupdiff: estpost ttest `descriptive_statistics', by(judgment_for_plaint
 #delimit ;
 esttab totsample treatment control groupdiff using "`tables_output'/balance_table.tex", 
 	`universal_esttab_options'
-	  refcat(for_cause "\emph{Panel A: Case Initiation}"
+	refcat(for_cause "\emph{Panel A: Case Initiation}"
 		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
 		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
 		 total_val "\vspace{0.1em} \\ \emph{Panel D: Asessor Data From Fiscal Year Following Eviction Filing'}",
 		 nolabel)
 	
     cell( 
-        mean(pattern(1 1 1 0) fmt(4)) & b(pattern(0 0 0 1) fmt(4)) 
-        sd(pattern(1 1 1 0) fmt(4)) & se(pattern(0 0 0 1) fmt(2)) 
+        mean(pattern(1 1 1 0) fmt(4)) & se(pattern(0 0 0 1) fmt(2)) 
     ) mtitle("Full sample" "Training" "Control" "Difference (3)-(2)");
 	
 #delimit cr
