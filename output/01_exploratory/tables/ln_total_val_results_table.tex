@@ -1,19 +1,19 @@
-{
+\begin{table}[htbp]\centering
 \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Estimates of the Impact of Eviction}
 \begin{tabular}{l*{4}{c}}
 \toprule
-                    &\multicolumn{1}{c}{\hspace{0.25cm}Building value}&\multicolumn{1}{c}{\hspace{0.25cm}Building value}&\multicolumn{1}{c}{\hspace{0.25cm}Building value}&\multicolumn{1}{c}{\hspace{0.25cm}Building value}\\
-                    &        b/se         &        b/se         &        b/se         &        b/se         \\
+                    &\multicolumn{1}{c}{ln\_total\_val}&\multicolumn{1}{c}{ln\_total\_val}&\multicolumn{1}{c}{ln\_total\_val}&\multicolumn{1}{c}{ln\_total\_val}\\
 \midrule
-judgment\_for\_plaintiff& 3575130.168\sym{***}& 1767134.269\sym{**} & 1767134.269\sym{**} & 4370397.491         \\
-                    & (840871.82)         & (644756.95)         & (644756.95)         &(3516160.70)         \\
+Plaintiff Victory   &       0.326\sym{***}&       0.171\sym{*}  &       0.171\sym{*}  &       0.315         \\
+                    &      (0.08)         &      (0.07)         &      (0.07)         &      (0.36)         \\
 \midrule
 Observations        &        3331         &        3331         &        3331         &        3331         \\
-$\text{R}^2$        &     0.00540         &       0.486         &       0.486         &       0.522         \\
+$\text{R}^2$        &     0.00510         &       0.321         &       0.321         &       0.325         \\
 City F.E.           &          No         &         Yes         &         Yes         &          No         \\
 Year F.E.           &          No         &         Yes         &         Yes         &          No         \\
 Case Controls       &          No         &          No         &         Yes         &          No         \\
 I.V. Estimate       &          No         &          No         &          No         &         Yes         \\
 \bottomrule
 \end{tabular}
-}
+\end{table}

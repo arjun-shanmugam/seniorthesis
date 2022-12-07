@@ -9,6 +9,8 @@
 include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/exploratory_locals.do"
 
 // Generate property values, adjusted by unit counts. 
+generate ln_total_val = ln(total_val)
+generate ln_bldg_val = ln(bldg_val)
 generate unit_adjusted_total_val = total_val / units if units != 0
 generate unit_adjusted_bldg_val = bldg_val / units if units != 0
 generate unit_adjusted_land_val = land_val / units if units != 0
@@ -19,7 +21,6 @@ replace unit_adjusted_land_val = land_val / num_records_combined if units == 0
 replace unit_adusted_other_val = other_val / num_records_combined if units == 0
 
 // Generate judge dummies and drop rows w/ judges who heard few cases.
-/*
 #delimit ;
 keep if inlist(court_person,
 			   "Alex Mitchell",
@@ -44,8 +45,10 @@ keep if inlist(court_person,
         inlist(court_person,
 			   "Timothy Sullivan");
 #delimit cr
-*/
+
+
 egen cases_heard_by_judge = count(court_person), by(court_person)
+tab court_person
 drop if cases_heard_by_judge < 50
 drop cases_heard_by_judge
 encode court_person, generate(court_person_encoded)
@@ -54,13 +57,13 @@ encode court_person, generate(court_person_encoded)
 encode property_address_city, generate(property_address_city_encoded)
 egen city_year = group(property_address_city file_year)
 egen city_year_count = count(city_year), by(city_year)
-drop if city_year_count < 5
+drop if city_year_count < 10
 drop city_year_count
 
 // Run OLS regression estimates. 
 eststo clear
-local outcomes total_val bldg_val 
-local controls 
+local outcomes ln_total_val ln_bldg_val 
+local controls hasattyd hasattyp isentityd isentityp judgment for_cause foreclosure no_cause non_payment
 foreach outcome of varlist `outcomes' {
 	eststo `outcome'_naive: regress `outcome' judgment_for_plaintiff
 	estadd local city_fe "No"
@@ -101,6 +104,34 @@ foreach outcome of varlist `outcomes' {
 				"city_fe City F.E."
 				"year_fe Year F.E."	
 				"controls Case Controls"
-				"iv I.V. Estimate");
+				"iv I.V. Estimate")
+		title("Estimates of the Impact of Eviction")
+		collabels(none);
 	#delimit cr
 }
+
+// Test confoundedness of I.V.
+matrix confoundedness_test_matrix = (., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., .) 
+#delimit ;
+matrix rownames confoundedness_test_matrix = "Defendant has attorney"
+	"Plaintiff has attorney" "Defendant is an entity" "Plaintiff is an entity"
+	"Money judgement" "For cause" "Forclosure" "No cause" "Non-payment of rent";
+matrix colnames confoundedness_test_matrix = 
+	"Partial F Statistic" "Two-Sided P-Value" "$R^2$";
+#delimit cr
+
+forvalues i=1/9 {
+	local control: word `i' of `controls'
+	scalar curr_col = `i'
+	regress `control' i.court_person_encoded i.city_year
+	testparm i.court_person_encoded
+	matrix confoundedness_test_matrix[curr_col, 1] = r(F)
+	matrix confoundedness_test_matrix[curr_col, 2] = r(p)
+	matrix confoundedness_test_matrix[curr_col, 3] = e(r2)
+}
+
+#delimit ;
+esttab matrix(confoundedness_test_matrix, fmt(2)) using "`tables_output'/placebo_first_stage.tex",
+	`universal_esttab_options'
+	title("Placebo First Stage Regressions");
+#delimit cr

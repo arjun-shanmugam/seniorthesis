@@ -42,6 +42,7 @@ label variable heard "\hspace{0.25cm}Case heard"
 label variable isentityd "\hspace{0.25cm}Defendant is an entity"
 label variable isentityp "\hspace{0.25cm}Plaintiff is an entity"
 label variable judgment "\hspace{0.25cm}Money judgement"
+replace judgment = 0 if judgment == .
 label variable for_cause "\hspace{0.25cm}For cause"
 label variable foreclosure "\hspace{0.25cm}Forclosure"
 label variable no_cause "\hspace{0.25cm}No cause"
@@ -88,6 +89,7 @@ generate non_payment_transfer = (initiating_action == "SP Transfer - Non-payment
 generate no_cause_transfer = (initiating_action == "SP Transfer- No Cause")
 
 // Label variables and generate indicators when necessary.
+label variable judgment_for_plaintiff "Plaintiff Victory"
 label variable total_val "\hspace{0.25cm}Total property value"
 label variable bldg_val "\hspace{0.25cm}Building value"
 label variable land_val "\hspace{0.25cm}Land value"
