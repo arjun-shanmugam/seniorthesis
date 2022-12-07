@@ -1,16 +1,16 @@
 /******************************************************************************/
-* Filename:   summary_statistics.do
-* Project:    Senior Thesis
-* Author:     Arjun Shanmugam
+* Filename:   		  summary_statistics.do
+* Project:    		  Senior Thesis
+* Author:     		  Arjun Shanmugam
 * Date Created:       November 2nd 2022
 
 * This file attempts to run the instrumental variable analysis.
 /******************************************************************************/
 clear
+include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/exploratory_locals.do"
 
 // Load unrestricted data.
-include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/01_exploratory/exploratory_locals.do"
-import delimited "`cross_section_unrestricted'", bindquote(strict)
+import delimited using "`cross_section_unrestricted'", bindquote(strict)
 
 * Table 1: Sample Summary Statistics -- use two panels, one for the restricted sample and one for the unrestricted sample
 // Generate indicator variables.
