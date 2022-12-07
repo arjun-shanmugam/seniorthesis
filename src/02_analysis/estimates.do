@@ -63,8 +63,20 @@ local outcomes total_val bldg_val
 local controls 
 foreach outcome of varlist `outcomes' {
 	eststo `outcome'_naive: regress `outcome' judgment_for_plaintiff
+	estadd local city_fe "No"
+	estadd local year_fe "No"
+	estadd local controls "No"
+	estadd local iv "No"
 	eststo `outcome'_twfe: regress `outcome' judgment_for_plaintiff i.file_year i.property_address_city_encoded
+	estadd local city_fe "Yes"
+	estadd local year_fe "Yes"
+	estadd local controls "No"
+	estadd local iv "No"
 	eststo `outcome'_all_controls: regress `outcome' judgment_for_plaintiff i.file_year i.property_address_city_encoded
+	estadd local city_fe "Yes"
+	estadd local year_fe "Yes"
+	estadd local controls "Yes"
+	estadd local iv "No"
 }
 
 // Run IV regression estimates.
@@ -72,13 +84,23 @@ regress judgment_for_plaintiff i.court_person_encoded i.city_year, robust
 testparm i.court_person_encoded
 foreach outcome of varlist `outcomes' {
 	eststo `outcome'_iv: ivregress 2sls `outcome' (judgment_for_plaintiff=i.court_person_encoded) i.city_year, robust
+	estadd local city_fe "No"
+	estadd local year_fe "No"
+	estadd local controls "No"
+	estadd local iv "Yes"
 }
 
 // Produce output tables.
 foreach outcome of varlist `outcomes' {
 	#delimit ;
 	esttab `outcome'_naive `outcome'_twfe `outcome'_all_controls `outcome'_iv using "`tables_output'/`outcome'_results_table.tex",
-		`universal_esttab_options' cells(b(fmt(3)) se(par fmt(2)))
-		 keep(judgment_for_plaintiff) ;
+		`universal_esttab_options' 
+		cells(b(star fmt(3)) se(par fmt(2)))
+		keep(judgment_for_plaintiff)
+		scalars("r2 $\text{R}^2$"
+				"city_fe City F.E."
+				"year_fe Year F.E."	
+				"controls Case Controls"
+				"iv I.V. Estimate");
 	#delimit cr
 }
