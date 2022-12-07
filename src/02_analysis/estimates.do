@@ -73,12 +73,12 @@ testparm i.court_person_encoded
 foreach outcome of varlist `outcomes' {
 	eststo `outcome'_iv: ivregress 2sls `outcome' (judgment_for_plaintiff=i.court_person_encoded) i.city_year, robust
 }
-disp("``outcome'_results_table'")
 
 // Produce output tables.
 foreach outcome of varlist `outcomes' {
 	#delimit ;
 	esttab `outcome'_naive `outcome'_twfe `outcome'_all_controls `outcome'_iv using "`tables_output'/`outcome'_results_table.tex",
-		`universal_esttab_options';
+		`universal_esttab_options' cells(b(fmt(3)) se(par fmt(2)))
+		 keep(judgment_for_plaintiff) ;
 	#delimit cr
 }
