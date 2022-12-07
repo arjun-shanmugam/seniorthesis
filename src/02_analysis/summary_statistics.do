@@ -104,6 +104,7 @@ label variable heard "\hspace{0.25cm}Case heard"
 label variable isentityd "\hspace{0.25cm}Defendant is an entity"
 label variable isentityp "\hspace{0.25cm}Plaintiff is an entity"
 label variable judgment "\hspace{0.25cm}Money judgement"
+replace judgment = 0 if judgment == .
 label variable for_cause "\hspace{0.25cm}For cause"
 label variable foreclosure "\hspace{0.25cm}Forclosure"
 label variable no_cause "\hspace{0.25cm}No cause"
@@ -130,6 +131,6 @@ esttab full_sample treatment control difference using "`tables_output'/balance_t
 		 nolabel)
 	title("Balance Table")
 	collabels(none)
-    cells(mean(pattern(1 1 1 0) fmt(2)) & b(pattern(0 0 0 1) fmt(2)) & p(pattern(0 0 0 1) fmt(2))) mtitles("Full sample" "Cases Won by Plantiff" "Cases Won by Defendant" "Difference (Mean, p-value)");
+    cells(mean(pattern(1 1 1 0) fmt(2)) & b(pattern(0 0 0 1) fmt(2)) & p(pattern(0 0 0 1) fmt(2))) mtitles("Full \\ sample" "Cases Won \\ by Plantiff" "Cases Won \\ by Defendant" "Difference \\ (Mean, p-value)");
 	
 #delimit cr
