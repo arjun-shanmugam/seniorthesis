@@ -60,56 +60,6 @@ egen city_year_count = count(city_year), by(city_year)
 drop if city_year_count < 10
 drop city_year_count
 
-// Run OLS regression estimates. 
-eststo clear
-local outcomes ln_total_val ln_bldg_val 
-local controls hasattyd hasattyp isentityd isentityp judgment for_cause foreclosure no_cause non_payment
-foreach outcome of varlist `outcomes' {
-	eststo `outcome'_naive: regress `outcome' judgment_for_plaintiff
-	estadd local city_fe "No"
-	estadd local year_fe "No"
-	estadd local controls "No"
-	estadd local iv "No"
-	eststo `outcome'_twfe: regress `outcome' judgment_for_plaintiff i.file_year i.property_address_city_encoded
-	estadd local city_fe "Yes"
-	estadd local year_fe "Yes"
-	estadd local controls "No"
-	estadd local iv "No"
-	eststo `outcome'_all_controls: regress `outcome' judgment_for_plaintiff i.file_year i.property_address_city_encoded
-	estadd local city_fe "Yes"
-	estadd local year_fe "Yes"
-	estadd local controls "Yes"
-	estadd local iv "No"
-}
-
-// Run IV regression estimates.
-regress judgment_for_plaintiff i.court_person_encoded i.city_year, robust
-testparm i.court_person_encoded
-foreach outcome of varlist `outcomes' {
-	eststo `outcome'_iv: ivregress 2sls `outcome' (judgment_for_plaintiff=i.court_person_encoded) i.city_year, robust
-	estadd local city_fe "No"
-	estadd local year_fe "No"
-	estadd local controls "No"
-	estadd local iv "Yes"
-}
-
-// Produce output tables.
-foreach outcome of varlist `outcomes' {
-	#delimit ;
-	esttab `outcome'_naive `outcome'_twfe `outcome'_all_controls `outcome'_iv using "`tables_output'/`outcome'_results_table.tex",
-		`universal_esttab_options' 
-		cells(b(star fmt(3)) se(par fmt(2)))
-		keep(judgment_for_plaintiff)
-		scalars("r2 $\text{R}^2$"
-				"city_fe City F.E."
-				"year_fe Year F.E."	
-				"controls Case Controls"
-				"iv I.V. Estimate")
-		title("Estimates of the Impact of Eviction")
-		collabels(none);
-	#delimit cr
-}
-
 // Test confoundedness of I.V.
 matrix confoundedness_test_matrix = (., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., .) 
 #delimit ;
@@ -120,8 +70,9 @@ matrix colnames confoundedness_test_matrix =
 	"Partial F Statistic" "Two-Sided P-Value" "$R^2$";
 #delimit cr
 
+local potential_confounders hasattyd hasattyp isentityd isentityp judgment for_cause foreclosure no_cause non_payment
 forvalues i=1/9 {
-	local control: word `i' of `controls'
+	local control: word `i' of `potential_confounders'
 	scalar curr_col = `i'
 	regress `control' i.court_person_encoded i.city_year
 	testparm i.court_person_encoded
@@ -133,5 +84,52 @@ forvalues i=1/9 {
 #delimit ;
 esttab matrix(confoundedness_test_matrix, fmt(2)) using "`tables_output'/placebo_first_stage.tex",
 	`universal_esttab_options'
-	title("Placebo First Stage Regressions");
+	title("Placebo First Stage Regressions")
+	nomtitles;
 #delimit cr
+
+// Run OLS regression estimates. 
+eststo clear
+local outcomes ln_total_val ln_bldg_val 
+foreach outcome of varlist `outcomes' {
+	eststo `outcome'_naive: regress `outcome' judgment_for_plaintiff
+	estadd local city_fe "No"
+	estadd local year_fe "No"
+	estadd local iv_confounders_controls "No"
+	estadd local iv "No"
+	eststo `outcome'_twfe: regress `outcome' judgment_for_plaintiff i.file_year i.property_address_city_encoded
+	estadd local city_fe "Yes"
+	estadd local year_fe "Yes"
+	estadd local iv_confounders_controls "No"
+	estadd local iv "No"
+}
+
+// Run IV regression estimates.
+regress judgment_for_plaintiff i.court_person_encoded i.city_year, robust
+testparm i.court_person_encoded
+local iv_confounders hasattyd hasattyp isentityd isentityp judgment for_cause
+foreach outcome of varlist `outcomes' {
+	eststo `outcome'_iv: ivregress 2sls `outcome' (judgment_for_plaintiff=i.court_person_encoded) i.city_year `iv_confounders', robust
+	estadd local city_fe "No"
+	estadd local year_fe "No"
+	estadd local iv_confounders_controls "Yes"
+	estadd local iv "Yes"
+}
+
+// Produce output tables.
+foreach outcome of varlist `outcomes' {
+	#delimit ;
+	esttab `outcome'_naive `outcome'_twfe `outcome'_iv using "`tables_output'/`outcome'_results_table.tex",
+		`universal_esttab_options' 
+		cells(b(star fmt(3)) se(par fmt(2)))
+		keep(judgment_for_plaintiff)
+		scalars("r2 $\text{R}^2$"
+				"city_fe City F.E."
+				"year_fe Year F.E."	
+				"iv_confounders_controls Controls for Potential I.V. Confounders"
+				"iv I.V. Estimate")
+		title("Estimates of the Impact of Eviction")
+		collabels(none);
+	#delimit cr
+}
+
