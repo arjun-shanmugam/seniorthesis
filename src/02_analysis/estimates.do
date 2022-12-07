@@ -10,7 +10,9 @@ include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/exp
 
 // Generate property values, adjusted by unit counts. 
 generate ln_total_val = ln(total_val)
+label variable ln_total_val "Log of total value"
 generate ln_bldg_val = ln(bldg_val)
+label variable ln_bldg_val "Log of building value"
 generate unit_adjusted_total_val = total_val / units if units != 0
 generate unit_adjusted_bldg_val = bldg_val / units if units != 0
 generate unit_adjusted_land_val = land_val / units if units != 0
@@ -57,8 +59,53 @@ encode court_person, generate(court_person_encoded)
 encode property_address_city, generate(property_address_city_encoded)
 egen city_year = group(property_address_city file_year)
 egen city_year_count = count(city_year), by(city_year)
-drop if city_year_count < 10
+drop if city_year_count < 5
 drop city_year_count
+
+// Run OLS regression estimates. 
+eststo clear
+local outcomes ln_total_val ln_bldg_val 
+foreach outcome of varlist `outcomes' {
+	eststo `outcome'_naive: regress `outcome' judgment_for_plaintiff
+	estadd local city_fe "No"
+	estadd local year_fe "No"
+	estadd local iv_confounders_controls "No"
+	estadd local iv "No"
+	eststo `outcome'_twfe: regress `outcome' judgment_for_plaintiff i.file_year i.property_address_city_encoded
+	estadd local city_fe "Yes"
+	estadd local year_fe "Yes"
+	estadd local iv_confounders_controls "No"
+	estadd local iv "No"
+}
+
+// Run IV regression estimates.
+regress judgment_for_plaintiff i.court_person_encoded i.city_year, robust
+testparm i.court_person_encoded
+local iv_confounders hasattyd hasattyp isentityp judgment for_cause
+foreach outcome of varlist `outcomes' {
+	eststo `outcome'_iv: ivregress 2sls `outcome' (judgment_for_plaintiff=i.court_person_encoded) i.city_year, robust
+	estadd local city_fe "No"
+	estadd local year_fe "No"
+	estadd local iv_confounders_controls "Yes"
+	estadd local iv "Yes"
+}
+
+// Produce output tables.
+foreach outcome of varlist `outcomes' {
+	#delimit ;
+	esttab `outcome'_naive `outcome'_twfe `outcome'_iv using "`tables_output'/`outcome'_results_table.tex",
+		`universal_esttab_options' 
+		cells(b(star fmt(3)) se(par fmt(2)))
+		keep(judgment_for_plaintiff)
+		scalars("r2 $\text{R}^2$"
+				"city_fe City F.E."
+				"year_fe Year F.E."	
+				"iv_confounders_controls Controls for Potential I.V. Confounders"
+				"iv I.V. Estimate")
+		title("Estimates of the Impact of Eviction")
+		collabels(none);
+	#delimit cr
+}
 
 // Test confoundedness of I.V.
 matrix confoundedness_test_matrix = (., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., . \ ., ., .) 
@@ -88,48 +135,4 @@ esttab matrix(confoundedness_test_matrix, fmt(2)) using "`tables_output'/placebo
 	nomtitles;
 #delimit cr
 
-// Run OLS regression estimates. 
-eststo clear
-local outcomes ln_total_val ln_bldg_val 
-foreach outcome of varlist `outcomes' {
-	eststo `outcome'_naive: regress `outcome' judgment_for_plaintiff
-	estadd local city_fe "No"
-	estadd local year_fe "No"
-	estadd local iv_confounders_controls "No"
-	estadd local iv "No"
-	eststo `outcome'_twfe: regress `outcome' judgment_for_plaintiff i.file_year i.property_address_city_encoded
-	estadd local city_fe "Yes"
-	estadd local year_fe "Yes"
-	estadd local iv_confounders_controls "No"
-	estadd local iv "No"
-}
-
-// Run IV regression estimates.
-regress judgment_for_plaintiff i.court_person_encoded i.city_year, robust
-testparm i.court_person_encoded
-local iv_confounders hasattyd hasattyp isentityd isentityp judgment for_cause
-foreach outcome of varlist `outcomes' {
-	eststo `outcome'_iv: ivregress 2sls `outcome' (judgment_for_plaintiff=i.court_person_encoded) i.city_year `iv_confounders', robust
-	estadd local city_fe "No"
-	estadd local year_fe "No"
-	estadd local iv_confounders_controls "Yes"
-	estadd local iv "Yes"
-}
-
-// Produce output tables.
-foreach outcome of varlist `outcomes' {
-	#delimit ;
-	esttab `outcome'_naive `outcome'_twfe `outcome'_iv using "`tables_output'/`outcome'_results_table.tex",
-		`universal_esttab_options' 
-		cells(b(star fmt(3)) se(par fmt(2)))
-		keep(judgment_for_plaintiff)
-		scalars("r2 $\text{R}^2$"
-				"city_fe City F.E."
-				"year_fe Year F.E."	
-				"iv_confounders_controls Controls for Potential I.V. Confounders"
-				"iv I.V. Estimate")
-		title("Estimates of the Impact of Eviction")
-		collabels(none);
-	#delimit cr
-}
 
