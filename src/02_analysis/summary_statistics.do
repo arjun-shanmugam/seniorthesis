@@ -66,9 +66,9 @@ esttab using "`tables_output'/summary_statistics.tex",
   nomtitles
   noobs
   refcat(for_cause "\emph{Panel A: Case Initiation}"
-		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
-		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
-		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From F.Y. Following Filing}",
+		 defaulted "\emph{Panel B: Case Resolution}"
+		 hasattyd "\emph{Panel C: Defendant and Plaintiff Characteristics}"
+		 total_val "\emph{Panel D: Assessor Data From F.Y. Following Filing}",
 		 nolabel);
 #delimit cr
 		 
@@ -124,9 +124,9 @@ eststo difference: estpost ttest `descriptive_statistics', by(judgment_for_plain
 esttab full_sample treatment control difference using "`tables_output'/balance_table.tex", 
 	`universal_esttab_options'
 	refcat(for_cause "\emph{Panel A: Case Initiation}"
-		 defaulted "\vspace{0.1em} \\ \emph{Panel B: Case Resolution}"
-		 hasattyd "\vspace{0.1em} \\ \emph{Panel C: Defendant and Plaintiff Characteristics}"
-		 total_val "\vspace{0.1em} \\ \emph{Panel D: Assessor Data From First Post-Filing F.Y.}",
+		 defaulted "\emph{Panel B: Case Resolution}"
+		 hasattyd "\emph{Panel C: Defendant and Plaintiff Characteristics}"
+		 total_val "\emph{Panel D: Assessor Data From First Post-Filing F.Y.}",
 		 nolabel)
 	title("Balance Table")
 	collabels(none)

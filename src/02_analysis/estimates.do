@@ -10,9 +10,9 @@ include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/exp
 
 // Generate property values, adjusted by unit counts. 
 generate ln_total_val = ln(total_val)
-label variable ln_total_val "Log of total value"
+label variable ln_total_val "Log(Total Value)"
 generate ln_bldg_val = ln(bldg_val)
-label variable ln_bldg_val "Log of building value"
+label variable ln_bldg_val "Log(Building Value)"
 generate unit_adjusted_total_val = total_val / units if units != 0
 generate unit_adjusted_bldg_val = bldg_val / units if units != 0
 generate unit_adjusted_land_val = land_val / units if units != 0
@@ -100,7 +100,6 @@ foreach outcome of varlist `outcomes' {
 		scalars("r2 $\text{R}^2$"
 				"city_fe City F.E."
 				"year_fe Year F.E."	
-				"iv_confounders_controls Controls for Potential I.V. Confounders"
 				"iv I.V. Estimate")
 		title("Estimates of the Impact of Eviction")
 		collabels(none);
