@@ -132,6 +132,6 @@ esttab full_sample treatment control difference using "`tables_output'/balance_t
 	title("Balance Table")
 	collabels(none)
     cells(mean(pattern(1 1 1 0) fmt(2)) & b(pattern(0 0 0 1) fmt(2)) & p(pattern(0 0 0 1) fmt(2))) 
-	mtitle("\shortstack{\textbf{Full}\\Sample}" "\shortstack{\textbf{Cases Won}\\By Plaintiff}" "\shortstack{\textbf{Cases Won}\\By Defendant}" "\shortstack{\textbf{Difference}\\Mean, P-Value}");
+	mtitle("\shortstack{Full\\Sample}" "\shortstack{Cases Won\\By Plaintiff}" "\shortstack{Cases Won\\By Defendant}" "\shortstack{Difference\\(Mean, P-Value)}");
 	
 #delimit cr

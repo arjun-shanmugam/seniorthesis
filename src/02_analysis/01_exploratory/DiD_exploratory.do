@@ -65,7 +65,8 @@ foreach outcome of varlist `outcomes' {
 	preserve 
 	#delimit ;
 	collapse (mean) mean_outcome=`outcome'
-			 (semean) se_outcome=`outcome',
+			 (semean) se_outcome=`outcome'
+			 (count) num_observations=`outcome',
 			 by(t judgment_for_plaintiff);
 	label variable mean_outcome `"``outcome'_label'"';
 	
@@ -78,9 +79,18 @@ foreach outcome of varlist `outcomes' {
 				  (rcap y_upper y_lower t if judgment_for_plaintiff == 0, color(blue));
 	local lines (line mean_outcome t if judgment_for_plaintiff == 1, color(red))	
 				(line mean_outcome t if judgment_for_plaintiff == 0, color(blue));
-	graph twoway `scatters' `ci_bars' `lines',
-		  legend(order(1 "Treatment Units" 2 "Control Units"));
-	graph export "`figures_output'/DiD_`outcome'.png", replace;
+	local counts (scatter num_observations t if judgment_for_plaintiff == 1, color(red))
+				   (scatter num_observations t if judgment_for_plaintiff == 0, color(blue) msymbol(S));
+	twoway `scatters' `ci_bars' `lines',
+		legend(order(1 "Treatment Units" 2 "Control Units"))
+		name("DiD_plot", replace);
+	twoway `counts',
+		legend(order(1 "Treatment Units" 2 "Control Units"))
+		name("counts_plot", replace);
+	graph combine DiD_plot counts_plot,
+		xcommon ///
+		cols(1);
+// 	graph export "`figures_output'/DiD_`outcome'.png", replace;
 	#delimit cr
 	restore
 	

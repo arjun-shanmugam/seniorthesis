@@ -1,5 +1,5 @@
 """
-02_clean_evictions.py
+01_clean_evictions.py
 
 Cleans eviction dataset from MassLandlords.
 """
@@ -9,7 +9,6 @@ from src.utilities.dataframe_utilities import batch_df
 
 INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/gather20221121_aug.csv"
 OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions.csv"
-OUTPUT_DATA_RESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_restricted.csv"
 GEOCODIO_API_KEY = "060167a66c7587887a81c38077996a71c963638"
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, encoding='unicode_escape')
 original_N = len(evictions_df)
@@ -91,59 +90,3 @@ if VERBOSE:
 if VERBOSE:
     print("Saving unrestricted evictions dataset.")
 evictions_df.to_csv(OUTPUT_DATA, index=False)
-
-"""
-# Restrict to cases where court_person_type is 'judge'
-mask = (evictions_df['court_person_type'] == 'judge')
-print(
-    f"Dropping {(~mask).sum()} observations where court_person_type is not \'judge\' ({100 * ((~mask).sum() / original_N):.3} percent of original dataset).")
-evictions_df = evictions_df.loc[mask, :]
-
-# Drop cases which were resolved via mediation.
-mask = evictions_df['disposition_found'] != "Mediated"
-print(
-    f"Dropping {(~mask).sum()} observations where disposition_found is \'Mediated\' ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
-evictions_df = evictions_df.loc[mask, :]
-
-# Drop cases which were resolved by voluntary dismissal (dropped by plaintiff).
-mask = ~(evictions_df['disposition'].str.contains("R 41(a)(1) Voluntary Dismissal on", regex=False))
-print(
-    f"Dropping {(~mask).sum()} observations resolved through voluntary dismissal ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
-evictions_df = evictions_df.loc[mask, :]
-
-# Drop cases where disposition_found is "Other".
-mask = ~(evictions_df['disposition_found'] == "Other")
-print(
-    f"Dropping {(~mask).sum()} observations where disposition_found is \'Other\' ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
-evictions_df = evictions_df.loc[mask, :]
-
-# Clean the values in the judgment_for_pdu variable.
-judgment_for_pdu_replacement_dict = {"unknown": "Unknown",
-                                     "plaintiff": "Plaintiff",
-                                     "defendant": "Defendant"}
-evictions_df.loc[:, "judgment_for_pdu"] = evictions_df.loc[:, "judgment_for_pdu"].replace(judgment_for_pdu_replacement_dict)
-
-# Drop rows which contain inconsistent values of disposition_found and judgment_for_pdu
-# Case listed as a default, yet defendant listed as winning.
-mask = ~((evictions_df['disposition_found'] == "Defaulted") & (evictions_df['judgment_for_pdu'] == "Defendant"))
-print(
-    f"Dropping {(~mask).sum()} observations disposition_found is \'Defaulted\' but judgment_for_pdu is \'Defendant\' ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
-evictions_df = evictions_df.loc[mask, :]
-# Case listed as dismissed, yet plaintiff listed as having won.
-mask = ~((evictions_df['disposition_found'] == "Dismissed") & (evictions_df['judgment_for_pdu'] == "Plaintiff"))
-print(
-    f"Dropping {(~mask).sum()} observations where disposition_found is \'Dismissed\' but judgment_for_pdu is \'Plaintiff\' ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
-print(
-    f"Dropping {(~mask).sum()} observations where disposition_found is \'Other\' ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
-
-evictions_df = evictions_df.loc[mask, :]
-
-# Generate a variable indicating judgement in favor of defendant.
-evictions_df.loc[:, 'judgment_for_defendant'] = 0
-mask = (evictions_df['disposition_found'] == "Dismissed") | (evictions_df['judgment_for_pdu'] == "Defendant")
-evictions_df.loc[mask, 'judgment_for_defendant'] = 1
-
-# Generate a variable indicating judgement in favor of plaintiff.
-evictions_df.loc[:, 'judgment_for_plaintiff'] = 1 - evictions_df['judgment_for_defendant']
-# Save restricted eviction data.
-evictions_df.to_csv(OUTPUT_DATA_RESTRICTED, index=False)"""
