@@ -10,5 +10,5 @@ include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/exp
 
 * Run code
 do "`code'/summary_statistics.do"
-do "`code'/estimates.do"
+do "`code'/DiD.do"
 

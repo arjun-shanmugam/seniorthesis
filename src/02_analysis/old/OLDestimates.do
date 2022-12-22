@@ -22,7 +22,7 @@ reshape long zestimate_period, i(case_number) j(months_since_2012_12)
 rename zestimate_period zestimate
 label variable zestimate "Zestimate"
 // Generate time-relative-to-treatment variable.
-generate treatment_m_relative_to_2012_12 = (file_year - 2012 - 1)*12 + file_month
+generate treatment_m_relative_to_2012_12 = (latest_docket_year - 2012 - 1)*12 + latest_docket_month
 generate t = months_since_2012_12 - treatment_m_relative_to_2012_12
 drop months_since_2012_12
 drop if t < -10  // Keep observations 10 months or fewer prior to treatment.
