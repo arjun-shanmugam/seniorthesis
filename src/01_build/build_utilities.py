@@ -8,76 +8,9 @@ import pandas as pd
 import numpy as np
 import censusgeocode
 from typing import List
-from shapely.geometry import Point
 from joblib import Parallel, delayed
 from multiprocessing import Manager
 import geopandas as gpd
-
-
-def merge_evictions_with_tax_parcels(path_to_evictions_df: str,
-                                     path_to_tax_parcel_east_gdf: str,
-                                     path_to_tax_parcel_west_gdf: str,
-                                     path_to_intermediate_data_geocoding: str):
-    # Create evictions GeoDataFrame.
-    evictions_gdf = pd.read_csv(path_to_evictions_df)
-    geometry = evictions_gdf.apply(lambda row: Point(row['lon'], row['lat']), axis=1)
-    evictions_gdf = gpd.GeoDataFrame(evictions_gdf, geometry=geometry)
-    evictions_gdf = evictions_gdf.set_crs("EPSG:4326")  # crs attribute is currently unassigned.
-    evictions_gdf = evictions_gdf.to_crs("EPSG:26986")
-
-
-
-    # Create tax parcels GeoDataFrame.
-    tax_parcel_columns_to_keep = ['MAP_PAR_ID', 'LOC_ID', 'POLY_TYPE', 'SITE_ADDR', 'CITY', 'ZIP', 'SHAPE_Leng', 'SHAPE_Area',
-                                  'geometry']
-    tax_parcels_gdf = pd.concat([gpd.read_file(path_to_tax_parcel_east_gdf)[tax_parcel_columns_to_keep],
-                                 gpd.read_file(path_to_tax_parcel_west_gdf)[tax_parcel_columns_to_keep]], axis=0)
-
-    tax_parcels_gdf = tax_parcels_gdf.dissolve(by='LOC_ID').reset_index()
-    tax_parcels_gdf.to_file("~/Desktop/tax_parcels.shp")
-
-    tax_parcels_gdf = evictions_gdf.sjoin_nearest(tax_parcels_gdf, how='left', max_distance=500, distance_col='distance')
-    tax_parcels_gdf.to_csv("~/Desktop/sjoin_nearest_results.csv")
-
-    columns_to_return = evictions_gdf.drop(columns='geometry').columns.tolist()
-    return tax_parcels_gdf[['LOC_ID'] + columns_to_return]
-
-    """# Geocode tax parcels.
-    tax_parcels_gdf.loc[:, 'STATE'] = "MA"
-    result = geocode_addresses(tax_parcels_gdf[['SITE_ADDR', 'CITY', 'STATE', 'ZIP']].fillna("na"),
-                               path_to_intermediate_data_geocoding)
-    result.loc[:, 'id'] = result['id'].astype(int)
-    result = result.set_index('id').rename(columns={'parsed': 'full_geocoded_address'})
-    print(f"Successfully geocoded {100 * (result['match'].sum() / len(tax_parcels_gdf)):.3} percent of records.")
-
-    # Concatenate the geocoded data with the original evictions data.
-    tax_parcels_gdf = gpd.GeoDataFrame(tax_parcels_gdf.merge(result,
-                                                             right_index=True,
-                                                             left_index=True,
-                                                             how='inner',
-                                                             validate='1:1')).dissolve(by='LOC_ID')
-
-    tax_parcels_gdf = tax_parcels_gdf.drop_duplicates(subset='full_geocoded_address')"""
-
-
-
-    """# TODO: Merge tax parcels with eviction data on street address when possible.
-    successfully_geocoded_mask = tax_parcels_gdf['match']
-   |{{{{{{"
-    merged = tax_parcels_gdf[successfully_geocoded_mask].merge(evictions_gdf,
-                                                               on='full_geocoded_address',
-                                                               how='outer',
-                                                               validate='1:m',
-                                                               indicator='_string_merge')
-    unmerged = pd.concat([merged.loc[(merged['_string_merge'] == "left_only"), :],
-                          tax_parcels_gdf.loc[~successfully_geocoded_mask, :]],
-                         axis=0)[tax_parcel_columns_to_keep]
-    merged = merged.loc[(merged['_string_merge'] == "both"), :]
-
-    unmerged.to_csv("~/Desktop/unmerged.csv")
-    merged.to_csv("~/Desktop/merged.csv")"""
-
-    # TODO: Merge the unmerged observations using a spatial join.
 
 
 # Write utility function to join evictions data with East and West shapefiles.

@@ -1,10 +1,5 @@
 """
 Defines constants.
-
-To make use of these constants, add the following import:
-from src.utilities import constants
-
-
 """
 class Colors:
     P1 = "#29B6A4"

@@ -5,7 +5,7 @@ Cleans eviction dataset from MassLandlords.
 """
 import pandas as pd
 from geocodio import GeocodioClient
-from src.utilities.dataframe_utilities import batch_df
+from src.old.utilities.dataframe_utilities import batch_df
 
 INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/gather20221121_aug.csv"
 OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions.csv"

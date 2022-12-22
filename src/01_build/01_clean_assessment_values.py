@@ -44,8 +44,6 @@ assessor_data = assessor_data.loc[~missing_LOC_ID_mask, :]
 print(f"Dropping {missing_LOC_ID_mask.sum()} rows where LOC_ID is missing ({missing_LOC_ID_mask.sum() / len(assessor_data)} "
       f"percent of original dataset).")
 
-# TODO: Aggregate according to LOC_ID
-# TODO: How best to aggregate? Which columns should we take mean? Which columns should we aggregate with mode?
 assessor_data.loc[:, 'num_records_combined'] = 1
 assessor_data = (assessor_data
                  .groupby(by=['LOC_ID', 'FY'])

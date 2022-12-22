@@ -7,55 +7,94 @@ and plot on that axis. They do not interact with Matplotlib Figure instances.
 Thus, the user must instantiate all subplots and close all figures
 separately.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
-import matplotlib.pyplot as plt
 import pandas as pd
-from src.utilities import figure_and_table_constants
-from typing import List
+from matplotlib.colors import to_rgba
+
+import figure_and_table_constants
 import matplotlib.transforms as transforms
 
-def plot_pie_chart(ax: Axes,
-                   x: pd.Series,
-                   title: str,
-                   colors=None,
-                   explode_amount=0.05):
-    # Produce series where index gives labels and values give counts.
-    x = x.astype(str)  # Convert to string so that we can sort Series which contain both numerics and alphabetic strings.
-    N = len(x)
-    counts = x.groupby(x).count().sort_index()
-    labels = counts.index.tolist()
 
-    # Choose color scheme.
-    if colors is None:
-        if len(labels) <= 10:
-            # Use pre-specified colors.
-            colors = [figure_and_table_constants.Colors.P1,
-                      figure_and_table_constants.Colors.P3,
-                      figure_and_table_constants.Colors.P6,
-                      figure_and_table_constants.Colors.P7,
-                      figure_and_table_constants.Colors.P2,
-                      figure_and_table_constants.Colors.P4,
-                      figure_and_table_constants.Colors.P5,
-                      figure_and_table_constants.Colors.P8,
-                      figure_and_table_constants.Colors.P9,
-                      figure_and_table_constants.Colors.P10][:len(labels)]
-        else:
-            # Let Matplotlib auto-assign colors.
-            colors = None
+def save_figure_and_close(figure: plt.Figure,
+                          filename: str,
+                          bbox_inches: str = 'tight'):
+    """
+    Helper function to save and close a provided figure.
+    :param figure: Figure to save and close.
+    :param filename: Location on disk to save figure.
+    :param bbox_inches: How to crop figure before saving.
+    """
+    figure.savefig(filename, bbox_inches=bbox_inches)
+    plt.close(figure)
 
-    # Plot pie chart.
-    ax.pie(counts,
-           labels=labels,
-           colors=colors,
-           explode=[explode_amount]*len(labels),
-           autopct='%2.2f%%')
-    ax.set_title(f'{title} (N={N})')
+
+def plot_scatter_with_shaded_errors(ax: plt.Axes,
+                                    x: pd.Series,
+                                    y: pd.Series,
+                                    y_upper: pd.Series,
+                                    y_lower: pd.Series,
+                                    point_color: str = figure_and_table_constants.Colors.P3,
+                                    point_size: float = 2,
+                                    error_color: str = figure_and_table_constants.Colors.P1,
+                                    error_opacity: float = 0.5,
+                                    zorder=None):
+    """
+
+    :param ax:
+    :param x: 
+    :param y: 
+    :param y_upper: 
+    :param y_lower: 
+    :param point_color: 
+    :param point_size: 
+    :param error_color: 
+    :param error_opacity: 
+    :param zorder: 
+    """
+    if zorder is None:
+        ax.scatter(x, y, color=point_color, marker='o', s=point_size)
+    else:
+        ax.scatter(x, y, color=point_color, marker='o', s=point_size, zorder=zorder)
+
+    ax.fill_between(x, y_upper, y_lower, color=error_color, alpha=error_opacity)
+
+
+def plot_scatter_with_error_bars(ax: plt.Axes,
+                                 x: pd.Series,
+                                 y: pd.Series,
+                                 y_upper: pd.Series,
+                                 y_lower: pd.Series,
+                                 point_color: str = figure_and_table_constants.Colors.P3,
+                                 point_size: float = 2,
+                                 error_color: str = figure_and_table_constants.Colors.P1,
+                                 error_opacity: float = 0.5,
+                                 zorder=None):
+    """
+
+    :param ax:
+    :param x:
+    :param y:
+    :param y_upper:
+    :param y_lower:
+    :param point_color:
+    :param point_size:
+    :param error_color:
+    :param error_opacity:
+    :param zorder:
+    """
+    yerr = (y_upper - y_lower)/2
+    ecolor = to_rgba(error_color, alpha=error_opacity)
+    if zorder is None:
+        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt='o', capsize=3)
+    else:
+        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt='o', capsize=3, zorder=zorder)
 
 def plot_labeled_hline(ax: Axes,
                        y: float,
                        text: str,
-                       c: str = figure_and_table_constants.Colors.P10,
+                       color: str = figure_and_table_constants.Colors.P10,
                        linestyle: str = '--',
                        text_x_location_normalized: float = 0.85,
                        size='small',
@@ -65,7 +104,7 @@ def plot_labeled_hline(ax: Axes,
     :param ax: An Axes instance on which to plot.
     :param y: The y-coordinate of the horizontal line.
     :param text: The text with which to label the horizontal line.
-    :param c: The color of the horizontal line and of the text.
+    :param color: The color of the horizontal line and of the text.
     :param linestyle: The style of the horizontal line.
     :param text_x_location_normalized: The x-coordinate of the text
             as a portion of the total length of the X-axis.
@@ -75,7 +114,7 @@ def plot_labeled_hline(ax: Axes,
 
     # Plot horizontal line.
     ax.axhline(y=y,
-               c=c,
+               c=color,
                linestyle=linestyle)
 
     # Create blended transform for coordinates.
@@ -85,7 +124,7 @@ def plot_labeled_hline(ax: Axes,
     ax.text(x=text_x_location_normalized,
             y=y,
             s=text,
-            c=c,
+            c=color,
             size=size,
             horizontalalignment='center',
             verticalalignment='center',
@@ -97,7 +136,7 @@ def plot_labeled_hline(ax: Axes,
 def plot_labeled_vline(ax: Axes,
                        x: float,
                        text: str,
-                       c: str = figure_and_table_constants.Colors.P10,
+                       color: str = figure_and_table_constants.Colors.P10,
                        linestyle: str = '--',
                        text_y_location_normalized: float = 0.85,
                        size='small',
@@ -107,7 +146,7 @@ def plot_labeled_vline(ax: Axes,
     :param ax: An Axes instance on which to plot.
     :param x: The x-coordinate of the vertical line.
     :param text: The text with which to label the vertical line.
-    :param c: The color of the vertical line and of the text.
+    :param color: The color of the vertical line and of the text.
     :param linestyle: The style of the vertical line.
     :param text_y_location_normalized: The y-coordinate of the
             text as a portion of the total length of the y-axis.
@@ -117,7 +156,7 @@ def plot_labeled_vline(ax: Axes,
 
     # Plot vertical line.
     ax.axvline(x=x,
-               c=c,
+               c=color,
                linestyle=linestyle)
 
     # Create blended transform for coordinates.
@@ -128,7 +167,7 @@ def plot_labeled_vline(ax: Axes,
     ax.text(x=x,
             y=text_y_location_normalized,
             s=text,
-            c=c,
+            c=color,
             size=size,
             horizontalalignment='center',
             verticalalignment='center',
@@ -209,5 +248,5 @@ def plot_histogram(ax: Axes,
         plot_labeled_vline(ax=ax,
                            x=statistic,
                            text=label,
-                           c=summary_statistics_linecolor,
+                           color=summary_statistics_linecolor,
                            text_y_location_normalized=summary_statistics_text_y_location_normalized)

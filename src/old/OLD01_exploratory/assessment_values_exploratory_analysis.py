@@ -6,12 +6,9 @@ Performs exploratory analysis on the assessment values data.
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from src.utilities.figure_utilities import plot_histogram, plot_pie_chart
+from src.old.utilities.figure_utilities import plot_histogram
 import numpy as np
-from src.utilities import figure_and_table_constants
 import os
-import fiona
-import geopandas as gpd
 
 ASSESSOR_FILE = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/assessor_data.csv"
 OUTPUT_FIGURES = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/output/01_exploratory/figures"
