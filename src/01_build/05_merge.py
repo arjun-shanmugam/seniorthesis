@@ -3,6 +3,7 @@
 
 Merge eviction data with assessment values.
 """
+import numpy as np
 import pandas as pd
 import geopandas as gpd
 
@@ -60,12 +61,29 @@ if VERBOSE:
           f"percent of observations) to Zestimates.")
 
 original_N = len(merged_df)
+
+# Drop cases missing latest_docket date.
 mask = merged_df['latest_docket_date'].notna()
 if VERBOSE:
     print(
         f"Dropping {(~mask).sum()} observations where latest_docket_date is missing ({100 * (((~mask).sum()) / original_N):.3} percent "
         f"of original dataset).")
 merged_df = merged_df.loc[mask, :]
+
+# Mark cases which were resolved by voluntary dismissal (dropped by plaintiff).
+mask = merged_df['disposition'].str.contains("R 41(a)(1) Voluntary Dismissal on", na=False, regex=False)
+merged_df.loc[:, 'voluntary_dismissal'] = np.where(mask, 1, 0)
+
+# Clean the values in the judgment_for_pdu variable.
+judgment_for_pdu_replacement_dict = {"unknown": "Unknown",
+                                     "plaintiff": "Plaintiff",
+                                     "defendant": "Defendant"}
+merged_df.loc[:, "judgment_for_pdu"] = merged_df.loc[:, "judgment_for_pdu"].replace(judgment_for_pdu_replacement_dict)
+
+# Replace missing values in money judgment column with zeroes.
+merged_df.loc[:, 'judgment'] = merged_df['judgment'].fillna(0)
+
+# Save unrestricted data file.
 merged_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
 
 # Drop cases which were resolved via mediation.
@@ -73,14 +91,6 @@ mask = merged_df['disposition_found'] != "Mediated"
 if VERBOSE:
     print(
         f"Dropping {(~mask).sum()} observations where disposition_found is \'Mediated\' ({100 * (((~mask).sum()) / original_N):.3} "
-        f"percent of original dataset).")
-merged_df = merged_df.loc[mask, :]
-
-# Drop cases which were resolved by voluntary dismissal (dropped by plaintiff).
-mask = ~(merged_df['disposition'].str.contains("R 41(a)(1) Voluntary Dismissal on", na=False, regex=False))
-if VERBOSE:
-    print(
-        f"Dropping {(~mask).sum()} observations resolved through voluntary dismissal ({100 * (((~mask).sum()) / original_N):.3} "
         f"percent of original dataset).")
 merged_df = merged_df.loc[mask, :]
 
@@ -92,12 +102,6 @@ if VERBOSE:
         f"percent of original dataset).")
 merged_df = merged_df.loc[mask, :]
 
-# Clean the values in the judgment_for_pdu variable.
-judgment_for_pdu_replacement_dict = {"unknown": "Unknown",
-                                     "plaintiff": "Plaintiff",
-                                     "defendant": "Defendant"}
-merged_df.loc[:, "judgment_for_pdu"] = merged_df.loc[:, "judgment_for_pdu"].replace(judgment_for_pdu_replacement_dict)
-
 # Drop rows which contain inconsistent values of disposition_found and judgment_for_pdu
 # Case listed as a default, yet defendant listed as winning.
 mask = ~((merged_df['disposition_found'] == "Defaulted") & (merged_df['judgment_for_pdu'] == "Defendant"))
@@ -106,19 +110,17 @@ if VERBOSE:
         f"Dropping {(~mask).sum()} observations disposition_found is \'Defaulted\' but judgment_for_pdu is \'Defendant\' "
         f"({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
 merged_df = merged_df.loc[mask, :]
-
 # Case listed as dismissed, yet plaintiff listed as having won.
 mask = ~((merged_df['disposition_found'] == "Dismissed") & (merged_df['judgment_for_pdu'] == "Plaintiff"))
 if VERBOSE:
     print(
         f"Dropping {(~mask).sum()} observations where disposition_found is \'Dismissed\' but judgment_for_pdu is "
         f"\'Plaintiff\' ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
-
 merged_df = merged_df.loc[mask, :]
 
 # Generate a variable indicating judgement in favor of defendant.
 merged_df.loc[:, 'judgment_for_defendant'] = 0
-mask = (merged_df['disposition_found'] == "Dismissed") | (merged_df['judgment_for_pdu'] == "Defendant")
+mask = (merged_df['disposition_found'] == "Dismissed") | (merged_df['judgment_for_pdu'] == "Defendant") | (merged_df['voluntary_dismissal'] == 1)
 merged_df.loc[mask, 'judgment_for_defendant'] = 1
 
 # Generate a variable indicating judgement in favor of plaintiff.
