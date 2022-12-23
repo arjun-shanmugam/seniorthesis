@@ -36,7 +36,7 @@
 
 
 \author[Arjun Shanmugam]{}
-
+\setbeamertemplate{navigation symbols}{}
 
 
 \date{\today}
@@ -141,12 +141,48 @@ spend over half of their incomes on rent (Desmond, 2017)
 
 
 \section{Empirical Strategy}
-    
+\begin{frame}{Empirical Strategy}
+    \begin{enumerate}
+        \item Most eviction cases in Massachusetts are filed in the Massachusetts Housing Court
+        \item Within the Housing Court, cases are assigned to about 15 judges quasi-randomly conditional on city and time
+        \item This is the basis for an examiner design study, which uses judge dummies as instruments
+    \end{enumerate}
+\end{frame}
 
-\begin{frame} [allowframebreaks]\frametitle{References}
-               
-        \bibliographystyle{apalike}
-        \bibliography{bibfile}
+\begin{frame}{Empirical Strategy}
+\begin{table}[H]
+    \centering
+    \tiny
+    \input{output/01_exploratory/tables/placebo_first_stage.tex}
+    \label{tab:my_label}
+\end{table}    
+\end{frame}
+
+\begin{frame}{Preliminary Results}
+    \begin{table}[H]
+        \centering
+        \tiny
+        \input{output/01_exploratory/tables/ln_total_val_results_table.tex}
+        \label{tab:my_label}
+    \end{table}
+\end{frame}
+\begin{frame}{Preliminary Results}
+    \begin{table}[H]
+        \centering
+        \tiny
+        \input{output/01_exploratory/tables/ln_bldg_val_results_table.tex}
+        \label{tab:my_label}
+    \end{table}
+\end{frame}
+
+
+\begin{frame}{Next Steps}
+    \begin{enumerate}
+        \item Figure out what to do about my lack of power
+        \item Find a systematic way to drop observations in sparse city-years
+        \item Speak to an assessor from Massachusetts to understand whether there is even a mechanism through which I might see an effect
+        \item Think about whether my instrument is truly valid
+    \end{enumerate}
 \end{frame}
 
 \end{document}
