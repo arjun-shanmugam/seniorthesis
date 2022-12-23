@@ -1,30 +1,108 @@
-\documentclass{article}
-\usepackage{graphicx, setspace, booktabs, float, xcolor, rotating, lscape, lscape, sectsty, rotating, pdflscape}
-\usepackage[utf8]{inputenc}
-\usepackage[letterpaper, portrait, margin=0.8in]{geometry}
-\usepackage[shortlabels]{enumitem}
-\usepackage[round, sort]{natbib}
+\documentclass[12pt]{article}
+
+\usepackage{amssymb,amsmath,amsfonts,eurosym,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,natbib,pdflscape,subfigure,array,hyperref}
+
+\normalem
+
+\onehalfspacing
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}{Proposition}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{subhyp}{Hypothesis}[hyp]
+\renewcommand{\thesubhyp}{\thehyp\alph{subhyp}}
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+
+\geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
+
+\begin{document}
+
+\begin{titlepage}
+\title{Arjun Shanmugam's Senior Thesis}
+\author{Arjun Shanmugam}
+\date{\today}
+\maketitle
+\begin{abstract}
+\noindent Placeholder\\
+
+
+\bigskip
+\end{abstract}
+\setcounter{page}{0}
+\thispagestyle{empty}
+\end{titlepage}
+\pagebreak \newpage
+
 
 
 
 \doublespacing
 
 
-\title{Thesis Updates}
-\author{Arjun}
-\date{December 2, 2022}
+\section{Introduction} \label{sec:introduction}
+
+\section{Literature Review} \label{sec:literature}
+
+\section{Data} \label{sec:data}
+    \subsection{Evictions Data}
+    \subsection{Tax Assessment Records}
+    \subsection{Zestimates}
+    \subsection{Summary Statistics}
+        \begin{table}[]
+            \centering
+            \begin{tabular}{c|c}
+                 &  \\
+                 & 
+            \end{tabular}
+            \caption{Caption}
+            \label{tab:my_label}
+        \end{table}
+
+\section{Results} \label{sec:result}
+
+\section{Discussions} \label{sec:discussion}
+
+\section{Conclusion} \label{sec:conclusion}
 
 
-\begin{document}
 
-\maketitle
-\input{output/01_exploratory/tables/summary_statistics.tex}
+\singlespacing
+\setlength\bibsep{0pt}
+\bibliographystyle{my-style}
+\bibliography{Placeholder}
 
-\begin{landscape}
-\input{output/01_exploratory/tables/balance_table.tex}
-\end{landscape}
 
-\input{output/01_exploratory/tables/ln_total_val_results_table.tex}
-\input{output/01_exploratory/tables/ln_bldg_val_results_table.tex}
-\input{output/01_exploratory/tables/placebo_first_stage.tex}
+
+\clearpage
+
+\onehalfspacing
+
+\section*{Tables} \label{sec:tab}
+\addcontentsline{toc}{section}{Tables}
+
+
+
+\clearpage
+
+\section*{Figures} \label{sec:fig}
+\addcontentsline{toc}{section}{Figures}
+
+
+
+
+\clearpage
+
+\section*{Appendix A. Placeholder} \label{sec:appendixa}
+\addcontentsline{toc}{section}{Appendix A}
+
+
+
 \end{document}
