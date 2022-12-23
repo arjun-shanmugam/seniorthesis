@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 
-\usepackage{amssymb,amsmath,amsfonts,booktabs,eurosym,float,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,natbib,pdflscape,subfigure,array,hyperref}
+\usepackage{amssymb,amsmath,amsfonts,booktabs,eurosym,float,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,multicol, multirow,natbib,pdflscape,subfigure,array,hyperref, pdflscape}
 
 \normalem
 
@@ -56,13 +56,16 @@
     \subsection{Tax Assessment Records}
     \subsection{Zestimates}
     \subsection{Summary Statistics}
-        \begin{table}[H]
+    \begin{landscape}
+         \begin{table}[H]
             \centering
             \input{output/summary_statistics/tables/summary_statistics.tex}
             \caption{Caption}
             \label{tab:my_label}
         \end{table}
 
+    \end{landscape}
+       
 \section{Results} \label{sec:result}
 
 \section{Discussions} \label{sec:discussion}
