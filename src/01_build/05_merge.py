@@ -70,10 +70,6 @@ if VERBOSE:
         f"of original dataset).")
 merged_df = merged_df.loc[mask, :]
 
-# Mark cases which were resolved by voluntary dismissal (dropped by plaintiff).
-mask = merged_df['disposition'].str.contains("R 41(a)(1) Voluntary Dismissal on", na=False, regex=False)
-merged_df.loc[:, 'voluntary_dismissal'] = np.where(mask, 1, 0)
-
 # Clean the values in the judgment_for_pdu variable.
 judgment_for_pdu_replacement_dict = {"unknown": "Unknown",
                                      "plaintiff": "Plaintiff",
@@ -92,6 +88,12 @@ if VERBOSE:
     print(
         f"Dropping {(~mask).sum()} observations where disposition_found is \'Mediated\' ({100 * (((~mask).sum()) / original_N):.3} "
         f"percent of original dataset).")
+merged_df = merged_df.loc[mask, :]
+
+# Drop cases which were resolved by voluntary dismissal (dropped by plaintiff).
+mask = ~(merged_df['disposition'].str.contains("R 41(a)(1) Voluntary Dismissal on", na=False, regex=False))
+print(
+    f"Dropping {(~mask).sum()} observations resolved through voluntary dismissal ({100 * (((~mask).sum()) / original_N):.3} percent of original dataset).")
 merged_df = merged_df.loc[mask, :]
 
 # Drop cases where disposition_found is "Other".
@@ -120,7 +122,7 @@ merged_df = merged_df.loc[mask, :]
 
 # Generate a variable indicating judgement in favor of defendant.
 merged_df.loc[:, 'judgment_for_defendant'] = 0
-mask = (merged_df['disposition_found'] == "Dismissed") | (merged_df['judgment_for_pdu'] == "Defendant") | (merged_df['voluntary_dismissal'] == 1)
+mask = (merged_df['disposition_found'] == "Dismissed") | (merged_df['judgment_for_pdu'] == "Defendant")
 merged_df.loc[mask, 'judgment_for_defendant'] = 1
 
 # Generate a variable indicating judgement in favor of plaintiff.

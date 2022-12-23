@@ -9,8 +9,8 @@
 clear
 
 // Load data.
-include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/01_exploratory/exploratory_locals.do"
-import delimited "`panel_restricted'", bindquote(strict)
+include  "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/old/exploratory_locals.do"
+import delimited using "`panel_restricted'", bindquote(strict)
 
 // Generate property values, adjusted by unit counts. 
 generate unit_adjusted_total_val = total_val / units if units != 0

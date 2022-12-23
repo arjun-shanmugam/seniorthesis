@@ -6,7 +6,8 @@
 
 * This file attempts to run the instrumental variable analysis.
 /******************************************************************************/
-include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/exploratory_locals.do"
+import delimited "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/03_cleaned/restricted.csv", bindquote(strict) clear
+ 
 // preserve
 * DiD Analysis
 // Drop variables which do not vary over time.
@@ -14,13 +15,16 @@ include "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/src/02_analysis/exp
 drop defendant_atty defendant_atty_address_apt defendant_atty_address_city defendant_atty_address_name defendant_atty_address_state defendant_atty_address_street defendant_atty_address_zip plaintiff_atty_address_city plaintiff_atty_address_name plaintiff_atty_address_state plaintiff_atty_address_street plaintiff_atty_address_zip next_fiscal_year bldg_val land_val other_val total_val units num_records_combined;
 #delimit cr
 // Drop observations which could not be matched to Zestimates.
-egen num_missing_zestimates = rowmiss(zestimate_period0-zestimate_period120)
+egen num_missing_zestimates = rowmiss(v2-v120)
 drop if num_missing_zestimates > 0  // These observations will only have missing zestimates.
 drop num_missing_zestimates
+count
 // Reshape.
-reshape long zestimate_period, i(case_number) j(months_since_2012_12)
-rename zestimate_period zestimate
+reshape long v, i(case_number) j(months_since_2012_12)
+count
+rename v zestimate
 label variable zestimate "Zestimate"
+replace months_since_2012_12 = months_since_2012_12 - 2
 // Generate time-relative-to-treatment variable.
 generate treatment_m_relative_to_2012_12 = (latest_docket_year - 2012 - 1)*12 + latest_docket_month
 generate t = months_since_2012_12 - treatment_m_relative_to_2012_12
@@ -28,14 +32,12 @@ drop months_since_2012_12
 drop if t < -10  // Keep observations 10 months or fewer prior to treatment.
 drop if t > 24  // Drop observations more than two years after treatment.
 replace t = t + 10  // Make j-variable positive.
+
+// MATCHES PYTHON SCRIPT UP TO THIS POINT
+
 reshape wide zestimate, i(case_number) j(t)  // Reshape to assess panel balance.
-// Drop entities which are not observed frequently enough.
-egen num_missing_obs_last_10_mos = rowmiss(zestimate24-zestimate34)
-egen num_missing_obs_first_10_mos = rowmiss(zestimate0-zestimate10)
-drop if num_missing_obs_last_10_mos > 5
-drop if num_missing_obs_first_10_mos > 5
-drop if zestimate34 == .
-drop if zestimate0 == .
+egen missing_zestimates_relative = rowmiss(zestimate0-zestimate34)
+drop if missing_zestimates_relative > 0
 reshape long
 replace t = t - 10  // Undo adjustment of j variable.
 label variable t "Month (Relative to Month of Eviction Filing)"
@@ -45,7 +47,6 @@ graph set window fontface default
 foreach outcome of varlist `outcomes' {
 	local `outcome'_label: var label `outcome'
 	diff `outcome', t(judgment_for_plaintiff) p(t)
-	preserve 
 	#delimit ;
 	collapse (mean) mean_outcome=`outcome'
 			 (semean) se_outcome=`outcome'
@@ -89,7 +90,7 @@ foreach outcome of varlist `outcomes' {
 		name("counts_plot", replace);
 	graph export "`figures_output'/DiD_`outcome'_counts.png", replace;
 	#delimit cr
-	restore
+
 	
 }
 

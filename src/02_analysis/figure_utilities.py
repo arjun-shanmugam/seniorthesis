@@ -35,13 +35,17 @@ def plot_scatter_with_shaded_errors(ax: plt.Axes,
                                     y: pd.Series,
                                     y_upper: pd.Series,
                                     y_lower: pd.Series,
+                                    label: str = "",
                                     point_color: str = figure_and_table_constants.Colors.P3,
                                     point_size: float = 2,
+                                    marker: str = 'o',
                                     error_color: str = figure_and_table_constants.Colors.P1,
                                     error_opacity: float = 0.5,
                                     zorder=None):
     """
 
+    :param label:
+    :param marker:
     :param ax:
     :param x: 
     :param y: 
@@ -54,9 +58,9 @@ def plot_scatter_with_shaded_errors(ax: plt.Axes,
     :param zorder: 
     """
     if zorder is None:
-        ax.scatter(x, y, color=point_color, marker='o', s=point_size)
+        ax.scatter(x, y, color=point_color, marker=marker, s=point_size, label=label)
     else:
-        ax.scatter(x, y, color=point_color, marker='o', s=point_size, zorder=zorder)
+        ax.scatter(x, y, color=point_color, marker=marker, s=point_size, label=label, zorder=zorder)
 
     ax.fill_between(x, y_upper, y_lower, color=error_color, alpha=error_opacity)
 
@@ -66,13 +70,17 @@ def plot_scatter_with_error_bars(ax: plt.Axes,
                                  y: pd.Series,
                                  y_upper: pd.Series,
                                  y_lower: pd.Series,
+                                 label: str = "",
                                  point_color: str = figure_and_table_constants.Colors.P3,
                                  point_size: float = 2,
+                                 marker: str = 'o',
                                  error_color: str = figure_and_table_constants.Colors.P1,
                                  error_opacity: float = 0.5,
                                  zorder=None):
     """
 
+    :param marker:
+    :param label:
     :param ax:
     :param x:
     :param y:
@@ -84,12 +92,14 @@ def plot_scatter_with_error_bars(ax: plt.Axes,
     :param error_opacity:
     :param zorder:
     """
-    yerr = (y_upper - y_lower)/2
+    yerr = (y_upper - y_lower) / 2
+    print(yerr)
     ecolor = to_rgba(error_color, alpha=error_opacity)
     if zorder is None:
-        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt='o', capsize=3)
+        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label, capsize=3)
     else:
-        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt='o', capsize=3, zorder=zorder)
+        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label, capsize=3, zorder=zorder)
+
 
 def plot_labeled_hline(ax: Axes,
                        y: float,
