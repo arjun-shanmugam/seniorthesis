@@ -66,20 +66,6 @@ def get_zillow_url(property_address: str, master_list: List):
         print(f"Unable to find Zillow URL for {property_address}.")
         master_list.append((property_address, "Unable to find Zillow URL."))
 
-
-def to_binary(filepath: str, series: pd.Series, index: bool, header: bool):
-    """
-    Write a pd.Series to a file in binary.
-    :param filepath:
-    :param series:
-    :param index:
-    :param header:
-    """
-    series_as_string = series.to_string(index=index, header=header)
-    with open(filepath, 'wb') as file:
-        file.write(bytes(series_as_string, encoding='utf-8'))
-
-
 def POST_batch_ZPID_request(path_to_addresses):
     """
     :param path_to_addresses: Path to a single .txt file containing one address per line and no more than 100 addresses.
