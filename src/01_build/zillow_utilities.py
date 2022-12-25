@@ -43,29 +43,6 @@ def GET_zestimate_history(zpid: int, case_number: str):
         df.loc[:, 'case_number'] = case_number
     return df
 
-def get_zillow_url(property_address: str, master_list: List):
-    """
-    Finds the URL of a specified property's page on Zillow.
-    :param master_list:
-    :param property_address: The address of the property.
-    :return:
-    """
-    # Avoid 429 error from Google.
-    time.sleep(.5)
-
-    # Get the URL of the first search result.
-    result = search(f"zillow {property_address}", num_results=1)
-    first_url = next(result)
-
-    # Return the URL if it appears to the Zillow URL of the requested property
-    print(first_url)
-    if first_url.startswith("https://www.zillow.com/homedetails/"):
-        print(f"Found Zillow URL for {property_address}.")
-        master_list.append((property_address, first_url))
-    else:
-        print(f"Unable to find Zillow URL for {property_address}.")
-        master_list.append((property_address, "Unable to find Zillow URL."))
-
 def POST_batch_ZPID_request(path_to_addresses):
     """
     :param path_to_addresses: Path to a single .txt file containing one address per line and no more than 100 addresses.
