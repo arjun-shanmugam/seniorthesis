@@ -20,7 +20,7 @@ evictions_df = pd.read_csv(INPUT_DATA)
 # Save eviction addresses in 100-row batches.
 batched_addresses = batch_df(df=evictions_df['property_address_full'], batch_size=100)
 filepaths = [os.path.join(BATCHED_ADDRESSES, f"batch_{i}.txt") for i, batched_address in enumerate(batched_addresses)]
-[to_binary(filepath=filepath, series=batch, index=False, header=False) for filepath, batch in zip(filepaths, batched_addresses)]
+[batch.to_csv(filepath, index=False, header=False, sep=';') for filepath, batch in zip(filepaths, batched_addresses)]
 job_numbers = [POST_batch_ZPID_request(filepath) for filepath in filepaths]
 job_numbers = pd.Series(job_numbers)
 job_numbers.to_csv(OUTPUT_DATA, index=False, header=False)

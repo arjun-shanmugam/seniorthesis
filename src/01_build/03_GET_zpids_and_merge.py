@@ -9,5 +9,4 @@ OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_inter
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS)
 job_numbers = pd.read_csv(INPUT_DATA_JOB_NUMBERS, header=None)[0]
 addresses_with_zpids = pd.concat([GET_processed_ZPIDs(job_number) for job_number in job_numbers], axis=0).reset_index(drop=True)
-evictions_df = pd.concat([evictions_df, addresses_with_zpids], axis=1)
-evictions_df[['case_number', 'zpid']].to_csv(OUTPUT_DATA, index=False)
+addresses_with_zpids.to_csv(OUTPUT_DATA, index=False)

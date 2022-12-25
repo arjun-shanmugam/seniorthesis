@@ -35,10 +35,10 @@ replace t = t + 10  // Make j-variable positive.
 
 // MATCHES PYTHON SCRIPT UP TO THIS POINT
 
-reshape wide zestimate, i(case_number) j(t)  // Reshape to assess panel balance.
-egen missing_zestimates_relative = rowmiss(zestimate0-zestimate34)
-drop if missing_zestimates_relative > 0
-reshape long
+// reshape wide zestimate, i(case_number) j(t)  // Reshape to assess panel balance.
+// egen missing_zestimates_relative = rowmiss(zestimate0-zestimate34)
+// drop if missing_zestimates_relative > 0
+// reshape long
 replace t = t - 10  // Undo adjustment of j variable.
 label variable t "Month (Relative to Month of Eviction Filing)"
 local outcomes zestimate

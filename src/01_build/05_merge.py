@@ -63,10 +63,10 @@ if VERBOSE:
 original_N = len(merged_df)
 
 # Drop cases missing latest_docket date.
-mask = merged_df['latest_docket_date'].notna()
+mask = merged_df['file_date'].notna()
 if VERBOSE:
     print(
-        f"Dropping {(~mask).sum()} observations where latest_docket_date is missing ({100 * (((~mask).sum()) / original_N):.3} percent "
+        f"Dropping {(~mask).sum()} observations where file_date is missing ({100 * (((~mask).sum()) / original_N):.3} percent "
         f"of original dataset).")
 merged_df = merged_df.loc[mask, :]
 

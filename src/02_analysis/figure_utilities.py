@@ -93,7 +93,6 @@ def plot_scatter_with_error_bars(ax: plt.Axes,
     :param zorder:
     """
     yerr = (y_upper - y_lower) / 2
-    print(yerr)
     ecolor = to_rgba(error_color, alpha=error_opacity)
     if zorder is None:
         ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label, capsize=3)

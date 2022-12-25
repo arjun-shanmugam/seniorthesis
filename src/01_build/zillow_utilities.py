@@ -7,6 +7,8 @@ import time
 import json
 from io import StringIO
 from typing import List
+
+import numpy as np
 import pandas as pd
 import requests
 from googlesearch import search
@@ -126,6 +128,26 @@ def GET_processed_ZPIDs(job_number):
     if "isn't complete!" in response.text:
         raise RuntimeError("The specified job_number was requested before it was completed on the server.")
     else:
-        result = pd.read_csv(StringIO(response.text), header=None, usecols=[0, 1], names=['property_address_full', 'zpid'])
-        result.loc[:, 'property_address_full'] = result['property_address_full'].str.replace("\"", "", regex=False)
+        # Read in the text of the response as a CSV with a separator that isn't actually present in the text.
+        # This ensures that we read in the text of the CSV as a single column.
+        result = pd.read_csv(StringIO(response.text), header=None, sep="NOT_A_SEPARATOR")[0]  # Get the first and only column.
+
+        split = result.str.split("\"")  # Split on the address's closing quotes.
+        # Build one column containing addresses and another containing lists of ZPIDs.
+        ZPIDs = split.str[2].str.split(",")
+        for index, zpid_list in enumerate(ZPIDs):
+            new_list = [element for element in zpid_list if element != ""]
+            if len(new_list) == 0:
+                ZPIDs.loc[index] = [np.nan]
+            else:
+                ZPIDs.loc[index] = new_list
+        ZPIDs = pd.DataFrame(ZPIDs.tolist())
+        ZPIDs.columns = "zpid" + (ZPIDs.columns + 1).astype(str)
+        addresses = split.str[1]
+        addresses.name = "property_address_full"
+
+        # Return result.
+        result = pd.concat([addresses, ZPIDs], axis=1)
+        result = pd.wide_to_long(result, stubnames='zpid', i='address', j='j').reset_index().drop(columns='j').reset_index(drop=True)
+
         return result
