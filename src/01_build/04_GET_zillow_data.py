@@ -8,8 +8,8 @@ OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_inter
 
 # Get Zestimates and concatenate into a single DataFrame.
 zpids_df = pd.read_csv(INPUT_DATA, dtype={'zpid': str}).fillna(" ")
-zestimates_df = pd.concat([GET_zestimate_history(zpid, address) for zpid, address in zip(zpids_df['zpid'], zpids_df['property_address_full'])], axis=0)
-# TODO: Resume here. Start by adapting GET_zestimate_history to the new way that ZPIDs are stored on disk.
+zestimates = [GET_zestimate_history(zpid, case_number) for zpid, case_number in zip(zpids_df['zpid'], zpids_df['case_number'])]
+zestimates_df = pd.concat(zestimates, axis=0)
 zestimates_df = zestimates_df.reset_index()
 
 # Produce month and year columns.

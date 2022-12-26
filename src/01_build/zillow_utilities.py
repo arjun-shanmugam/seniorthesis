@@ -18,10 +18,16 @@ API_KEY = "91ac630dccmshb123beb8366a49ap124b4djsn4bdf0c892172"
 
 def GET_zestimate_history(zpid: int, case_number: str):
     """
+    :param case_number:
     :param zpid: The Zillow property ID for which we want to fetch zestimates.
     :return: A DataFrame containing the past Zestimates associated with the provided ZPID.
     """
     import requests
+
+    # If a " " zpid is passed, return an empty DataFrame.
+    if zpid == " ":
+        return pd.DataFrame()
+
     # Obey call frequency limits.
     time.sleep(0.34)
     print(f"Getting Zestimates for ZPID: {zpid}")
@@ -111,6 +117,4 @@ def GET_processed_ZPIDs(job_number):
 
         # Return result.
         result = pd.concat([addresses, ZPIDs], axis=1)
-        result = pd.wide_to_long(result, stubnames='zpid', i='address', j='j').reset_index().drop(columns='j').reset_index(drop=True)
-
         return result
