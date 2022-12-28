@@ -48,9 +48,17 @@
 
 
 \section{Introduction} \label{sec:introduction}
+\subsection{Literature Review}
 
-\section{Literature Review} \label{sec:literature}
-
+\section{Institutional Context}
+    \subsection{Eviction in Massachusetts}
+        \subsubsection{The Massachusetts Housing Court}
+        \subsubsection{The Eviction Process}
+    \subsubsection{Property Tax Assessment}
+        \subsubsection{The Property Value Assessment Process}
+    \subsection{Zestimates}
+        \subsubsection{How Are Zestimates Produced?}
+        \subsubsection{Reliability}
 \section{Data} \label{sec:data}
     \begin{landscape}
     \subsection{Evictions Data}
@@ -61,11 +69,14 @@
             \label{fig:my_label}
         \end{figure}
     \end{landscape}
-
-
     \subsection{Tax Assessment Records}
     \subsection{Zestimates}
-    
+        \begin{figure}[H]
+            \centering
+            \includegraphics{output/summary_statistics/figures/trends_in_zestimates.png}
+            \caption{Trends in Zestimates}
+            \label{fig:my_label}
+        \end{figure}
     \begin{landscape}
     \subsection{Summary Statistics}
          \begin{table}[H]
@@ -75,7 +86,6 @@
             \caption{Summary Statistics}
             \label{tab:table_1}
         \end{table}
-
         \newpage
         \begin{table}[H]
             \centering
@@ -85,10 +95,72 @@
             \label{tab:my_label}
         \end{table}
     \end{landscape}
-       
-\section{Results} \label{sec:result}
 
-\section{Discussions} \label{sec:discussion}
+\section{Empirical Strategy: Difference-in-Difference}
+    \subsection{Estimating the ATT in the Staggered Treatment Case}
+    I will use Callaway and Sant'Anna' (2021)'s multiperiod, staggered treatment difference-in-difference estimators. The following bullets summarize the empirical strategy informally; this information will eventually be placed appropriately into the subsection headers below this brief summary.
+    \begin{enumerate}
+        \item Reject conventional TWFE-DiD estimator. This estimator essentially estimates the ATT by performing a bunch of 2 unit, 2 period DiDs, then averages the calculated treatment effects. Goodman-Bacon (2021) shows that this estimator is composed in part of DiD estimates involving \emph{two units which are both treated during both periods}. This is in violation of the spirit of DiD. These incorrect DiD estimates are known as ``forbidden comparisons.''
+        \item The way to properly recover the ATT is to basically perform all of the ``non-forbidden'' comparisons possible in our panel dataset. More formally:
+        \begin{enumerate}
+            \item We begin with a panel dataset of properties whose Zestimates are observed monthly. At each property $i$, an eviction case concludes during month $G_i=g$, resulting in a plaintiff victory or a defendant victory. These properties are collectively known as ``cohort $g$.'' If the eviction case at property $i$ resulted in a defendant victory, let $C_i=1$
+            \item Break the units into ``cohorts'' according to the month in which their cases conclude. 
+            \item We estimate $ATT(g, t)$, which is the average treatment effect on the treated for cohort $g$ at time $t$, by calculating the sample analog of:
+
+            
+            $E[Y_t - Y_{g-1}|G=g] - [Y_t - Y_{g-1}|C=1]$ 
+
+            
+            \item Intuitively, $ATT(g, t)$ comes from 2 period, 2 unit difference in difference estimate. The treatment group contains all units where we observe a plaintiff victory and the case was resolved at time $g$. The control group contains all units where we observe a defendant victory and the case was resolved at time $g$. We adjust the change in observed outcomes in the treatment group by the change in observed outcomes in the control group to get our estimate.
+           
+        \end{enumerate}
+        \item The parallel trends and no anticipation assumptions are extended to the staggered treatment context.
+            \begin{enumerate}
+                \item \textbf{Staggered Treatment Adoption Assumption.} Let $D_it=1$ if unit $i$ has been treated by period $t$ and $D_it=0$ otherwise. Then, for $t=1,...,\tau$, $D_{it}=1 \rightarrow D_{it+1} = 1$. Basically, once a unit becomes treated, it stays treated.
+                
+                \item \textbf{Parallel Trends Assumption Based On Never Treated Units}. For all $g=2,...,\tau, t=2,...,\tau$ with $t\geq g$, we have
+
+                $E[Y_t(0)-Y_{g-1}(0)|G=g]$ = $E[Y_t(0)-Y_{g-1}(0)|C=1]$
+
+                Basically, for every possible 2 unit, 2 period DiD that we can run in our panel dataset between treated units and never-treated units, the canonical parallel trends assumption holds.
+                
+                
+                \item \textbf{Parallel Trends Assumption Based On Not Yet Treated Units}. For all $g=2,...,\tau, s, t=2,...,\tau$ with $t \geq g$ and $s \geq t$, we have
+
+                $E[Y_t(0) - Y_{t-1}(0)|G=g] = E[Y_t(0) - Y_{t-1}(0)|D_s=1, G \neq g]$
+
+                This assumption allows us to use \emph{not yet treated} observations as a comparison group for \emph{treated} units. This is clearly a stronger assumption than the previous one and I have to think hard about whether I can make it in my case. Note that the graph in section 5.3 does NOT make this assumption.
+
+                
+
+                
+            \end{enumerate}
+        \item Now, we have a bunch of $ATT(g, t)$s. How do we aggregate them?
+            \begin{enumerate}
+                \item Take frequency-weighted averages across $t$ to get $ATT(g)$s, or ATTs for each cohort.
+                \item Take frequency-weighted averages across $g$ to get $ATT(t)$s, or ATTs for each time period.
+                \item Most convincing: calculate event time $e = t - g$. Now, $ATT(g, e_i)$ expresses the ATT on cohort $g$ at time relative to the end of the eviction case involving property $i$. Take frequency weighted averages across $g$ to get $ATT(e)s$, or ATTs for each period relative to the treatment period.
+            \end{enumerate}
+    \end{enumerate}
+    \subsection{Parallel Trends Assumptions in the Staggered Treatment Case}
+        
+        \subsection{Testing Parallel Trends Empirically Using Rambachan and Roth (2022)}
+    \subsection{Aggregating Treatment Effects Across Cohort and Time}
+        \subsubsection{ATTs Across Cohorts}
+        \subsubsection{ATTs Across Time Periods}
+        \subsubsection{Event-Study ATTs}
+    
+\section{Results} \label{sec:result}
+    \subsection{ATTs Across Cohorts}
+    \subsection{ATTs Across Time Periods}
+    \subsection{Event-Study ATTs}
+        \begin{figure}[H]
+            \centering
+            \includegraphics{output/DiD/figures/att_gt_estimates_event_study.png}
+            \caption{$ATT(e)$s}
+            \label{fig:my_label}
+        \end{figure}
+
 
 \section{Conclusion} \label{sec:conclusion}
 
@@ -105,23 +177,23 @@
 
 \onehalfspacing
 
-\section*{Tables} \label{sec:tab}
-\addcontentsline{toc}{section}{Tables}
+% \section*{Tables} \label{sec:tab}
+% \addcontentsline{toc}{section}{Tables}
 
 
 
-\clearpage
+% \clearpage
 
-\section*{Figures} \label{sec:fig}
-\addcontentsline{toc}{section}{Figures}
-
-
+% \section*{Figures} \label{sec:fig}
+% \addcontentsline{toc}{section}{Figures}
 
 
-\clearpage
 
-\section*{Appendix A. Placeholder} \label{sec:appendixa}
-\addcontentsline{toc}{section}{Appendix A}
+
+% \clearpage
+
+% \section*{Appendix A. Placeholder} \label{sec:appendixa}
+% \addcontentsline{toc}{section}{Appendix A}
 
 
 
