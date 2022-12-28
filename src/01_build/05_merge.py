@@ -62,7 +62,7 @@ if VERBOSE:
 
 original_N = len(merged_df)
 
-# Drop cases missing latest_docket date.
+# Drop cases missing file_date.
 mask = merged_df['file_date'].notna()
 if VERBOSE:
     print(
@@ -78,6 +78,12 @@ merged_df.loc[:, "judgment_for_pdu"] = merged_df.loc[:, "judgment_for_pdu"].repl
 
 # Replace missing values in money judgment column with zeroes.
 merged_df.loc[:, 'judgment'] = merged_df['judgment'].fillna(0)
+
+# Drop malformed addresses.
+merged_df = merged_df.loc[~merged_df['property_address_full'].str.contains("span, span span"), :]
+
+# Drop addresses without ZIP codes.
+merged_df = merged_df.loc[merged_df['property_address_zip'].notna(), :]
 
 # Save unrestricted data file.
 merged_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
