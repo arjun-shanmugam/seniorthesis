@@ -1,6 +1,8 @@
 """
 Defines constants.
 """
+
+
 class Colors:
     P1 = "#29B6A4"
     P2 = "#FAA523"

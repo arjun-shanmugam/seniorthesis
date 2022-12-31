@@ -85,6 +85,9 @@ merged_df = merged_df.loc[~merged_df['property_address_full'].str.contains("span
 # Drop addresses without ZIP codes.
 merged_df = merged_df.loc[merged_df['property_address_zip'].notna(), :]
 
+# Rename duration to case_duration.
+merged_df = merged_df.rename(columns={'duration': 'case_duration'})
+
 # Save unrestricted data file.
 merged_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
 
