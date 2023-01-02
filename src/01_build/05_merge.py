@@ -41,12 +41,11 @@ tax_parcels_gdf.loc[:, 'file_month'] = pd.to_datetime(tax_parcels_gdf['file_date
 tax_parcels_gdf.loc[:, 'file_year'] = pd.to_datetime(tax_parcels_gdf['file_date']).dt.year
 tax_parcels_gdf.loc[:, 'latest_docket_year'] = pd.to_datetime(tax_parcels_gdf['latest_docket_date']).dt.year
 tax_parcels_gdf.loc[:, 'latest_docket_month'] = pd.to_datetime(tax_parcels_gdf['latest_docket_date']).dt.month
-tax_parcels_gdf.loc[:, 'next_fiscal_year'] = tax_parcels_gdf['latest_docket_year'] + 2
 merged_df = tax_parcels_gdf.merge(pd.read_csv(INPUT_DATA_ASSESSMENT_VALUES),
                                   how='left',
                                   right_on=['LOC_ID', 'FY'],
-                                  left_on=['LOC_ID', 'next_fiscal_year'],
-                                  validate='m:1').drop(index=29326)  # Drop one row which matched to two property parcels to eliminate duplicates.
+                                  left_on=['LOC_ID', 'file_year'],
+                                  validate='m:1')
 if VERBOSE:
     successfully_matched_observations = (~merged_df['FY'].isna()).sum()
     print(f"Successfully matched {successfully_matched_observations} evictions ({100 * (successfully_matched_observations / len(evictions_gdf))} "
