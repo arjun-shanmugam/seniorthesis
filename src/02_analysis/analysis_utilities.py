@@ -13,18 +13,20 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :return:
     """
     # Panel A: Case Initiaton
-    panel_A_columns = ['for_cause', 'foreclosure', 'no_cause', 'non_payment', 'for_cause_transfer',
-                       'foreclosure_transfer',
-                       'non_payment_transfer', 'no_cause_transfer']
+    panel_A_columns = ['for_cause', 'foreclosure', 'no_cause', 'non_payment', 'transfer']
     origin_columns = ['initiating_action', 'initiating_action', 'initiating_action', 'initiating_action',
-                      'initiating_action', 'initiating_action', 'initiating_action', 'initiating_action']
-    target_values = ["SP Summons and Complaint - Cause", "SP Summons and Complaint - Foreclosure",
-                     "SP Summons and Complaint - No Cause", "SP Summons and Complaint - Non-payment of Rent",
-                     "SP Transfer - Cause", "SP Transfer - Foreclosure", "SP Transfer - Non-payment of Rent",
-                     "SP Transfer- No Cause"]
+                      'initiating_action']
+    target_values = [("SP Summons and Complaint - Cause", "SP Transfer - Cause"),
+                     ("SP Summons and Complaint - Foreclosure", "SP Transfer - Foreclosure"),
+                     ("SP Summons and Complaint - No Cause", "SP Transfer- No Cause"),
+                     ("SP Summons and Complaint - Non-payment of Rent", "SP Transfer - Non-payment of Rent"),
+                     'Transfer']
 
     for dummy_column, origin_column, target_value in zip(panel_A_columns, origin_columns, target_values):
-        df.loc[:, dummy_column] = np.where(df[origin_column] == target_value, 1, 0)
+        df.loc[:, dummy_column] = np.where((df[origin_column].str.contains(target_value[0])) |
+                                           (df[origin_column].str.contains(target_value[1])),
+                                           1,
+                                           0)
 
     panel_A = df[sorted(panel_A_columns)].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Case Initiation"])
