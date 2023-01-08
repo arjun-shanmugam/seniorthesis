@@ -109,6 +109,7 @@
             \label{tab:my_label}
         \end{table}
     \end{landscape}
+    
 
 \section{Empirical Strategy: Difference-in-Difference}
     \subsection{Estimating the ATT in the Staggered Treatment Case}
@@ -156,6 +157,13 @@
                 \item Most convincing: calculate event time $e = t - g$. Now, $ATT(g, e_i)$ expresses the ATT on cohort $g$ at time relative to the end of the eviction case involving property $i$. Take frequency weighted averages across $g$ to get $ATT(e)s$, or ATTs for each period relative to the treatment period.
             \end{enumerate}
     \end{enumerate}
+
+    \begin{table}[H]
+        \centering
+        \input{ou}
+        \caption{Caption}
+        \label{tab:my_label}
+    \end{table}
     \subsection{Parallel Trends Assumptions in the Staggered Treatment Case}
         
         \subsection{Testing Parallel Trends Empirically Using Rambachan and Roth (2022)}
