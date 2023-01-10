@@ -6,7 +6,7 @@ from time import sleep
 
 import pandas as pd
 import numpy as np
-import censusgeocode
+import censusgeocode as cg
 from typing import List
 from joblib import Parallel, delayed
 from multiprocessing import Manager
@@ -32,83 +32,26 @@ def sjoin_tax_parcels_with_evictions(tax_parcels_gdf: gpd.GeoDataFrame,
     return gdf
 
 
-def geocode_single_address(row):
-    """
-    Function meant to be applied to a single row of a DataFrame.
-    :param row:
-    """
-    sleep(3)  # Sleep to avoid over-pinging the API server.
-    id_num = int(row['id'])
-    tokenized_address = row['address'].split(", ")
-    if len(tokenized_address) > 4:  # If there is an extra comma in the address tokenized address may have too many items.
-        return row  # Abort if this happens.
-    street_address = tokenized_address[0]
-    city = tokenized_address[1]
-    state = tokenized_address[2]
-    zipcode = tokenized_address[3]
-    if len(zipcode) > 10:
-        return row  # Abort if zipcode is longer than 10 characters.
-    result = censusgeocode.address(street_address, city=city, state=state, zip=zipcode)
-    print(result)
-    if len(result) > 0:  # If a match is found:
-        row['parsed'] = result[0]['matchedAddress']
-        row['match'] = True
-        row['tigerlineid'] = result[0]['tigerLine']['tigerLineId']
-        row['side'] = result[0]['tigerLine']['side']
-        row['statefp'] = result[0]['geographies']['Census Tracts'][0]['STATE']
-        row['countyfp'] = result[0]['geographies']['Census Tracts'][0]['COUNTY']
-        row['tract'] = result[0]['geographies']['Census Tracts'][0]['TRACT']
-        row['block'] = result[0]['geographies']['2020 Census Blocks'][0]['BLOCK']
-        row['lat'] = result[0]['coordinates']['y']
-        row['lon'] = result[0]['coordinates']['x']
+def geocode_single_point(master_list: List, index: int, latitude: float, longitude: float):
+    print(f"Geocoding row {index} at latitude {latitude} and longitude {longitude}.")
+    if np.isnan(latitude) or np.isnan(longitude):
+        master_list.append((index, np.nan))
     else:
-        row['match'] = False
-    print(row)
-    return row
+        try:
+            master_list.append((index, cg.coordinates(longitude, latitude)['Census Tracts'][0]['GEOID']))
+        except ValueError:
+            print("ValueError: Unable to parse response from Census")
 
 
-def geocode_helper(cg: censusgeocode.CensusGeocode,
-                   master_list: List[pd.DataFrame],
-                   filepath: str):
-    """
-    Helper function to allow parallelization of batch geocoding.
-    :param cg: A CensusGeocode object.
-    :param master_list: A list which will hold all the geocoded DataFrames.
-    :param filepath: Path to a CSV file containing the records to geocode.
-    """
-    returned_from_api = cg.addressbatch(filepath)
-    returned_from_api_as_df = pd.DataFrame(returned_from_api, columns=returned_from_api[0].keys())
-    master_list.append(returned_from_api_as_df)
-    print(f"Geocoded batch: {filepath[-7:-4]}")
-    os.remove(filepath)
-
-
-def geocode_addresses(df: pd.DataFrame,
-                      path_to_intermediate_data: str,
-                      n_jobs=-1):
-    """
-    Geocodes a DataFrame containing addresses.
-    :param df: A DataFrame containing 4 columns, ID, street address, city, state, zip, in that order.
-    :param n_jobs: Number of processors to use.
-    :param path_to_intermediate_data: Location to store CSV files before sending to batch geocoder.
-    """
-    batched_df = batch_df(df=df, batch_size=9999)
-    filepaths = []  # Save each batch as a separate CSV file.
-    for i, batch in enumerate(batched_df):
-        path = os.path.join(path_to_intermediate_data, f"batch{i}.csv")
-        filepaths.append(path)
-        batch.to_csv(path, header=False)
-        print(f"Saving batch number to CSV: {i}")
-    # Send CSVs to the census geocoder.
-    cg = censusgeocode.CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
-
+def geocode_coordinates(indices: List[int], latitudes: List[float], longitudes: List[float], n_jobs: int = 1):
     manager = Manager()
-    geocoded_results = manager.list()
-    Parallel(n_jobs=n_jobs)(delayed(geocode_helper)(cg, geocoded_results, filepath) for filepath in filepaths)
-    result = pd.concat(list(geocoded_results), axis=0)  # Store returned, geocoded data.
-
+    master_list = manager.list()
+    data = zip(indices, latitudes, longitudes)
+    Parallel(n_jobs=n_jobs)(
+        delayed(geocode_single_point)(master_list, index, latitude, longitude) for index, latitude, longitude in data)
+    result = pd.DataFrame(list(master_list))  # Store returned, geocoded data.
+    result = result.rename(columns={0: 'index', 1: 'tract_geoid'}).set_index('index')
     return result
-
 
 def batch_df(df: pd.DataFrame, batch_size: int):
     """

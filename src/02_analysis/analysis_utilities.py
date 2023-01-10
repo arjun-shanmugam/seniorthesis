@@ -56,11 +56,17 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_D = df[sorted(panel_D_columns)].describe().T
     panel_D = pd.concat([panel_D], keys=["Panel D: Assessor Records From Most Recent Pre-Filing F.Y."])
 
-    # Panel E: Zestimates Around Last Docket Date
+    # Panel E: Census Tract Characteristics
+    panel_E_columns = ['med_hhinc2016', 'share_white2010', 'rent_twobed2015', 'popdensity2010', ]
+    panel_E = df[sorted(panel_E_columns)].describe().T
+    panel_E = pd.concat([panel_E], keys=["Panel E: Census Tract Characteristics"])
+
+
+    # Panel F: Zestimates Around Last Docket Date
     # Get month of the latest docket date for each row and use to grab Zestimates at different times prior to treatment.
     df.loc[:, treatment_date_variable] = pd.to_datetime(df[treatment_date_variable])
     df.loc[:, 'nan'] = np.nan
-    panel_E_columns = []
+    panel_F_columns = []
     for i in range(-5, 4):
         # This column contains the year-month which is i years relative to treatment for each property.
         offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)).dt.strftime('%Y-%m').copy()
@@ -73,13 +79,13 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
         # Set column accordingly.
         idx, cols = pd.factorize(offset_docket_month)
         new_col_name = f'zestimate_{i}_years_relative_to_treatment'
-        panel_E_columns.append(new_col_name)
+        panel_F_columns.append(new_col_name)
         df.loc[:, new_col_name] = df.reindex(cols, axis=1).to_numpy()[np.arange(len(df)), idx]
 
-    panel_E = df[panel_E_columns].describe().T
-    panel_E = pd.concat([panel_E], keys=["Panel E: Zestimates Around Last Docket Date"])
+    panel_F = df[panel_F_columns].describe().T
+    panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Around Filing Date"])
 
     # Concatenate Panels A-E
-    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E], axis=0)[['50%', 'mean', 'std', 'count']]
+    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F], axis=0)[['mean', 'std', 'count']]
 
     return summary_statistics

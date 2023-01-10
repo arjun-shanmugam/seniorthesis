@@ -1,5 +1,5 @@
 """
-02_POST_batched_addresses.py
+03_POST_batched_addresses.py
 
 Sends POST requests containing batches of addresses.
 """
