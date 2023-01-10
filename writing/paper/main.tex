@@ -1,29 +1,15 @@
 \documentclass[12pt]{article}
 
 \usepackage{amssymb,amsmath,amsfonts,booktabs,eurosym,float,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,multicol, multirow,natbib,pdflscape,subfigure,array,hyperref, pdflscape}
+\bibliographystyle{unsrtnat}
 
 \normalem
-
-\onehalfspacing
-\newtheorem{theorem}{Theorem}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}{Proposition}
-\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
-
-\newtheorem{hyp}{Hypothesis}
-\newtheorem{subhyp}{Hypothesis}[hyp]
-\renewcommand{\thesubhyp}{\thehyp\alph{subhyp}}
-
-\newcommand{\red}[1]{{\color{red} #1}}
-\newcommand{\blue}[1]{{\color{blue} #1}}
-
-\newcolumntype{L}[1]{>{\raggedright\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
-\newcolumntype{C}[1]{>{\centering\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
-\newcolumntype{R}[1]{>{\raggedleft\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
 
 \geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
 
 \begin{document}
+
+
 
 \begin{titlepage}
 \title{Arjun Shanmugam's Senior Thesis}
@@ -33,7 +19,6 @@
 \begin{abstract}
 \noindent Placeholder\\
 
-
 \bigskip
 \end{abstract}
 \setcounter{page}{0}
@@ -41,13 +26,10 @@
 \end{titlepage}
 \pagebreak \newpage
 
-
-
-
 \doublespacing
 
-
 \section{Introduction} \label{sec:introduction}
+\bibliography{writing/paper/citations}
 \subsection{Literature Review}
 
 \section{Institutional Context}
@@ -111,7 +93,11 @@
     \end{landscape}
     
 
+
 \section{Empirical Strategy: Difference-in-Difference}
+    I seek to estimate average treatment effects of plaintiff victory on treated properties. Let $G_i$ be the treatment cohort for eviction case $i$; $G_i = g \in \{\text{May}\:2019, \text{June}\:2019, ..., \text{May}\:2021\}$ if eviction case $i$ resulted in a victory for the plaintiff. Let $C_i = 1$ if eviction case $i$ resulted in a victory for the defendant and $0$ otherwise. I use  the staggered difference-in-difference estimator proposed in \cite{callaway_sant'anna_2021}, which estimates time- and cohort-specific average treatment effects on the treated using canonical difference-in-difference estimators and then aggregates them, weighting by cohort size, to produce summaries of the average treatment effect on the treated.
+
+
     \subsection{Estimating the ATT in the Staggered Treatment Case}
     I will use Callaway and Sant'Anna' (2021)'s multiperiod, staggered treatment difference-in-difference estimators. The following bullets summarize the empirical strategy informally; this information will eventually be placed appropriately into the subsection headers below this brief summary.
     \begin{enumerate}
