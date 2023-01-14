@@ -1,7 +1,8 @@
 \documentclass[12pt]{article}
 
-\usepackage{amssymb,amsmath,amsfonts,booktabs,eurosym,float,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,multicol, multirow,natbib,pdflscape,subfigure,array,hyperref, pdflscape}
-\bibliographystyle{unsrtnat}
+\usepackage{amssymb,amsmath,amsfonts, booktabs, dsfont, eurosym,float,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,multicol, multirow, natbib, pdflscape,array,hyperref}
+\bibliographystyle{rusnat}
+\bibliography{citations}
 
 \normalem
 
@@ -74,6 +75,13 @@
             \label{fig:my_label}
         \end{figure}
 
+        \begin{figure}[H]
+            \centering
+            \includegraphics[scale=0.8]{output/DiD/figures/trends_in_zestimates_by_cohort.png}
+            \caption{Trends in Zestimates by Cohort}
+            \label{fig:my_label}
+        \end{figure}
+
     \subsection{Summary Statistics}
          \begin{table}[H]
             \centering
@@ -83,19 +91,20 @@
             \label{tab:table_1}
         \end{table}
         \newpage
-        \begin{table}[H]
-            \centering
-            \small
-            \input{output/summary_statistics/tables/balance_table.tex}
-            \caption{Balance Table}
-            \label{tab:my_label}
-        \end{table}
+
 
     
 
 
 \section{Empirical Strategy: Difference-in-Difference}
-    I seek to estimate average treatment effects of plaintiff victory on treated properties. Let $G_i$ be the treatment cohort for eviction case $i$; $G_i = g \in \{\text{May}\:2019, \text{June}\:2019, ..., \text{May}\:2021\}$ if eviction case $i$ resulted in a victory for the plaintiff. Let $C_i = 1$ if eviction case $i$ resulted in a victory for the defendant and $0$ otherwise. I use  the staggered difference-in-difference estimator proposed in \cite{callaway_sant'anna_2021}, which estimates time- and cohort-specific average treatment effects on the treated using canonical difference-in-difference estimators and then aggregates them, weighting by cohort size, to produce summaries of the average treatment effect on the treated.
+    I seek to estimate the average treatment effects of plaintiff victory in eviction cases on treated properties. I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. Let $G_i$ be the month during which the eviction case involving property $i$ was filed, such that $G_i = g \in \{\text{May} \; 2019, \text{June} \; 2019, ..., \text{May} \; 2021\}$. Let $C_i = 1$ if the eviction case involving $i$ resulted in a victory for the defendant and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$. If $C_i=1$, then property $i$ is a never-treated property. 
+
+    \subsection{Unconditional Estimates of the ATT}
+    The following is an unconditional estimator for $ATT(g,t)$, the average treatment affect during month $t$ for the cohort first treated during month $g$.
+
+    \begin{align}
+        \hat{ATT}^{nev}_{un}(g, t) = \frac{\sum_i(Y_{i,t} - Y_{i, g-1})\mathds{1}\{G_i=g\}}{\sum_i\mathds{1}\{G_i=g\}} - \frac{\sum_i(Y_{i,t} - Y_{i, g-1})\mathds{1}\{C_i=1\}}{\sum_i\mathds{1}\{C_i=1\}}
+    \end{align}
 
 
     \subsection{Estimating the ATT in the Staggered Treatment Case}
@@ -178,35 +187,9 @@
 
 
 
-\singlespacing
-\setlength\bibsep{0pt}
-\bibliographystyle{my-style}
-\bibliography{Placeholder}
-
-
-
 \clearpage
 
 \onehalfspacing
 
-% \section*{Tables} \label{sec:tab}
-% \addcontentsline{toc}{section}{Tables}
-
-
-
-% \clearpage
-
-% \section*{Figures} \label{sec:fig}
-% \addcontentsline{toc}{section}{Figures}
-
-
-
-
-% \clearpage
-
-% \section*{Appendix A. Placeholder} \label{sec:appendixa}
-% \addcontentsline{toc}{section}{Appendix A}
-
-
-
+%
 \end{document}
