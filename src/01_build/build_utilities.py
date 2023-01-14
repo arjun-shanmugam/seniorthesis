@@ -38,6 +38,7 @@ def geocode_single_point(master_list: List, index: int, latitude: float, longitu
         master_list.append((index, np.nan))
     else:
         try:
+            print(cg.coordinates(longitude, latitude))
             master_list.append((index, cg.coordinates(longitude, latitude)['Census Tracts'][0]['GEOID']))
         except ValueError:
             print("ValueError: Unable to parse response from Census")

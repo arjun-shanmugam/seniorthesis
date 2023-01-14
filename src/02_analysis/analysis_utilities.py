@@ -20,7 +20,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                      ("SP Summons and Complaint - Foreclosure", "SP Transfer - Foreclosure"),
                      ("SP Summons and Complaint - No Cause", "SP Transfer- No Cause"),
                      ("SP Summons and Complaint - Non-payment of Rent", "SP Transfer - Non-payment of Rent"),
-                     'Transfer']
+                     ('Transfer', 'Transfer')]
 
     for dummy_column, origin_column, target_value in zip(panel_A_columns, origin_columns, target_values):
         df.loc[:, dummy_column] = np.where((df[origin_column].str.contains(target_value[0])) |
@@ -52,7 +52,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_C = pd.concat([panel_C], keys=["Panel C: Defendant and Plaintiff Characteristics"])
 
     # Panel D: Tax Assessment Records From F.Y. Following Eviction Filing
-    panel_D_columns = ['TOTAL_VAL', 'BLDG_VAL', 'LAND_VAL', 'OTHER_VAL', 'UNITS']
+    panel_D_columns = ['TOTAL_VAL', 'BLDG_VAL', 'LAND_VAL', 'OTHER_VAL']
     panel_D = df[sorted(panel_D_columns)].describe().T
     panel_D = pd.concat([panel_D], keys=["Panel D: Assessor Records From Most Recent Pre-Filing F.Y."])
 

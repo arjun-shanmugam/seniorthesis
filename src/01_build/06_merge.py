@@ -97,15 +97,22 @@ if __name__ == '__main__':
     # Drop addresses without ZIP codes.
     merged_df = merged_df.loc[merged_df['property_address_zip'].notna(), :]
 
-    result = geocode_coordinates(merged_df.index, merged_df['latitude'], merged_df['longitude'], n_jobs=-1)
-    merged_df = pd.concat([merged_df, result], axis=1)
-    merged_df = merged_df.merge(pd.read_csv(INPUT_DATA_TRACTS, dtype={'tract_geoid': str}),
+    # Add tract_geoid column to merged_df.
+    merged_df = merged_df.rename(columns={'Full FIPS (tract)': 'tract_geoid'})
+
+    # Merge census tract characteristics with the already merged data.
+    merged_df = merged_df.merge(pd.read_csv(INPUT_DATA_TRACTS, dtype={'tract_geoid': float}),
                                 on='tract_geoid',
                                 how='left',
                                 validate='m:1')
 
     # Save unrestricted data file.
-    merged_df.to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
+    geographic_columns = ['Accuracy Score', 'Accuracy Type', 'Number', 'Street', 'Unit Type', 'Unit Number', 'City',
+                          'State', 'County', 'Zip', 'Country', 'Source', 'Census Year', 'State FIPS', 'County FIPS',
+                          'Place Name', 'Place FIPS', 'Census Tract Code', 'Census Block Code', 'Census Block Group',
+                          'Full FIPS (block)', 'Metro/Micro Statistical Area Code', 'Metro/Micro Statistical Area Type',
+                          'Combined Statistical Area Code', 'Metropolitan Division Area Code']
+    merged_df.drop(columns=geographic_columns).to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
 
     # Drop cases which were resolved via mediation.
     mask = merged_df['disposition_found'] != "Mediated"

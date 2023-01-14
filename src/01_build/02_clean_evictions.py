@@ -38,7 +38,8 @@ initiating_action_replacement_dict = {"Efiled SP Summons and Complaint - Cause":
 evictions_df.loc[:, 'initiating_action'] = evictions_df.replace(initiating_action_replacement_dict)
 
 # Clean inconsistencies in judge names.
-evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].str.replace("&#039;",  # Apostrophes represented as mojibake.
+evictions_df.loc[:, 'court_person'] = evictions_df.loc[:, 'court_person'].str.replace("&#039;",
+                                                                                      # Apostrophes represented as mojibake.
                                                                                       "",
                                                                                       regex=False)
 name_replacement_dict = {"David D Kerman": "David Kerman",
@@ -90,3 +91,6 @@ if VERBOSE:
 if VERBOSE:
     print("Saving unrestricted evictions dataset.")
 evictions_df.to_csv(OUTPUT_DATA, index=False)
+
+# NOTE: After this file was run, I manually ran evictions.csv through Geocod.io to get the 2010 Census Tract
+#       in which each property is located.
