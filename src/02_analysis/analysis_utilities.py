@@ -13,14 +13,11 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :return:
     """
     # Panel A: Case Initiaton
-    panel_A_columns = ['for_cause', 'foreclosure', 'no_cause', 'non_payment', 'transfer']
-    origin_columns = ['initiating_action', 'initiating_action', 'initiating_action', 'initiating_action',
-                      'initiating_action']
+    panel_A_columns = ['for_cause', 'no_cause', 'non_payment']
+    origin_columns = ['initiating_action', 'initiating_action', 'initiating_action']
     target_values = [("SP Summons and Complaint - Cause", "SP Transfer - Cause"),
-                     ("SP Summons and Complaint - Foreclosure", "SP Transfer - Foreclosure"),
                      ("SP Summons and Complaint - No Cause", "SP Transfer- No Cause"),
-                     ("SP Summons and Complaint - Non-payment of Rent", "SP Transfer - Non-payment of Rent"),
-                     ('Transfer', 'Transfer')]
+                     ("SP Summons and Complaint - Non-payment of Rent", "SP Transfer - Non-payment of Rent")]
 
     for dummy_column, origin_column, target_value in zip(panel_A_columns, origin_columns, target_values):
         df.loc[:, dummy_column] = np.where((df[origin_column].str.contains(target_value[0])) |

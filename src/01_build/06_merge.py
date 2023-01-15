@@ -110,7 +110,7 @@ if __name__ == '__main__':
     geographic_columns = ['Accuracy Score', 'Accuracy Type', 'Number', 'Street', 'Unit Type', 'Unit Number', 'City',
                           'State', 'County', 'Zip', 'Country', 'Source', 'Census Year', 'State FIPS', 'County FIPS',
                           'Place Name', 'Place FIPS', 'Census Tract Code', 'Census Block Code', 'Census Block Group',
-                          'Full FIPS (block)', 'Metro/Micro Statistical Area Code', 'Metro/Micro Statistical Area Type',
+                          'Metro/Micro Statistical Area Code', 'Metro/Micro Statistical Area Type',
                           'Combined Statistical Area Code', 'Metropolitan Division Area Code']
     merged_df.drop(columns=geographic_columns).to_csv(OUTPUT_DATA_UNRESTRICTED, index=False)
 
