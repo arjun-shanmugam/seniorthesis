@@ -83,6 +83,6 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Around Filing Date"])
 
     # Concatenate Panels A-E
-    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F], axis=0)[['mean', 'std', 'count']]
+    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F], axis=0)[['mean', '50%', 'std', 'count']]
 
     return summary_statistics
