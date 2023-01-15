@@ -51,7 +51,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     # Panel D: Tax Assessment Records From F.Y. Following Eviction Filing
     panel_D_columns = ['TOTAL_VAL', 'BLDG_VAL', 'LAND_VAL', 'OTHER_VAL']
     panel_D = df[sorted(panel_D_columns)].describe().T
-    panel_D = pd.concat([panel_D], keys=["Panel D: Assessor Records From Most Recent Pre-Filing F.Y."])
+    panel_D = pd.concat([panel_D], keys=["Panel D: Assessor Records"])
 
     # Panel E: Census Tract Characteristics
     panel_E_columns = ['med_hhinc2016', 'share_white2010', 'rent_twobed2015', 'popdensity2010', ]
