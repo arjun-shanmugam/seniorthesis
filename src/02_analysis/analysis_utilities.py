@@ -7,6 +7,7 @@ import numpy as np
 import figure_utilities
 from os.path import join
 
+
 def aggregate_by_event_time_and_plot(att_gt,
                                      output_folder: str,
                                      filename: str,
@@ -56,6 +57,7 @@ def aggregate_by_event_time_and_plot(att_gt,
 
     plt.show()
     figure_utilities.save_figure_and_close(fig, join(output_folder, filename))
+
 
 def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_folder: str, filename: str, title: str):
     # Get time-aggregated ATTs.
@@ -145,12 +147,14 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_E = df[sorted(panel_E_columns)].describe().T
     panel_E = pd.concat([panel_E], keys=["Panel E: Census Tract Characteristics"])
 
-    # Panel F: Zestimates Around Last Docket Date
+    # Panel F: Zestimates Before Filing
     # Get month of the latest docket date for each row and use to grab Zestimates at different times prior to treatment.
     df.loc[:, treatment_date_variable] = pd.to_datetime(df[treatment_date_variable])
     df.loc[:, 'nan'] = np.nan
     panel_F_columns = []
-    for i in range(-5, 4):
+    start = -2
+    stop = 0
+    for i in range(start, stop):
         # This column contains the year-month which is i years relative to treatment for each property.
         offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)).dt.strftime(
             '%Y-%m').copy()
@@ -162,12 +166,16 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
 
         # Set column accordingly.
         idx, cols = pd.factorize(offset_docket_month)
-        new_col_name = f'zestimate_{i}_years_relative_to_treatment'
+        if i < 0:
+            new_col_name = f'zestimate_minus{-1*i}_years_relative_to_treatment'
+        else:
+            new_col_name = f'zestimate_{i}_years_relative_to_treatment'
         panel_F_columns.append(new_col_name)
         df.loc[:, new_col_name] = df.reindex(cols, axis=1).to_numpy()[np.arange(len(df)), idx]
-
+    df.loc[:, 'pre_treatment_zestimate_change'] = df[panel_F_columns[-1]] - df[panel_F_columns[0]]
+    panel_F_columns.append('pre_treatment_zestimate_change')
     panel_F = df[panel_F_columns].describe().T
-    panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Around Filing Date"])
+    panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Before Filing Date"])
 
     # Concatenate Panels A-E
     summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_E, panel_F], axis=0)[
