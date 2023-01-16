@@ -41,6 +41,8 @@ def plot_scatter_with_shaded_errors(ax: plt.Axes,
                                     marker: str = 'o',
                                     error_color: str = figure_and_table_constants.Colors.P1,
                                     error_opacity: float = 0.5,
+                                    edge_color: str = figure_and_table_constants.Colors.P1,
+                                    edge_style: str = '-',
                                     zorder=None):
     """
 
@@ -57,12 +59,21 @@ def plot_scatter_with_shaded_errors(ax: plt.Axes,
     :param error_opacity: 
     :param zorder: 
     """
+
     if zorder is None:
         ax.scatter(x, y, color=point_color, marker=marker, s=point_size, label=label)
+        ax.fill_between(x, y_upper, y_lower, color=error_color, alpha=error_opacity, edgecolor=edge_color,
+                        linestyle=edge_style)
+        ax.axvline(x=x.min(), color='white')
+        ax.axvline(x=x.max(), color='white')
     else:
-        ax.scatter(x, y, color=point_color, marker=marker, s=point_size, label=label, zorder=zorder)
+        ax.fill_between(x, y_upper, y_lower, color=error_color, alpha=error_opacity, edgecolor=edge_color,
+                        linestyle=edge_style, zorder=zorder)
+        ax.axvline(x=x.min(), color='white', zorder=zorder+1)
+        ax.axvline(x=x.max(), color='white', zorder=zorder+1)
+        ax.scatter(x, y, color=point_color, marker=marker, s=point_size, label=label, zorder=zorder+2)
 
-    ax.fill_between(x, y_upper, y_lower, color=error_color, alpha=error_opacity)
+
 
 
 def plot_scatter_with_error_bars(ax: plt.Axes,
@@ -95,9 +106,11 @@ def plot_scatter_with_error_bars(ax: plt.Axes,
     yerr = (y_upper - y_lower) / 2
     ecolor = to_rgba(error_color, alpha=error_opacity)
     if zorder is None:
-        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label, capsize=3)
+        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label,
+                    capsize=3)
     else:
-        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label, capsize=3, zorder=zorder)
+        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label,
+                    capsize=3, zorder=zorder)
 
 
 def plot_labeled_hline(ax: Axes,

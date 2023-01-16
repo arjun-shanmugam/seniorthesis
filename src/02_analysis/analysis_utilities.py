@@ -2,7 +2,92 @@
 Functions useful for analysis.
 """
 import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
+import figure_utilities
+from os.path import join
+
+def aggregate_by_event_time_and_plot(att_gt,
+                                     output_folder: str,
+                                     filename: str,
+                                     start_period: int,
+                                     end_period: int,
+                                     title: str,
+                                     treatment_month_variable: str,
+                                     df: pd.DataFrame):
+    # Get event study-aggregated ATT(t)s.
+    results_df = att_gt.aggregate('event')
+    results_df = results_df.loc[start_period:end_period]
+    results_df.columns = results_df.columns.droplevel().droplevel()
+
+    # Plot event study-style plot of ATTs.
+    fig, (ax, ax2) = plt.subplots(2, 1, sharex=True, height_ratios=[4, 1], layout='constrained')
+    x = results_df.index
+    y = results_df['ATT']
+    y_upper = results_df['upper']
+    y_lower = results_df['lower']
+    ax.set_ylabel("ATT")
+    ax.set_title(title)
+    figure_utilities.plot_labeled_vline(ax, x=0, text="Treatment Month", color='black', linestyle='-',
+                                        text_y_location_normalized=0.95)
+    figure_utilities.plot_scatter_with_shaded_errors(ax,
+                                                     x.values,
+                                                     y.values,
+                                                     y_upper.values,
+                                                     y_lower.values,
+                                                     point_color='black',
+                                                     error_color='white',
+                                                     edge_color='grey',
+                                                     edge_style='--',
+                                                     zorder=1)
+    figure_utilities.plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
+
+    # Plot sample size at each event-time.
+    df_copy = df.copy().reset_index()
+    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable]
+    cases_per_year = df_copy.groupby('event_time')['case_number'].nunique().loc[start_period:end_period]
+    x = cases_per_year.index
+    y = cases_per_year.values
+    ax2.plot(x, y, color='black')
+    ax2.set_xlabel("Month Relative to Treatment")
+    ax2.set_ylabel("Number of Units")
+    ax2.grid(True)
+    ax2.set_title("Sample Size")
+
+    plt.show()
+    figure_utilities.save_figure_and_close(fig, join(output_folder, filename))
+
+def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_folder: str, filename: str, title: str):
+    # Get time-aggregated ATTs.
+    results_df = att_gt.aggregate('time')
+
+    # Plot event study-style plot of ATTs.
+    fig, ax = plt.subplots()
+    results_df = results_df.rename(index=int_to_month_dictionary)
+    x = results_df.index
+    y = results_df.iloc[:, 0]
+    y_upper = results_df.iloc[:, 3]
+    y_lower = results_df.iloc[:, 2]
+    ax.set_xlabel("Month")
+    ax.set_ylabel("ATT")
+    ax.set_title(title)
+    figure_utilities.plot_labeled_vline(ax, x=results_df.index.tolist()[0], text="Earliest Treatment Date in Sample",
+                                        color='black', linestyle='-',
+                                        text_y_location_normalized=0.95)
+    figure_utilities.plot_scatter_with_shaded_errors(ax,
+                                                     x.values,
+                                                     y.values,
+                                                     y_upper.values,
+                                                     y_lower.values,
+                                                     point_color='black',
+                                                     error_color='white',
+                                                     edge_color='grey',
+                                                     edge_style='--',
+                                                     zorder=1)
+    figure_utilities.plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-')
+    ax.set_xticks(range(0, len(x), 12))
+    plt.show()
+    figure_utilities.save_figure_and_close(fig, join(output_folder, filename))
 
 
 def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
@@ -48,16 +133,17 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_C = df[sorted(panel_C_columns)].describe().T
     panel_C = pd.concat([panel_C], keys=["Panel C: Defendant and Plaintiff Characteristics"])
 
+    """
     # Panel D: Tax Assessment Records From F.Y. Following Eviction Filing
     panel_D_columns = ['TOTAL_VAL', 'BLDG_VAL', 'LAND_VAL', 'OTHER_VAL']
     panel_D = df[sorted(panel_D_columns)].describe().T
     panel_D = pd.concat([panel_D], keys=["Panel D: Assessor Records"])
+    """
 
     # Panel E: Census Tract Characteristics
-    panel_E_columns = ['med_hhinc2016', 'share_white2010', 'rent_twobed2015', 'popdensity2010', ]
+    panel_E_columns = ['med_hhinc2016', 'popdensity2010', 'share_white2010']
     panel_E = df[sorted(panel_E_columns)].describe().T
     panel_E = pd.concat([panel_E], keys=["Panel E: Census Tract Characteristics"])
-
 
     # Panel F: Zestimates Around Last Docket Date
     # Get month of the latest docket date for each row and use to grab Zestimates at different times prior to treatment.
@@ -66,7 +152,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_F_columns = []
     for i in range(-5, 4):
         # This column contains the year-month which is i years relative to treatment for each property.
-        offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)).dt.strftime('%Y-%m').copy()
+        offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)).dt.strftime(
+            '%Y-%m').copy()
 
         # Some year-months will be outside the range of our data.
         # For instance, we do not have Zestimates 2 years post-treatment for evictions which occurred in 2022.
@@ -83,6 +170,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Around Filing Date"])
 
     # Concatenate Panels A-E
-    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F], axis=0)[['mean', '50%', 'std', 'count']]
+    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_E, panel_F], axis=0)[
+        ['mean', '50%', 'std', 'count']]
 
     return summary_statistics
