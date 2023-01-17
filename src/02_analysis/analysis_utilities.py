@@ -102,8 +102,10 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :return:
     """
     # Panel A: Pre-treatment Zestimates
-    df.loc[:, 'change_in_zestimates_2018_to_2019'] = df['2019-01'] - df['2018-01']
-    panel_A_columns = ['2017-01', '2018-01', 'change_in_zestimates_2018_to_2019']
+    df.loc[:, 'twenty_seventeen'] = df['2017-01']
+    df.loc[:, 'twenty_eighteen'] = df['2018-01']
+    df.loc[:, 'change_in_zestimates'] = df['2019-01'] - df['2018-01']
+    panel_A_columns = ['twenty_seventeen', 'twenty_eighteen', 'change_in_zestimates']
     panel_A = df[panel_A_columns].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Zestimates"])
 
@@ -192,8 +194,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'med_hhinc2016': 'Median household income (2016)',
                                    'popdensity2010': 'Population density (2010)',  # Panel E
                                    'share_white2010': 'Portion white (2010)',  # Panel E
-                                   '2017-01': 'Jan. 2017',
-                                   '2018-01': 'Jan. 2018', 'change_in_zestimates_2018_to_2019': 'Change from Jan. 2018 to Jan. 2019',
+                                   'twenty_seventeen': 'Jan. 2017',
+                                   'twenty_eighteen': 'Jan. 2018', 'change_in_zestimates': 'Change from Jan. 2018 to Jan. 2019',
                                    'zestimate_0_years_relative_to_treatment': "At filing date",
                                    'zestimate_1_years_relative_to_treatment': "One year after filing date",
                                    'zestimate_2_years_relative_to_treatment': "Two years after filing date",
