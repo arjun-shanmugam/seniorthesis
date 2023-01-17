@@ -111,9 +111,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
 
     # Panel B: Census Tract Characteristics
     # TODO: RE-ADD 'mean_commutetime2000' TO THIS LIST AFTER RE-RUNNING 06_merge.py
-    # TODO: RE-ADD 'traveltime15_2010' TO THIS LIST AFTER RE-RUNNING 06_merge.py
     panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'share_white2010', 'frac_coll_plus2010', 'job_density_2013',
-                        'poor_share2010']
+                        'poor_share2010', 'traveltime15_2010']
     panel_B = df[sorted(panel_B_columns)].describe().T
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
@@ -202,8 +201,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'mean_commutetime2000': 'Mean commute time (2000)',
                                    'traveltime15_2010': 'Share with commute under 15 min. (2010)',
                                    'poor_share2010': 'Share below poverty line',
-                                   'twenty_seventeen': 'Jan. 2017',
-                                   'twenty_eighteen': 'Jan. 2018', 'change_in_zestimates': 'Change from Jan. 2018 to Jan. 2019',
+                                   'twenty_seventeen': 'Zestimate, Jan. 2017',
+                                   'twenty_eighteen': 'Zestimate, Jan. 2018', 'change_in_zestimates': 'Change from Jan. 2018 to Jan. 2019',
                                    'zestimate_0_years_relative_to_treatment': "At filing date",
                                    'zestimate_1_years_relative_to_treatment': "One year after filing date",
                                    'zestimate_2_years_relative_to_treatment': "Two years after filing date",
