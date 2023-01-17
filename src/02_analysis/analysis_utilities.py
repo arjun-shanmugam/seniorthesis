@@ -103,9 +103,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     """
     # Panel A: Pre-treatment Zestimates
     df.loc[:, 'twenty_seventeen'] = df['2017-01']
-    df.loc[:, 'twenty_eighteen'] = df['2018-01']
     df.loc[:, 'change_in_zestimates'] = df['2019-01'] - df['2017-01']
-    panel_A_columns = ['twenty_seventeen', 'twenty_eighteen', 'change_in_zestimates']
+    panel_A_columns = ['twenty_seventeen', 'change_in_zestimates']
     panel_A = df[panel_A_columns].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Zestimates"])
 
@@ -196,13 +195,14 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'med_hhinc2016': 'Median household income (2016)',
                                    'popdensity2010': 'Population density (2010)',
                                    'share_white2010': 'Share white (2010)',
-                                   'frac_coll_plus2010': 'Share with bachelor\'s degree or higher (2010)',
+                                   'frac_coll_plus2010': 'Share with bachelor\'s degree',
                                    'job_density_2013': 'Jobs per sq. mile (2010)',
                                    'mean_commutetime2000': 'Mean commute time (2000)',
-                                   'traveltime15_2010': 'Share with commute under 15 min. (2010)',
+                                   'traveltime15_2010': 'Share with commute <15 min. (2010)',
                                    'poor_share2010': 'Share below poverty line',
                                    'twenty_seventeen': 'Zestimate, Jan. 2017',
-                                   'twenty_eighteen': 'Zestimate, Jan. 2018', 'change_in_zestimates': 'Change from Jan. 2018 to Jan. 2019',
+                                   'twenty_eighteen': 'Zestimate, Jan. 2018',
+                                   'change_in_zestimates': 'Zestimate, Jan. 2019 $-$ Zestimate, Jan. 2017',
                                    'zestimate_0_years_relative_to_treatment': "At filing date",
                                    'zestimate_1_years_relative_to_treatment': "One year after filing date",
                                    'zestimate_2_years_relative_to_treatment': "Two years after filing date",
