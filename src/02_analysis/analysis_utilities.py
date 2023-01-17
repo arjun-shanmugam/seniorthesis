@@ -182,7 +182,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
 
     # Concatenate Panels A-E
     summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F],
-                                   axis=0)[['mean', '50%', 'std', 'count']]
+                                   axis=0)[['mean', 'std', 'count']]
 
     variable_display_names_dict = {'for_cause': "For cause", 'no_cause': "No cause",
                                    'non_payment': "Non-payment of rent",
@@ -198,7 +198,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'frac_coll_plus2010': 'Share with bachelor\'s degree',
                                    'job_density_2013': 'Jobs per sq. mile (2010)',
                                    'mean_commutetime2000': 'Mean commute time (2000)',
-                                   'traveltime15_2010': 'Share with commute <15 min. (2010)',
+                                   'traveltime15_2010': 'Share with commute $<$15 min. (2010)',
                                    'poor_share2010': 'Share below poverty line',
                                    'twenty_seventeen': 'Zestimate, Jan. 2017',
                                    'twenty_eighteen': 'Zestimate, Jan. 2018',
