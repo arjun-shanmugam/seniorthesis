@@ -1,11 +1,13 @@
 """
 Functions useful for analysis.
 """
-import pandas as pd
+from os.path import join
+
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
 import figure_utilities
-from os.path import join
 
 
 def aggregate_by_event_time_and_plot(att_gt,
@@ -148,37 +150,39 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_E = pd.concat([panel_E], keys=["Panel E: Census Tract Characteristics"])
 
     # Panel F: Zestimates Before Filing
-    # Get month of the latest docket date for each row and use to grab Zestimates at different times prior to treatment.
-    df.loc[:, treatment_date_variable] = pd.to_datetime(df[treatment_date_variable])
-    df.loc[:, 'nan'] = np.nan
-    panel_F_columns = []
-    start = -2
-    stop = 0
-    for i in range(start, stop):
-        # This column contains the year-month which is i years relative to treatment for each property.
-        offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)).dt.strftime(
-            '%Y-%m').copy()
-
-        # Some year-months will be outside the range of our data.
-        # For instance, we do not have Zestimates 2 years post-treatment for evictions which occurred in 2022.
-        # For these observations, the offset docket month needs to map to the column of nans we created earlier.
-        offset_docket_month.loc[~offset_docket_month.isin(df.columns)] = 'nan'
-
-        # Set column accordingly.
-        idx, cols = pd.factorize(offset_docket_month)
-        if i < 0:
-            new_col_name = f'zestimate_minus{-1*i}_years_relative_to_treatment'
-        else:
-            new_col_name = f'zestimate_{i}_years_relative_to_treatment'
-        panel_F_columns.append(new_col_name)
-        df.loc[:, new_col_name] = df.reindex(cols, axis=1).to_numpy()[np.arange(len(df)), idx]
-    df.loc[:, 'pre_treatment_zestimate_change'] = df[panel_F_columns[-1]] - df[panel_F_columns[0]]
-    panel_F_columns.append('pre_treatment_zestimate_change')
+    df.loc[:, 'change_in_zestimates_2018_to_2019'] = df['2019-01'] - df['2018-01']
+    panel_F_columns = ['2018-01', 'change_in_zestimates_2018_to_2019']
     panel_F = df[panel_F_columns].describe().T
-    panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Before Filing"])
+    panel_F = pd.concat([panel_F], keys=["Panel F: Pretreatment Zestimates"])
 
     # Concatenate Panels A-E
     summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_E, panel_F], axis=0)[
         ['mean', '50%', 'std', 'count']]
 
-    return summary_statistics
+    variable_display_names_dict = {'for_cause': "For cause", 'no_cause': "No cause",
+                                   'non_payment': "Non-payment of rent",  # Panel A
+                                   'case_duration': "Case duration", 'defaulted': "Case defaulted",
+                                   'heard': "Case heard",  # Panel B
+                                   'judgment': "Money judgment", 'mediated': "Case mediated",
+                                   'dismissed': 'Case dismised',  # Panel B
+                                   'hasAttyD': "Defendant has an attorney", 'hasAttyP': "Plaintiff has an attorney",
+                                   # Panel C
+                                   'isEntityD': "Defendant is an entity", 'isEntityP': "Plaintiff is an entity",
+                                   # Panel C
+                                   'TOTAL_VAL': "Total property value", 'BLDG_VAL': "Building value",
+                                   'LAND_VAL': "Land value",  # Panel D
+                                   'OTHER_VAL': "Other value",  # Panel D
+                                   'med_hhinc2016': 'Median household income (2016)',
+                                   'popdensity2010': 'Population density (2010)',  # Panel E
+                                   'share_white2010': 'Portion white (2010)',  # Panel E
+                                   '2018-01': 'Jan. 2018', 'change_in_zestimates_2018_to_2019': 'Change from Jan. 2018 to Jan. 2019',
+                                   'zestimate_-5_years_relative_to_treatment': "Five years before filing date",
+                                   'zestimate_-4_years_relative_to_treatment': "Four years before filing date",
+                                   'zestimate_-3_years_relative_to_treatment': "Three years before filing date",
+                                   'zestimate_-2_years_relative_to_treatment': "Two years before filing date",
+                                   'zestimate_-1_years_relative_to_treatment': "One year before filing date",
+                                   'zestimate_0_years_relative_to_treatment': "Filing date",
+                                   'zestimate_1_years_relative_to_treatment': "One year after filing date",
+                                   'zestimate_2_years_relative_to_treatment': "Two years after filing date",
+                                   'zestimate_3_years_relative_to_treatment': "Three years after filing date"}
+    return summary_statistics, variable_display_names_dict
