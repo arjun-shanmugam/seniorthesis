@@ -175,7 +175,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     df.loc[:, 'pre_treatment_zestimate_change'] = df[panel_F_columns[-1]] - df[panel_F_columns[0]]
     panel_F_columns.append('pre_treatment_zestimate_change')
     panel_F = df[panel_F_columns].describe().T
-    panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Before Filing Date"])
+    panel_F = pd.concat([panel_F], keys=["Panel F: Zestimates Before Filing"])
 
     # Concatenate Panels A-E
     summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_E, panel_F], axis=0)[
