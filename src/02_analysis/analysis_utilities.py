@@ -103,7 +103,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     """
     # Panel A: Pre-treatment Zestimates
     df.loc[:, 'change_in_zestimates_2018_to_2019'] = df['2019-01'] - df['2018-01']
-    panel_A_columns = ['2018-01', 'change_in_zestimates_2018_to_2019']
+    panel_A_columns = ['2017-01', '2018-01', 'change_in_zestimates_2018_to_2019']
     panel_A = df[panel_A_columns].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Zestimates"])
 
@@ -182,7 +182,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    axis=0)[['mean', '50%', 'std', 'count']]
 
     variable_display_names_dict = {'for_cause': "For cause", 'no_cause': "No cause",
-                                   'non_payment': "Non-payment of rent",  # Panel A
+                                   'non_payment': "Non-payment of rent",
                                    'case_duration': "Case duration", 'defaulted': "Case defaulted",
                                    'heard': "Case heard",
                                    'judgment': "Money judgment", 'mediated': "Case mediated",
@@ -192,6 +192,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'med_hhinc2016': 'Median household income (2016)',
                                    'popdensity2010': 'Population density (2010)',  # Panel E
                                    'share_white2010': 'Portion white (2010)',  # Panel E
+                                   '2017-01': 'Jan. 2017',
                                    '2018-01': 'Jan. 2018', 'change_in_zestimates_2018_to_2019': 'Change from Jan. 2018 to Jan. 2019',
                                    'zestimate_0_years_relative_to_treatment': "At filing date",
                                    'zestimate_1_years_relative_to_treatment': "One year after filing date",
