@@ -61,7 +61,6 @@ if __name__ == '__main__':
 
     # Merge with Zillow data.
     zestimates_df = pd.read_csv(INPUT_DATA_ZESTIMATES)
-    merged_df.to_csv("~/Desktop/duplicates_check.csv")
     merged_df = zestimates_df.merge(merged_df, on='case_number', how='right', validate='1:1')
     if VERBOSE:
         successfully_matched_observations = (~merged_df['2022-12'].isna()).sum()
@@ -108,7 +107,7 @@ if __name__ == '__main__':
 
     # Save unrestricted data file.
     geographic_columns = ['Accuracy Score', 'Accuracy Type', 'Number', 'Street', 'Unit Type', 'Unit Number', 'City',
-                          'State', 'County', 'Zip', 'Country', 'Source', 'Census Year', 'State FIPS', 'County FIPS',
+                          'State', 'Zip', 'Country', 'Source', 'Census Year', 'State FIPS', 'County FIPS',
                           'Place Name', 'Place FIPS', 'Census Tract Code', 'Census Block Code', 'Census Block Group',
                           'Metro/Micro Statistical Area Code', 'Metro/Micro Statistical Area Type',
                           'Combined Statistical Area Code', 'Metropolitan Division Area Code']

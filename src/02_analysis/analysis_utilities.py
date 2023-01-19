@@ -111,7 +111,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     # Panel B: Census Tract Characteristics
     # TODO: RE-ADD 'mean_commutetime2000' TO THIS LIST AFTER RE-RUNNING 06_merge.py
     panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'share_white2010', 'frac_coll_plus2010', 'job_density_2013',
-                        'poor_share2010', 'traveltime15_2010']
+                        'poor_share2010', 'traveltime15_2010', 'rent_twobed2015']
     panel_B = df[sorted(panel_B_columns)].describe().T
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
@@ -195,6 +195,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'med_hhinc2016': 'Median household income (2016)',
                                    'popdensity2010': 'Population density (2010)',
                                    'share_white2010': 'Share white (2010)',
+                                   'rent_twobed2015': 'Median two bedroom rent (2015)',
                                    'frac_coll_plus2010': 'Share with bachelor\'s degree',
                                    'job_density_2013': 'Jobs per square mile (2010)',
                                    'mean_commutetime2000': 'Mean commute time (2000)',
