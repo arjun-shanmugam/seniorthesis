@@ -2,7 +2,7 @@
 
 \usepackage{amssymb,amsmath,amsfonts, booktabs, dsfont, eurosym,float,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,multicol, multirow, natbib, pdflscape,array,hyperref}
 \bibliographystyle{rusnat}
-\bibliography{citations}
+
 
 \normalem
 
@@ -65,15 +65,6 @@
             \caption{Distribution of Eviction Filings and Outcomes}
             \label{tab:my_label}
         \end{table}
-    
-    \subsection{Tax Assessment Records}
-    \subsection{Zestimates}
-        \begin{figure}[H]
-            \centering
-            \includegraphics{output/summary_statistics/figures/trends_in_zestimates.png}
-            \caption{Trends in Zestimates}
-            \label{fig:my_label}
-        \end{figure}
 
         \begin{figure}[H]
             \centering
@@ -92,108 +83,113 @@
         \end{table}
         \newpage
 
-
+\section{Empirical Strategy: Difference-in-Differences}
+    I seek to estimate the average treatment effects of plaintiff victory in eviction cases on treated properties. I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. 
     
-
-
-\section{Empirical Strategy: Difference-in-Difference}
-    I seek to estimate the average treatment effects of plaintiff victory in eviction cases on treated properties. I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. Let $G_i$ be the month during which the eviction case involving property $i$ was filed, such that $G_i = g \in \{\text{May} \; 2019, \text{June} \; 2019, ..., \text{May} \; 2021\}$. Let $C_i = 1$ if the eviction case involving $i$ resulted in a victory for the defendant and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$. If $C_i=1$, then property $i$ is a never-treated property. 
+    
+    Let $G_i$ be the month during which the eviction case involving property $i$ was filed, such that $G_i = g \in \{\text{May} \; 2019, \text{June} \; 2019, ..., \text{May} \; 2021\}$. Let $C_i = 1$ if the eviction case involving $i$ resulted in a victory for the defendant and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$ (cohort $g$). If $C_i=1$, then property $i$ is a never-treated property. Let $Y_{i,t}$ be property $i$'s Zestimate during month $t$ and define $\Delta Y_{i, g-1, t} \equiv Y_{i,t} - Y_{i,g-1}$ so that $\Delta Y_{i, g-1, t}$ is the change in property $i$'s Zestimate between months $t$ and $g-1$.
 
     \subsection{Unconditional Estimates of the ATT}
-    The following is an unconditional estimator for $ATT(g,t)$, the average treatment affect during month $t$ for the cohort first treated during month $g$.
-
+    The following is an unconditional estimator for $ATT(g,t)$, the average treatment affect during month $t$ for cohort $g$.
     \begin{align}
-        \hat{ATT}^{nev}_{un}(g, t) = \frac{\sum_i(Y_{i,t} - Y_{i, g-1})\mathds{1}\{G_i=g\}}{\sum_i\mathds{1}\{G_i=g\}} - \frac{\sum_i(Y_{i,t} - Y_{i, g-1})\mathds{1}\{C_i=1\}}{\sum_i\mathds{1}\{C_i=1\}}
+        \hat{ATT}^{nev}_{un}(g, t) = \frac{\sum_i\Delta Y_{i, g-1, t}\mathds{1}\{G_i=g\}}{\sum_i\mathds{1}\{G_i=g\}} - \frac{\sum_i\Delta Y_{i, g-1, t}\mathds{1}\{C_i=1\}}{\sum_i\mathds{1}\{C_i=1\}}
     \end{align}
+    The above estimator will identify $ATT(g,t)$ under the assumption that the change in untreated potential outcomes between periods $g-1$ and $t$ is the same among units in cohort $g$ as it is among never-treated units.
 
-    This unconditional parallel trends assumption is unlikely to hold. Eviction case outcomes are likely to be endogenous to their socoioeconomic surroundings. Indeed, covariate exploration table reveals t
+    \subsection{D.R. Estimates of the ATT}
+
+    The above unconditional parallel trends assumption is unlikely to hold, as eviction case outcomes and zestimates may be related to their socioeconomic surroundings. Table 3 explores this theory further, reporting results from univariate regressions of January 2022 Zestimates and an indicator for plaintiff victory on the pre-treatment characteristics listed in Panels A through D of Table 2. Each cell gives the p-value from a regression of the variable which labels its column on the variable which labels its row. Table 3 shows significant associations between pre-treatment characteristics and Zestimates and pre-treatment characteristics and case outcomes, suggesting that the unconditional parallel trends assumption imposed earlier may not be valid.
 
     \begin{table}[H]
         \centering
         \input{output/DiD/tables/pre_treatment_covariate_tests.tex}
-        \caption{Caption}
+        \caption{Relationship Between Pre-Treatment Characteristics and the Dependent and Independent Variables}
         \label{tab:my_label}
     \end{table}
 
+    My next strategy uses covariates to construct a more credible counterfactual for the observed path of outcomes in the treatment group using the doubly robust difference-in-differences estimator proposed by \cite{santanna_doubly_2018}. For each property, let $X_i$ be a vector containing the covariates whose univariate regression coefficients from column 1 of table 3 are significant at the 5 percent level. To attempt to identify $ATT(g, t)$ using the doubly robust estimator, I first estimate $\hat{p}_g(X_i)$, a logit regression propensity score model for being in cohort $g$. I assign a weight $\hat{w}_i(X_i) \equiv\frac{\hat{p}_g(X_i)}{1 - \hat{p}_g(X_i)}$ to each never-treated property $i$; $\hat{w}_i(X_i) \equiv 1$ for treated properties. Define $\hat{w}^*_i(X_i) = \frac{\hat{w}_i(X_i)}{\sum_i \hat{w}_i(X_i)}$. Second, using only never-treated counties, I regress $\Delta Y_{i, g-1, t}$ on $X_j$, weighting by $\hat{w}_i(X_i)$. Using the estimated coefficients $\hat{\beta}_{g-1, t}^{X}$, I define $\Delta \hat{\mu}_{g-1, t}(X_i) \equiv \hat{\beta}_{g-1, t}^{X}X_i$ so that $\Delta \hat{\mu}_{g-1, t}(X_i)$ is the predicted change in property $i$'s Zestimate between months $t$ and $g-1$.
+    The doubly robust estimator for $ATT(g, t)$ is as follows.
+    \begin{align}
+        \hat{ATT}^{nev}_{DR, X}(g,t) = \frac{1}{N}\sum_i[(\frac{D_i}{\Bar{D_i}} - \frac{\hat{w}^*_i(X_i)C_i}{\Bar{C_i}})(\Delta Y_{i, g-1, t} - \hat{\mu}_{g-1, t}(X_i))]
+    \end{align}
+    Note that $\Bar{D_i}$ and $\Bar{C_i}$ are sample averages. Under the assumption of parallel trends among units with the same covariates, $\hat{ATT}^{nev}_{DR, X}(g,t)$ will identify $ATT(g, t)$.
+    
 
-    \subsection{Estimating the ATT in the Staggered Treatment Case}
-    I will use Callaway and Sant'Anna' (2021)'s multiperiod, staggered treatment difference-in-difference estimators. The following bullets summarize the empirical strategy informally; this information will eventually be placed appropriately into the subsection headers below this brief summary.
-    \begin{enumerate}
-        \item Reject conventional TWFE-DiD estimator. This estimator essentially estimates the ATT by performing a bunch of 2 unit, 2 period DiDs, then averages the calculated treatment effects. Goodman-Bacon (2021) shows that this estimator is composed in part of DiD estimates involving \emph{two units which are both treated during both periods}. This is in violation of the spirit of DiD. These incorrect DiD estimates are known as ``forbidden comparisons.''
-        \item The way to properly recover the ATT is to basically perform all of the ``non-forbidden'' comparisons possible in our panel dataset. More formally:
-        \begin{enumerate}
-            \item We begin with a panel dataset of properties whose Zestimates are observed monthly. At each property $i$, an eviction case concludes during month $G_i=g$, resulting in a plaintiff victory or a defendant victory. These properties are collectively known as ``cohort $g$.'' If the eviction case at property $i$ resulted in a defendant victory, let $C_i=1$
-            \item Break the units into ``cohorts'' according to the month in which their cases conclude. 
-            \item We estimate $ATT(g, t)$, which is the average treatment effect on the treated for cohort $g$ at time $t$, by calculating the sample analog of:
+    Columns 2 and 3 of table 4 shows significant pre-treatment imbalance in covariates between the treatment and control groups. Each row of column 2 reports the coefficient from a univariate regression of one covariate on an indicator for plaintiff victory. Column 3 reports the p-values associated with each of these coefficients. In each row of column 4, I regress one covariate on an indicator for plaintiff victory and $\hat{w}_i(X_i)$ and report the coefficient on the indicator for plaintiff victory. Column 5 reports the p-values associated with each coefficient and shows that conditioning on pre-treatment covariates makes virtually all pre-treatment differences in covariates insignificant.
 
-            
-            $E[Y_t - Y_{g-1}|G=g] - [Y_t - Y_{g-1}|C=1]$ 
-
-            
-            \item Intuitively, $ATT(g, t)$ comes from 2 period, 2 unit difference in difference estimate. The treatment group contains all units where we observe a plaintiff victory and the case was resolved at time $g$. The control group contains all units where we observe a defendant victory and the case was resolved at time $g$. We adjust the change in observed outcomes in the treatment group by the change in observed outcomes in the control group to get our estimate.
-           
-        \end{enumerate}
-        \item The parallel trends and no anticipation assumptions are extended to the staggered treatment context.
-            \begin{enumerate}
-                \item \textbf{Staggered Treatment Adoption Assumption.} Let $D_it=1$ if unit $i$ has been treated by period $t$ and $D_it=0$ otherwise. Then, for $t=1,...,\tau$, $D_{it}=1 \rightarrow D_{it+1} = 1$. Basically, once a unit becomes treated, it stays treated.
-                
-                \item \textbf{Parallel Trends Assumption Based On Never Treated Units}. For all $g=2,...,\tau, t=2,...,\tau$ with $t\geq g$, we have
-
-                $E[Y_t(0)-Y_{g-1}(0)|G=g]$ = $E[Y_t(0)-Y_{g-1}(0)|C=1]$
-
-                Basically, for every possible 2 unit, 2 period DiD that we can run in our panel dataset between treated units and never-treated units, the canonical parallel trends assumption holds.
-                
-                
-                \item \textbf{Parallel Trends Assumption Based On Not Yet Treated Units}. For all $g=2,...,\tau, s, t=2,...,\tau$ with $t \geq g$ and $s \geq t$, we have
-
-                $E[Y_t(0) - Y_{t-1}(0)|G=g] = E[Y_t(0) - Y_{t-1}(0)|D_s=1, G \neq g]$
-
-                This assumption allows us to use \emph{not yet treated} observations as a comparison group for \emph{treated} units. This is clearly a stronger assumption than the previous one and I have to think hard about whether I can make it in my case. Note that the graph in section 5.3 does NOT make this assumption.
-
-                
-
-                
-            \end{enumerate}
-        \item Now, we have a bunch of $ATT(g, t)$s. How do we aggregate them?
-            \begin{enumerate}
-                \item Take frequency-weighted averages across $t$ to get $ATT(g)$s, or ATTs for each cohort.
-                \item Take frequency-weighted averages across $g$ to get $ATT(t)$s, or ATTs for each time period.
-                \item Most convincing: calculate event time $e = t - g$. Now, $ATT(g, e_i)$ expresses the ATT on cohort $g$ at time relative to the end of the eviction case involving property $i$. Take frequency weighted averages across $g$ to get $ATT(e)s$, or ATTs for each period relative to the treatment period.
-            \end{enumerate}
-    \end{enumerate}
+    The estimator defined in equation 2 simultaneously models the counterfactual change in \emph{observed} outcomes for untreated properties ($\hat{w}_i(X_i)$) and the \emph{predicted} change in outcomes for untreated properties ($\hat{\mu}_{g-1, t}(X_i)$). As long as one of these two models is correctly specified, the doubly robust estimator will identify $ATT(g, t)$.
 
     \newpage
     \begin{landscape}
        \begin{table}[H]
         \centering
         \input{output/DiD/tables/balance_table.tex}
-        \caption{Caption}
+        \caption{Balance Tests}
         \label{tab:my_label}
     \end{table} 
     \end{landscape}
-    
-    \subsection{Parallel Trends Assumptions in the Staggered Treatment Case}
-        
-        \subsection{Testing Parallel Trends Empirically Using Rambachan and Roth (2022)}
+
     \subsection{Aggregating Treatment Effects Across Cohort and Time}
         \subsubsection{ATTs Across Cohorts}
         \subsubsection{ATTs Across Time Periods}
         \subsubsection{Event-Study ATTs}
     
 \section{Results} \label{sec:result}
-    \subsection{ATTs Across Cohorts}
-    \subsection{ATTs Across Time Periods}
-    \subsection{Event-Study ATTs}
-        \begin{figure}[H]
-            \centering
-            \includegraphics{output/DiD/figures/att_gt_estimates_event_study.png}
-            \caption{$ATT(e)$s}
-            \label{fig:my_label}
-        \end{figure}
+
+    \subsection{Unconditional Estimates of the ATT}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics{output/DiD/figures/att_gt_unconditional_event_study_short_horizon.png}
+        \caption{}
+        \label{fig:my_label}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics{output/DiD/figures/att_gt_unconditional_event_study_long_horizon.png}
+        \caption{}
+        \label{fig:my_label}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics{output/DiD/figures/att_gt_unconditional_time.png}
+        \caption{}
+        \label{fig:my_label}
+    \end{figure}
+
+    \subsection{D.R. Estimates of the ATT}
+
+
+    
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics{output/DiD/figures/att_gt_dr_event_study_short_horizon.png}
+        \caption{}
+        \label{fig:my_label}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics{output/DiD/figures/att_gt_dr_event_study_long_horizon.png}
+        \caption{}
+        \label{fig:my_label}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics{output/DiD/figures/att_gt_dr_time.png}
+        \caption{}
+        \label{fig:my_label}
+    \end{figure}
 
 
 \section{Conclusion} \label{sec:conclusion}
 
+
+\bibliography{citations}
 
 
 \clearpage
