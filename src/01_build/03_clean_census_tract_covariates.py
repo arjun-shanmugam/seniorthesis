@@ -21,5 +21,7 @@ tracts_df.loc[:, 'tract_geoid'] = tracts_df['state'].astype(str) + tracts_df['co
 
 
 # Save data.
-tracts_df.to_csv(OUTPUT_DATA)
+columns_to_keep = ['tract_geoid', 'med_hhinc2016', 'popdensity2010', 'share_white2010', 'frac_coll_plus2010', 'job_density_2013',
+                   'poor_share2010', 'traveltime15_2010', 'rent_twobed2015', 'czname']
+tracts_df[columns_to_keep].to_csv(OUTPUT_DATA)
 #%%
