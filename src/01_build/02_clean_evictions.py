@@ -71,22 +71,6 @@ if VERBOSE:
         f"({100 * (no_address_info_mask.sum() / original_N):.3} percent of original dataset).")
 evictions_df = evictions_df.loc[~no_address_info_mask, :].reset_index(drop=True)
 
-# Geocode addresses for matching with tax parcels.
-client = GeocodioClient(GEOCODIO_API_KEY)
-batched_addresses = batch_df(evictions_df['property_address_full'], batch_size=10000)
-list_of_coordinates = []
-for i, batch in enumerate(batched_addresses):
-    list_of_coordinates += client.batch_geocode(batch.tolist()).coords
-    if VERBOSE:
-        print(f"Geocoded batch {i}")
-coordinates = pd.DataFrame(list_of_coordinates, columns=['latitude', 'longitude'])
-evictions_df = pd.concat([evictions_df, coordinates], axis=1)
-geocoding_failed_mask = (evictions_df['longitude'] == 0) & (evictions_df['latitude'] == 0)
-evictions_df = evictions_df.loc[~geocoding_failed_mask, :]
-if VERBOSE:
-    print(f"Successfully geocoded {len(evictions_df) - geocoding_failed_mask.sum()} evictions "
-          f"({(len(evictions_df) - geocoding_failed_mask.sum()) / len(evictions_df)} percent of observations).")
-
 # Save unrestricted eviction data.
 if VERBOSE:
     print("Saving unrestricted evictions dataset.")
