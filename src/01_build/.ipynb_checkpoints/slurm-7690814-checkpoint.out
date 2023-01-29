@@ -1,0 +1,66 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 7690814
+##  Job Name : dask-worker
+##  Nodelist : node1328
+##      CPUs : 1
+##  Mem/Node : 2048 MB
+## Directory : /gpfs/home/ashanmu1/seniorthesis/src/01_build
+##   Job Started : Sat Jan 28 18:20:47 EST 2023
+###############################################################################
+2023-01-28 18:20:47,887 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.28:39534'
+2023-01-28 18:20:47,891 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.28:41300'
+2023-01-28 18:20:47,892 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.28:38106'
+2023-01-28 18:20:47,900 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.28:42188'
+2023-01-28 18:20:49,018 - distributed.worker - INFO -       Start worker at:  tcp://172.20.209.28:37753
+2023-01-28 18:20:49,018 - distributed.worker - INFO -       Start worker at:  tcp://172.20.209.28:39426
+2023-01-28 18:20:49,018 - distributed.worker - INFO -       Start worker at:  tcp://172.20.209.28:45700
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          Listening to:  tcp://172.20.209.28:37753
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          Listening to:  tcp://172.20.209.28:39426
+2023-01-28 18:20:49,018 - distributed.worker - INFO -           Worker name:           SLURMCluster-1-3
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          Listening to:  tcp://172.20.209.28:45700
+2023-01-28 18:20:49,018 - distributed.worker - INFO -           Worker name:           SLURMCluster-1-1
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          dashboard at:        172.20.209.28:40249
+2023-01-28 18:20:49,018 - distributed.worker - INFO -           Worker name:           SLURMCluster-1-0
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          dashboard at:        172.20.209.28:35666
+2023-01-28 18:20:49,018 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          dashboard at:        172.20.209.28:38245
+2023-01-28 18:20:49,018 - distributed.worker - INFO -       Start worker at:  tcp://172.20.209.28:41584
+2023-01-28 18:20:49,018 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,018 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,018 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,018 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,018 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          Listening to:  tcp://172.20.209.28:41584
+2023-01-28 18:20:49,018 - distributed.worker - INFO -           Worker name:           SLURMCluster-1-2
+2023-01-28 18:20:49,018 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:20:49,018 - distributed.worker - INFO -          dashboard at:        172.20.209.28:32921
+2023-01-28 18:20:49,018 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-01-28 18:20:49,018 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:20:49,018 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:20:49,018 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,018 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-df40clul
+2023-01-28 18:20:49,018 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-01-28 18:20:49,018 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,018 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-01-28 18:20:49,018 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-cj_piz6n
+2023-01-28 18:20:49,018 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,018 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:20:49,019 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-4hhchibd
+2023-01-28 18:20:49,019 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,019 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-01-28 18:20:49,019 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,019 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-jbl1s35n
+2023-01-28 18:20:49,019 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,028 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,028 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,028 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41196
+2023-01-28 18:20:49,029 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,029 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,029 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41196
+2023-01-28 18:20:49,029 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,029 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,030 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41196
+2023-01-28 18:20:49,030 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41196
+2023-01-28 18:20:49,030 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:20:49,031 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41196
+slurmstepd: error: *** JOB 7690814 ON node1328 CANCELLED AT 2023-01-28T18:35:35 ***

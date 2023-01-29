@@ -1,0 +1,96 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 7690900
+##  Job Name : dask-worker
+##  Nodelist : node1162
+##      CPUs : 1
+##  Mem/Node : 8192 MB
+## Directory : /gpfs/home/ashanmu1/seniorthesis/src/01_build
+##   Job Started : Sat Jan 28 18:38:57 EST 2023
+###############################################################################
+2023-01-28 18:38:58,897 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.207.62:34193'
+2023-01-28 18:38:58,907 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.207.62:37472'
+2023-01-28 18:38:58,907 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.207.62:41886'
+2023-01-28 18:38:58,919 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.207.62:32989'
+2023-01-28 18:39:00,363 - distributed.worker - INFO -       Start worker at:  tcp://172.20.207.62:45742
+2023-01-28 18:39:00,364 - distributed.worker - INFO -          Listening to:  tcp://172.20.207.62:45742
+2023-01-28 18:39:00,364 - distributed.worker - INFO -           Worker name:           SLURMCluster-4-0
+2023-01-28 18:39:00,364 - distributed.worker - INFO -          dashboard at:        172.20.207.62:38464
+2023-01-28 18:39:00,364 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,364 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,363 - distributed.worker - INFO -       Start worker at:  tcp://172.20.207.62:36503
+2023-01-28 18:39:00,364 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:39:00,364 - distributed.worker - INFO -          Listening to:  tcp://172.20.207.62:36503
+2023-01-28 18:39:00,364 - distributed.worker - INFO -                Memory:                   1.86 GiB
+2023-01-28 18:39:00,364 - distributed.worker - INFO -           Worker name:           SLURMCluster-4-1
+2023-01-28 18:39:00,364 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-a90brk2z
+2023-01-28 18:39:00,364 - distributed.worker - INFO -          dashboard at:        172.20.207.62:41293
+2023-01-28 18:39:00,364 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,364 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,364 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,364 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:39:00,364 - distributed.worker - INFO -                Memory:                   1.86 GiB
+2023-01-28 18:39:00,364 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-bnwivwh4
+2023-01-28 18:39:00,364 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,369 - distributed.worker - INFO -       Start worker at:  tcp://172.20.207.62:44560
+2023-01-28 18:39:00,369 - distributed.worker - INFO -          Listening to:  tcp://172.20.207.62:44560
+2023-01-28 18:39:00,369 - distributed.worker - INFO -           Worker name:           SLURMCluster-4-3
+2023-01-28 18:39:00,369 - distributed.worker - INFO -          dashboard at:        172.20.207.62:37102
+2023-01-28 18:39:00,369 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,369 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,369 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:39:00,370 - distributed.worker - INFO -                Memory:                   1.86 GiB
+2023-01-28 18:39:00,370 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-owr1v0bi
+2023-01-28 18:39:00,370 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,370 - distributed.worker - INFO -       Start worker at:  tcp://172.20.207.62:42829
+2023-01-28 18:39:00,371 - distributed.worker - INFO -          Listening to:  tcp://172.20.207.62:42829
+2023-01-28 18:39:00,372 - distributed.worker - INFO -           Worker name:           SLURMCluster-4-2
+2023-01-28 18:39:00,372 - distributed.worker - INFO -          dashboard at:        172.20.207.62:40265
+2023-01-28 18:39:00,372 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,372 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,372 - distributed.worker - INFO -               Threads:                          1
+2023-01-28 18:39:00,372 - distributed.worker - INFO -                Memory:                   1.86 GiB
+2023-01-28 18:39:00,372 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-trsw7ujs
+2023-01-28 18:39:00,372 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,384 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,384 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,384 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41081
+2023-01-28 18:39:00,385 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,385 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,385 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41081
+2023-01-28 18:39:00,385 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,386 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,386 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41081
+2023-01-28 18:39:00,388 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:41081
+2023-01-28 18:39:00,388 - distributed.worker - INFO - -------------------------------------------------
+2023-01-28 18:39:00,388 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:41081
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:73: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:73: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:73: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x)
+slurmstepd: error: *** JOB 7690900 ON node1162 CANCELLED AT 2023-01-28T19:09:19 DUE TO TIME LIMIT ***
