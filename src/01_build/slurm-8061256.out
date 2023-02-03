@@ -1,0 +1,58 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 8061256
+##  Job Name : dask-worker
+##  Nodelist : node1161
+##      CPUs : 1
+##  Mem/Node : 10240 MB
+## Directory : /gpfs/home/ashanmu1/seniorthesis/src/01_build
+##   Job Started : Fri Feb  3 12:12:10 EST 2023
+###############################################################################
+2023-02-03 12:12:10,976 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.207.61:40870'
+2023-02-03 12:12:10,984 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.207.61:37268'
+2023-02-03 12:12:11,782 - distributed.worker - INFO -       Start worker at:  tcp://172.20.207.61:34009
+2023-02-03 12:12:11,783 - distributed.worker - INFO -          Listening to:  tcp://172.20.207.61:34009
+2023-02-03 12:12:11,783 - distributed.worker - INFO -           Worker name:          SLURMCluster-14-0
+2023-02-03 12:12:11,783 - distributed.worker - INFO -          dashboard at:        172.20.207.61:37191
+2023-02-03 12:12:11,783 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:37421
+2023-02-03 12:12:11,783 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:12:11,783 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 12:12:11,783 - distributed.worker - INFO -                Memory:                   4.66 GiB
+2023-02-03 12:12:11,783 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-huogy8ns
+2023-02-03 12:12:11,783 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:12:11,788 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:37421
+2023-02-03 12:12:11,788 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:12:11,788 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:37421
+2023-02-03 12:12:11,812 - distributed.worker - INFO -       Start worker at:  tcp://172.20.207.61:34116
+2023-02-03 12:12:11,813 - distributed.worker - INFO -          Listening to:  tcp://172.20.207.61:34116
+2023-02-03 12:12:11,813 - distributed.worker - INFO -           Worker name:          SLURMCluster-14-1
+2023-02-03 12:12:11,813 - distributed.worker - INFO -          dashboard at:        172.20.207.61:35454
+2023-02-03 12:12:11,813 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:37421
+2023-02-03 12:12:11,813 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:12:11,813 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 12:12:11,813 - distributed.worker - INFO -                Memory:                   4.66 GiB
+2023-02-03 12:12:11,813 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-b80_tea4
+2023-02-03 12:12:11,813 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:12:11,818 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:37421
+2023-02-03 12:12:11,818 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:12:11,818 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:37421
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+slurmstepd: error: *** JOB 8061256 ON node1161 CANCELLED AT 2023-02-03T12:20:20 ***

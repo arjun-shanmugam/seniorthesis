@@ -1,0 +1,395 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 8059269
+##  Job Name : dask-worker
+##  Nodelist : node1305
+##      CPUs : 1
+##  Mem/Node : 2048 MB
+## Directory : /gpfs/home/ashanmu1/seniorthesis/src/01_build
+##   Job Started : Fri Feb  3 11:08:05 EST 2023
+###############################################################################
+2023-02-03 11:08:06,476 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.5:35020'
+2023-02-03 11:08:06,480 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.5:42320'
+2023-02-03 11:08:06,482 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.5:44211'
+2023-02-03 11:08:06,489 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.5:38248'
+2023-02-03 11:08:07,401 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:33776
+2023-02-03 11:08:07,401 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:33776
+2023-02-03 11:08:07,401 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-3
+2023-02-03 11:08:07,401 - distributed.worker - INFO -          dashboard at:         172.20.209.5:39871
+2023-02-03 11:08:07,401 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,401 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,401 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:08:07,401 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:08:07,401 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-y7jpiyt4
+2023-02-03 11:08:07,401 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,431 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,431 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,431 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+2023-02-03 11:08:07,668 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:46629
+2023-02-03 11:08:07,668 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:46629
+2023-02-03 11:08:07,668 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-2
+2023-02-03 11:08:07,668 - distributed.worker - INFO -          dashboard at:         172.20.209.5:32877
+2023-02-03 11:08:07,668 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,668 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,668 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:08:07,669 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:08:07,669 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-hl8l_75u
+2023-02-03 11:08:07,669 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,673 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:43128
+2023-02-03 11:08:07,673 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:43128
+2023-02-03 11:08:07,673 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-0
+2023-02-03 11:08:07,673 - distributed.worker - INFO -          dashboard at:         172.20.209.5:36579
+2023-02-03 11:08:07,673 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,673 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,673 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:08:07,673 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:08:07,674 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-5_3h5k0p
+2023-02-03 11:08:07,674 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,705 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,705 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,706 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+2023-02-03 11:08:07,712 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,712 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,712 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+2023-02-03 11:08:07,837 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:46273
+2023-02-03 11:08:07,837 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:46273
+2023-02-03 11:08:07,837 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-1
+2023-02-03 11:08:07,837 - distributed.worker - INFO -          dashboard at:         172.20.209.5:38182
+2023-02-03 11:08:07,837 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,837 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,837 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:08:07,837 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:08:07,837 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-j_4m63pl
+2023-02-03 11:08:07,837 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,859 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:08:07,859 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:08:07,860 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+Warning 1: organizePolygons() received an unexpected geometry.  Either a polygon with interior rings, or a polygon with less than 4 points, or a non-Polygon geometry.  Return arguments as a collection.
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+2023-02-03 11:09:54,514 - distributed.nanny.memory - WARNING - Worker tcp://172.20.209.5:46629 (pid=239332) exceeded 95% memory budget. Restarting...
+2023-02-03 11:09:54,564 - distributed.nanny - INFO - Worker process 239332 was killed by signal 15
+2023-02-03 11:09:54,567 - distributed.nanny - WARNING - Restarting worker
+2023-02-03 11:09:55,478 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:35996
+2023-02-03 11:09:55,478 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:35996
+2023-02-03 11:09:55,478 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-2
+2023-02-03 11:09:55,479 - distributed.worker - INFO -          dashboard at:         172.20.209.5:37311
+2023-02-03 11:09:55,479 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:09:55,479 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:09:55,479 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:09:55,479 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:09:55,479 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-ef7o3cli
+2023-02-03 11:09:55,479 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:09:55,503 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:09:55,503 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:09:55,503 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+2023-02-03 11:09:57,310 - distributed.worker - ERROR - Worker stream died during communication: tcp://172.20.209.18:41688
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/tornado/iostream.py", line 869, in _read_to_buffer
+    bytes_read = self.read_from_fd(buf)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/tornado/iostream.py", line 1138, in read_from_fd
+    return self.socket.recv_into(buf, len(buf))
+ConnectionResetError: [Errno 104] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 328, in connect
+    handshake = await asyncio.wait_for(comm.read(), time_left())
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 445, in wait_for
+    return fut.result()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 241, in read
+    convert_stream_closed_error(self, e)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 142, in convert_stream_closed_error
+    raise CommClosedError(f"in {obj}: {exc.__class__.__name__}: {exc}") from exc
+distributed.comm.core.CommClosedError: in <TCP (closed)  local=tcp://172.20.209.5:54744 remote=tcp://172.20.209.18:41688>: ConnectionResetError: [Errno 104] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2058, in gather_dep
+    response = await get_data_from_worker(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2870, in get_data_from_worker
+    return await retry_operation(_get_data, operation="get_data_from_worker")
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/utils_comm.py", line 402, in retry_operation
+    return await retry(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/utils_comm.py", line 387, in retry
+    return await coro()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2847, in _get_data
+    comm = await rpc.connect(worker)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1439, in connect
+    return await connect_attempt
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1375, in _connect
+    comm = await connect(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 333, in connect
+    raise OSError(
+OSError: Timed out during handshake while connecting to tcp://172.20.209.18:41688 after 30 s
+2023-02-03 11:09:57,310 - distributed.worker - ERROR - Worker stream died during communication: tcp://172.20.209.18:41688
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/tornado/iostream.py", line 869, in _read_to_buffer
+    bytes_read = self.read_from_fd(buf)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/tornado/iostream.py", line 1138, in read_from_fd
+    return self.socket.recv_into(buf, len(buf))
+ConnectionResetError: [Errno 104] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 328, in connect
+    handshake = await asyncio.wait_for(comm.read(), time_left())
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 445, in wait_for
+    return fut.result()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 241, in read
+    convert_stream_closed_error(self, e)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 142, in convert_stream_closed_error
+    raise CommClosedError(f"in {obj}: {exc.__class__.__name__}: {exc}") from exc
+distributed.comm.core.CommClosedError: in <TCP (closed)  local=tcp://172.20.209.5:54746 remote=tcp://172.20.209.18:41688>: ConnectionResetError: [Errno 104] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2058, in gather_dep
+    response = await get_data_from_worker(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2870, in get_data_from_worker
+    return await retry_operation(_get_data, operation="get_data_from_worker")
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/utils_comm.py", line 402, in retry_operation
+    return await retry(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/utils_comm.py", line 387, in retry
+    return await coro()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2847, in _get_data
+    comm = await rpc.connect(worker)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1439, in connect
+    return await connect_attempt
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1375, in _connect
+    comm = await connect(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 333, in connect
+    raise OSError(
+OSError: Timed out during handshake while connecting to tcp://172.20.209.18:41688 after 30 s
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+2023-02-03 11:09:57,840 - distributed.worker - ERROR - Worker stream died during communication: tcp://172.20.209.23:38902
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/tornado/iostream.py", line 869, in _read_to_buffer
+    bytes_read = self.read_from_fd(buf)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/tornado/iostream.py", line 1138, in read_from_fd
+    return self.socket.recv_into(buf, len(buf))
+ConnectionResetError: [Errno 104] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 328, in connect
+    handshake = await asyncio.wait_for(comm.read(), time_left())
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 445, in wait_for
+    return fut.result()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 241, in read
+    convert_stream_closed_error(self, e)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 142, in convert_stream_closed_error
+    raise CommClosedError(f"in {obj}: {exc.__class__.__name__}: {exc}") from exc
+distributed.comm.core.CommClosedError: in <TCP (closed)  local=tcp://172.20.209.5:51922 remote=tcp://172.20.209.23:38902>: ConnectionResetError: [Errno 104] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2058, in gather_dep
+    response = await get_data_from_worker(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2870, in get_data_from_worker
+    return await retry_operation(_get_data, operation="get_data_from_worker")
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/utils_comm.py", line 402, in retry_operation
+    return await retry(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/utils_comm.py", line 387, in retry
+    return await coro()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/worker.py", line 2847, in _get_data
+    comm = await rpc.connect(worker)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1439, in connect
+    return await connect_attempt
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1375, in _connect
+    comm = await connect(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 333, in connect
+    raise OSError(
+OSError: Timed out during handshake while connecting to tcp://172.20.209.23:38902 after 30 s
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+Warning 1: organizePolygons() received an unexpected geometry.  Either a polygon with interior rings, or a polygon with less than 4 points, or a non-Polygon geometry.  Return arguments as a collection.
+Warning 1: Geometry of polygon of fid 1464043 cannot be translated to Simple Geometry. All polygons will be contained in a multipolygon.
+2023-02-03 11:10:00,812 - distributed.nanny.memory - WARNING - Worker tcp://172.20.209.5:46273 (pid=239327) exceeded 95% memory budget. Restarting...
+2023-02-03 11:10:00,814 - distributed.nanny.memory - WARNING - Worker tcp://172.20.209.5:35996 (pid=239681) exceeded 95% memory budget. Restarting...
+2023-02-03 11:10:00,873 - distributed.nanny - INFO - Worker process 239681 was killed by signal 15
+2023-02-03 11:10:00,875 - distributed.nanny - WARNING - Restarting worker
+2023-02-03 11:10:00,876 - distributed.nanny - INFO - Worker process 239327 was killed by signal 15
+2023-02-03 11:10:00,878 - distributed.nanny - WARNING - Restarting worker
+2023-02-03 11:10:01,457 - distributed.nanny.memory - WARNING - Worker tcp://172.20.209.5:43128 (pid=239323) exceeded 95% memory budget. Restarting...
+2023-02-03 11:10:01,506 - distributed.nanny - INFO - Worker process 239323 was killed by signal 15
+2023-02-03 11:10:01,508 - distributed.nanny - WARNING - Restarting worker
+2023-02-03 11:10:01,764 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:35136
+2023-02-03 11:10:01,765 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:35136
+2023-02-03 11:10:01,765 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-1
+2023-02-03 11:10:01,765 - distributed.worker - INFO -          dashboard at:         172.20.209.5:44752
+2023-02-03 11:10:01,765 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:10:01,765 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:01,765 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:10:01,765 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:10:01,765 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-dgh99nox
+2023-02-03 11:10:01,765 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:01,770 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:10:01,770 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:01,770 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+2023-02-03 11:10:01,819 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:33646
+2023-02-03 11:10:01,819 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:33646
+2023-02-03 11:10:01,820 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-2
+2023-02-03 11:10:01,820 - distributed.worker - INFO -          dashboard at:         172.20.209.5:44610
+2023-02-03 11:10:01,820 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:10:01,820 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:01,820 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:10:01,820 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:10:01,820 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-mk533r1o
+2023-02-03 11:10:01,820 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:01,825 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:10:01,825 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:01,826 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+2023-02-03 11:10:02,316 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:39242
+2023-02-03 11:10:02,317 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:39242
+2023-02-03 11:10:02,317 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-0
+2023-02-03 11:10:02,317 - distributed.worker - INFO -          dashboard at:         172.20.209.5:38464
+2023-02-03 11:10:02,317 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:10:02,317 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:02,317 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:10:02,317 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:10:02,317 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-tds4mxec
+2023-02-03 11:10:02,317 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:02,322 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:10:02,323 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:10:02,323 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+Warning 1: organizePolygons() received an unexpected geometry.  Either a polygon with interior rings, or a polygon with less than 4 points, or a non-Polygon geometry.  Return arguments as a collection.
+2023-02-03 11:14:40,412 - distributed.nanny.memory - WARNING - Worker tcp://172.20.209.5:35136 (pid=239713) exceeded 95% memory budget. Restarting...
+2023-02-03 11:14:40,414 - distributed.nanny.memory - WARNING - Worker tcp://172.20.209.5:33646 (pid=239710) exceeded 95% memory budget. Restarting...
+2023-02-03 11:14:40,469 - distributed.nanny - INFO - Worker process 239713 was killed by signal 15
+2023-02-03 11:14:40,471 - distributed.nanny - WARNING - Restarting worker
+2023-02-03 11:14:40,472 - distributed.nanny - INFO - Worker process 239710 was killed by signal 15
+2023-02-03 11:14:40,476 - distributed.nanny - WARNING - Restarting worker
+2023-02-03 11:14:41,372 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:32791
+2023-02-03 11:14:41,372 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:32791
+2023-02-03 11:14:41,372 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-1
+2023-02-03 11:14:41,372 - distributed.worker - INFO -          dashboard at:         172.20.209.5:43517
+2023-02-03 11:14:41,372 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:14:41,372 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:41,372 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:14:41,372 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:14:41,372 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-tyf_0i43
+2023-02-03 11:14:41,372 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:41,376 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:42346
+2023-02-03 11:14:41,377 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:42346
+2023-02-03 11:14:41,377 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-2
+2023-02-03 11:14:41,377 - distributed.worker - INFO -          dashboard at:         172.20.209.5:38107
+2023-02-03 11:14:41,377 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:14:41,377 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:41,377 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:14:41,377 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:14:41,377 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-kf4j7w_0
+2023-02-03 11:14:41,377 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:41,378 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:14:41,379 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:41,379 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+2023-02-03 11:14:41,384 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:14:41,384 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:41,385 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+2023-02-03 11:14:46,557 - distributed.nanny.memory - WARNING - Worker tcp://172.20.209.5:39242 (pid=239722) exceeded 95% memory budget. Restarting...
+2023-02-03 11:14:46,612 - distributed.nanny - INFO - Worker process 239722 was killed by signal 15
+2023-02-03 11:14:46,614 - distributed.nanny - WARNING - Restarting worker
+2023-02-03 11:14:47,505 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.5:37931
+2023-02-03 11:14:47,505 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.5:37931
+2023-02-03 11:14:47,505 - distributed.worker - INFO -           Worker name:           SLURMCluster-2-0
+2023-02-03 11:14:47,506 - distributed.worker - INFO -          dashboard at:         172.20.209.5:38803
+2023-02-03 11:14:47,506 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.1:39601
+2023-02-03 11:14:47,506 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:47,506 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 11:14:47,506 - distributed.worker - INFO -                Memory:                 476.84 MiB
+2023-02-03 11:14:47,506 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-uqeoabrg
+2023-02-03 11:14:47,506 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:47,512 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.1:39601
+2023-02-03 11:14:47,512 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 11:14:47,512 - distributed.core - INFO - Starting established connection to tcp://172.20.207.1:39601
+slurmstepd: error: *** JOB 8059269 ON node1305 CANCELLED AT 2023-02-03T11:25:17 ***

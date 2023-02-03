@@ -1,0 +1,80 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 8061245
+##  Job Name : dask-worker
+##  Nodelist : node1308
+##      CPUs : 1
+##  Mem/Node : 10240 MB
+## Directory : /gpfs/home/ashanmu1/seniorthesis/src/01_build
+##   Job Started : Fri Feb  3 12:10:09 EST 2023
+###############################################################################
+2023-02-03 12:10:09,958 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.8:38305'
+2023-02-03 12:10:09,969 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.209.8:36727'
+2023-02-03 12:10:10,816 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.8:34040
+2023-02-03 12:10:10,816 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.8:34040
+2023-02-03 12:10:10,816 - distributed.worker - INFO -           Worker name:           SLURMCluster-7-0
+2023-02-03 12:10:10,816 - distributed.worker - INFO -          dashboard at:         172.20.209.8:33197
+2023-02-03 12:10:10,816 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:37421
+2023-02-03 12:10:10,816 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:10:10,816 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 12:10:10,816 - distributed.worker - INFO -                Memory:                   4.66 GiB
+2023-02-03 12:10:10,816 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-y6ghxuc5
+2023-02-03 12:10:10,816 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:10:10,821 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:37421
+2023-02-03 12:10:10,821 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:10:10,822 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:37421
+2023-02-03 12:10:10,822 - distributed.worker - INFO -       Start worker at:   tcp://172.20.209.8:40762
+2023-02-03 12:10:10,822 - distributed.worker - INFO -          Listening to:   tcp://172.20.209.8:40762
+2023-02-03 12:10:10,822 - distributed.worker - INFO -           Worker name:           SLURMCluster-7-1
+2023-02-03 12:10:10,822 - distributed.worker - INFO -          dashboard at:         172.20.209.8:45414
+2023-02-03 12:10:10,822 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:37421
+2023-02-03 12:10:10,822 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:10:10,822 - distributed.worker - INFO -               Threads:                          1
+2023-02-03 12:10:10,823 - distributed.worker - INFO -                Memory:                   4.66 GiB
+2023-02-03 12:10:10,823 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-oc0e7iq_
+2023-02-03 12:10:10,823 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:10:10,827 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:37421
+2023-02-03 12:10:10,828 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 12:10:10,828 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:37421
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+Warning 1: organizePolygons() received an unexpected geometry.  Either a polygon with interior rings, or a polygon with less than 4 points, or a non-Polygon geometry.  Return arguments as a collection.
+Warning 1: Geometry of polygon of fid 1464043 cannot be translated to Simple Geometry. All polygons will be contained in a multipolygon.
+2023-02-03 12:14:06,416 - distributed.worker - WARNING - Compute Failed
+Key:       ('aggregate-chunk-ef00ab8f12b9fd39e85c92c6cb2df826-ef645f5e8cb830308b7fc8ed1748b0b9', 35)
+Function:  subgraph_callable-6372cadd-edf7-478d-aa92-a3fb0d38
+args:      (                   LOC_ID                                           geometry
+1404900  F_992026_2720424  POLYGON ((302449.047 829201.148, 302324.817 82...
+1404901  F_731857_2813842  POLYGON ((223106.833 857686.389, 223084.289 85...
+1404902   M_194856_906444  POLYGON ((194879.604 906458.268, 194879.604 90...
+1404903  F_675176_3013887  POLYGON ((205846.657 918797.257, 205852.722 91...
+1404904  F_675176_3013887  POLYGON ((205846.657 918797.257, 205852.722 91...
+...                   ...                                                ...
+1498555   M_277187_801940  POLYGON ((277200.129 801949.442, 277183.907 80...
+1498556  F_658800_2993750  POLYGON ((200828.079 912482.800, 200786.700 91...
+1498557  F_780731_3105533  POLYGON ((238023.728 946489.889, 238003.589 94...
+1498558  F_725274_3090338  POLYGON ((221058.103 941920.548, 221058.093 94...
+1498559   M_318907_826187  POLYGON ((319012.254 826190.414, 319012.296 82...
+
+[93660 rows x 2 columns])
+kwargs:    {}
+Exception: "GEOSException('IllegalArgumentException: Ring has fewer than 4 points, so orientation cannot be determined')"
+
+slurmstepd: error: *** JOB 8061245 ON node1308 CANCELLED AT 2023-02-03T12:20:20 ***
