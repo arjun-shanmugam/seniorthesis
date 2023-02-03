@@ -1,5 +1,5 @@
 """
-01_clean_assessment_values.py
+01_clean_assessment_valuesDEPRECATED.py
 
 Cleans property assessment values from MassGIS.
 """

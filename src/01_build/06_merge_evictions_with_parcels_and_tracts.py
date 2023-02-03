@@ -93,15 +93,9 @@ if VERBOSE:
 evictions_df = gpd.GeoDataFrame(evictions_df,
                                 geometry=gpd.points_from_xy(evictions_df['longitude'], evictions_df['latitude']))
 evictions_df = evictions_df.set_crs("EPSG:4326")  # CRS attribute is not set initially set.
-tax_parcel_columns_to_keep = ['MAP_PAR_ID', 'LOC_ID', 'POLY_TYPE', 'SITE_ADDR', 'SHAPE_Leng',
-                              'SHAPE_Area',
-                              'geometry']
-tax_parcels_gdf = pd.concat([gpd.read_file(INPUT_DATA_TAX_PARCELS_EAST)[tax_parcel_columns_to_keep],
-                             gpd.read_file(INPUT_DATA_TAX_PARCELS_WEST)[tax_parcel_columns_to_keep]], axis=0)
-tax_parcels_gdf = tax_parcels_gdf.to_crs("EPSG:4326")
-tax_parcels_gdf = tax_parcels_gdf.dissolve(by='LOC_ID').reset_index()
-spatially_joined_columns_to_drop = ['index_right', 'geometry', 'MAP_PAR_ID', 'POLY_TYPE', 'SITE_ADDR',
-                                    'SHAPE_Leng', 'SHAPE_Area']
+
+# TODO: Read tax_parcels_gdf
+tax_parcels_gdf =
 
 merged_df = (gpd
              .sjoin(evictions_df, tax_parcels_gdf, how='left', predicate='within')
