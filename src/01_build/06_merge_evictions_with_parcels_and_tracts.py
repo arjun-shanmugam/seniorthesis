@@ -10,8 +10,7 @@ import geopandas as gpd
 
 INPUT_DATA_EVICTIONS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions.csv"
 INPUT_DATA_TRACTS = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/tracts.csv"
-INPUT_DATA_TAX_PARCELS_EAST = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/Statewide_parcels_SHP/L3_TAXPAR_POLY_ASSESS_EAST.shp"
-INPUT_DATA_TAX_PARCELS_WEST = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/Statewide_parcels_SHP/L3_TAXPAR_POLY_ASSESS_WEST.shp"
+INPUT_DATA_TAX_PARCELS = "../../data/02_intermediate/tax_parcels.gpkg"
 OUTPUT_DATA_UNRESTRICTED = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/evictions_with_parcels_and_tracts.csv"
 
 VERBOSE = True
@@ -33,7 +32,6 @@ to_drop = {'Accuracy Score', 'Accuracy Type', 'Number', 'Street', 'Unit Type', '
            'property_address_city', 'property_address_state', 'property_address_street',
            'property_address_zip'}
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, usecols=set(all_column_names) - set(to_drop))
-# evictions_df = evictions_df.rename(columns={'Latitude': 'latitude', 'Longitude': 'longitude'})
 original_N = len(evictions_df)
 if VERBOSE:
     print(f"Beginning with {original_N} observations.")
