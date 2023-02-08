@@ -1,0 +1,302 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 8069368
+##  Job Name : dask-worker
+##  Nodelist : node2201
+##      CPUs : 1
+##  Mem/Node : 220160 MB
+## Directory : /gpfs/home/ashanmu1/seniorthesis/src/01_build
+##   Job Started : Fri Feb  3 23:48:55 EST 2023
+###############################################################################
+2023-02-03 23:48:56,112 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:46465'
+2023-02-03 23:48:56,115 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:39332'
+2023-02-03 23:48:56,115 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:44599'
+2023-02-03 23:48:56,120 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:41219'
+2023-02-03 23:48:56,120 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:46479'
+2023-02-03 23:48:56,122 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:38850'
+2023-02-03 23:48:56,123 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:33293'
+2023-02-03 23:48:56,123 - distributed.nanny - INFO -         Start Nanny at: 'tcp://172.20.218.1:44186'
+2023-02-03 23:48:56,864 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:43703
+2023-02-03 23:48:56,864 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:43703
+2023-02-03 23:48:56,864 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-1
+2023-02-03 23:48:56,864 - distributed.worker - INFO -          dashboard at:         172.20.218.1:34541
+2023-02-03 23:48:56,864 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,864 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,864 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,864 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,864 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-hiknwj54
+2023-02-03 23:48:56,865 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,866 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:35875
+2023-02-03 23:48:56,867 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:35875
+2023-02-03 23:48:56,867 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-2
+2023-02-03 23:48:56,867 - distributed.worker - INFO -          dashboard at:         172.20.218.1:34884
+2023-02-03 23:48:56,867 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,867 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,867 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,867 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,867 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-1jqzxkky
+2023-02-03 23:48:56,867 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,873 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,873 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,874 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+2023-02-03 23:48:56,874 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,874 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,874 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+2023-02-03 23:48:56,875 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:45731
+2023-02-03 23:48:56,876 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:45731
+2023-02-03 23:48:56,876 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-4
+2023-02-03 23:48:56,876 - distributed.worker - INFO -          dashboard at:         172.20.218.1:34722
+2023-02-03 23:48:56,876 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,877 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,877 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,877 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,877 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-n3rocn6u
+2023-02-03 23:48:56,877 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,877 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:34204
+2023-02-03 23:48:56,877 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:42554
+2023-02-03 23:48:56,877 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:34204
+2023-02-03 23:48:56,877 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-5
+2023-02-03 23:48:56,877 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:42554
+2023-02-03 23:48:56,877 - distributed.worker - INFO -          dashboard at:         172.20.218.1:42129
+2023-02-03 23:48:56,877 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-3
+2023-02-03 23:48:56,877 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,877 - distributed.worker - INFO -          dashboard at:         172.20.218.1:45160
+2023-02-03 23:48:56,877 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,877 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,877 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,877 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,877 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,878 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,878 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,878 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-hnyrtjw3
+2023-02-03 23:48:56,878 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-mm31hn6l
+2023-02-03 23:48:56,878 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,878 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,879 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:41499
+2023-02-03 23:48:56,879 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:41499
+2023-02-03 23:48:56,879 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-0
+2023-02-03 23:48:56,879 - distributed.worker - INFO -          dashboard at:         172.20.218.1:34220
+2023-02-03 23:48:56,879 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,879 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,879 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,879 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,879 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-009uvij4
+2023-02-03 23:48:56,879 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,885 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:35997
+2023-02-03 23:48:56,885 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:35997
+2023-02-03 23:48:56,885 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-6
+2023-02-03 23:48:56,885 - distributed.worker - INFO -          dashboard at:         172.20.218.1:45151
+2023-02-03 23:48:56,885 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,885 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,885 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,885 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,885 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-38j0jytz
+2023-02-03 23:48:56,886 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,888 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,888 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,889 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,889 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,889 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+2023-02-03 23:48:56,889 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+2023-02-03 23:48:56,889 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,889 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,890 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+2023-02-03 23:48:56,891 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,891 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,891 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+2023-02-03 23:48:56,892 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,892 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,892 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+2023-02-03 23:48:56,904 - distributed.worker - INFO -       Start worker at:   tcp://172.20.218.1:42984
+2023-02-03 23:48:56,905 - distributed.worker - INFO -          Listening to:   tcp://172.20.218.1:42984
+2023-02-03 23:48:56,905 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-7
+2023-02-03 23:48:56,905 - distributed.worker - INFO -          dashboard at:         172.20.218.1:36572
+2023-02-03 23:48:56,905 - distributed.worker - INFO - Waiting to connect to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,905 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,905 - distributed.worker - INFO -               Threads:                          4
+2023-02-03 23:48:56,905 - distributed.worker - INFO -                Memory:                  26.78 GiB
+2023-02-03 23:48:56,905 - distributed.worker - INFO -       Local Directory: /tmp/dask-worker-space/worker-4_tt14n2
+2023-02-03 23:48:56,905 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,911 - distributed.worker - INFO -         Registered to:   tcp://172.20.207.2:44825
+2023-02-03 23:48:56,911 - distributed.worker - INFO - -------------------------------------------------
+2023-02-03 23:48:56,911 - distributed.core - INFO - Starting established connection to tcp://172.20.207.2:44825
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:71: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x, buffers=buffers)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+2023-02-03 23:49:06,530 - distributed.core - INFO - Event loop was unresponsive in Worker for 8.24s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:71: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x, buffers=buffers)
+2023-02-03 23:50:17,741 - distributed.core - INFO - Event loop was unresponsive in Worker for 8.19s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask_geopandas/backends.py:13: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  import geopandas
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:71: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x, buffers=buffers)
+2023-02-03 23:50:28,060 - distributed.core - INFO - Event loop was unresponsive in Worker for 5.80s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:71: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x, buffers=buffers)
+2023-02-03 23:51:21,305 - distributed.core - INFO - Event loop was unresponsive in Worker for 7.99s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/geopandas/_compat.py:123: UserWarning: The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+  warnings.warn(
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/protocol/pickle.py:71: UserWarning: Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas will still use PyGEOS by default for now. To force to use and test Shapely 2.0, you have to set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In a future release, GeoPandas will switch to using Shapely by default. If you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+  return pickle.loads(x, buffers=buffers)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+2023-02-03 23:52:31,658 - distributed.core - INFO - Event loop was unresponsive in Worker for 8.28s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/dask/dataframe/io/csv.py:194: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = reader(bio, **kwargs)
+2023-02-03 23:52:54,519 - distributed.core - INFO - Event loop was unresponsive in Worker for 5.99s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+2023-02-03 23:53:00,285 - distributed.core - INFO - Event loop was unresponsive in Worker for 3.17s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+2023-02-03 23:53:05,133 - distributed.utils_perf - INFO - full garbage collection released 31.18 MiB from 21 reference cycles (threshold: 9.54 MiB)
+2023-02-03 23:54:55,665 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,665 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,665 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,665 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,665 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,665 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,665 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,665 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:34204. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,665 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:42984. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,665 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:41499. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,665 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:45731. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,665 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:35997. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,665 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:43703. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,665 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:42554. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,666 - distributed.core - INFO - Connection to tcp://172.20.207.2:44825 has been closed.
+2023-02-03 23:54:55,666 - distributed.worker - INFO - Stopping worker at tcp://172.20.218.1:35875. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,669 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:38850'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,670 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:44186'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,670 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:44599'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,671 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:46479'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,671 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:33293'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,671 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:46465'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,672 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:41219'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,672 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:55,672 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://172.20.218.1:39332'. Reason: worker-handle-scheduler-connection-broken
+2023-02-03 23:54:55,672 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:55,673 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:55,673 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:55,675 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:55,675 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:55,676 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:55,676 - distributed.nanny - INFO - Worker closed
+2023-02-03 23:54:57,673 - distributed.nanny - ERROR - Worker process died unexpectedly
+2023-02-03 23:54:57,674 - distributed.nanny - ERROR - Worker process died unexpectedly
+2023-02-03 23:54:57,677 - distributed.nanny - ERROR - Worker process died unexpectedly
+2023-02-03 23:54:57,677 - distributed.nanny - ERROR - Worker process died unexpectedly
+2023-02-03 23:54:57,904 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:46479'. Reason: nanny-close-gracefully
+2023-02-03 23:54:57,917 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:38850'. Reason: nanny-close-gracefully
+2023-02-03 23:54:57,970 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:44599'. Reason: nanny-close-gracefully
+2023-02-03 23:54:58,123 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:46465'. Reason: nanny-close-gracefully
+2023-02-03 23:54:58,129 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:39332'. Reason: nanny-close-gracefully
+2023-02-03 23:54:58,131 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:44186'. Reason: nanny-close-gracefully
+2023-02-03 23:54:58,199 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:41219'. Reason: nanny-close-gracefully
+2023-02-03 23:54:58,302 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.218.1:33293'. Reason: nanny-close-gracefully
+2023-02-03 23:54:58,303 - distributed.dask_worker - INFO - End worker

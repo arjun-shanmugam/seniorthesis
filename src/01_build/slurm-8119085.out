@@ -1,0 +1,138 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 8119085
+##  Job Name : dask-worker
+##  Nodelist : node1363
+##      CPUs : 1
+##  Mem/Node : 220160 MB
+## Directory : /gpfs/home/ashanmu1/seniorthesis/src/01_build
+##   Job Started : Tue Feb  7 20:04:39 EST 2023
+###############################################################################
+2023-02-07 20:05:09,868 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:35977'. Reason: nanny-close
+2023-02-07 20:05:09,868 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:35420'. Reason: nanny-close
+2023-02-07 20:05:09,869 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:35244'. Reason: nanny-close
+2023-02-07 20:05:09,869 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:44519'. Reason: nanny-close
+2023-02-07 20:05:09,869 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:39522'. Reason: nanny-close
+2023-02-07 20:05:09,869 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:45174'. Reason: nanny-close
+2023-02-07 20:05:09,869 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:44116'. Reason: nanny-close
+2023-02-07 20:05:09,869 - distributed.nanny - INFO - Closing Nanny at 'tcp://172.20.209.63:39448'. Reason: nanny-close
+unhandled exception during asyncio.run() shutdown
+task: <Task finished name='Task-6' coro=<_wrap_awaitable() done, defined at /users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py:643> exception=RuntimeError('Nanny failed to start.')>
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 498, in connect
+    stream = await self.client.connect(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/tornado/tcpclient.py", line 275, in connect
+    af, addr, stream = await connector.start(connect_timeout=timeout)
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 456, in wait_for
+    return fut.result()
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 291, in connect
+    comm = await asyncio.wait_for(
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 458, in wait_for
+    raise exceptions.TimeoutError() from exc
+asyncio.exceptions.TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 528, in start
+    await asyncio.wait_for(self.start_unsafe(), timeout=timeout)
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 435, in wait_for
+    return fut.result()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/nanny.py", line 361, in start_unsafe
+    msg = await self.scheduler.register_nanny()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1218, in send_recv_from_rpc
+    comm = await self.pool.connect(self.addr)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1439, in connect
+    return await connect_attempt
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1375, in _connect
+    comm = await connect(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 317, in connect
+    raise OSError(
+OSError: Timed out trying to connect to tcp://172.20.207.2:45242 after 30 s
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 650, in _wrap_awaitable
+    return (yield from awaitable.__await__())
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 536, in start
+    raise RuntimeError(f"{type(self).__name__} failed to start.") from exc
+RuntimeError: Nanny failed to start.
+2023-02-07 20:05:09,873 - distributed.dask_worker - INFO - End worker
+ConnectionRefusedError: [Errno 111] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 291, in connect
+    comm = await asyncio.wait_for(
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 445, in wait_for
+    return fut.result()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 511, in connect
+    convert_stream_closed_error(self, e)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/tcp.py", line 142, in convert_stream_closed_error
+    raise CommClosedError(f"in {obj}: {exc.__class__.__name__}: {exc}") from exc
+distributed.comm.core.CommClosedError: in <distributed.comm.tcp.TCPConnector object at 0x7f6e3fc397e0>: ConnectionRefusedError: [Errno 111] Connection refused
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 528, in start
+    await asyncio.wait_for(self.start_unsafe(), timeout=timeout)
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 445, in wait_for
+    return fut.result()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/nanny.py", line 361, in start_unsafe
+    msg = await self.scheduler.register_nanny()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1218, in send_recv_from_rpc
+    comm = await self.pool.connect(self.addr)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1439, in connect
+    return await connect_attempt
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 1375, in _connect
+    comm = await connect(
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/comm/core.py", line 317, in connect
+    raise OSError(
+OSError: Timed out trying to connect to tcp://172.20.207.2:45242 after 30 s
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/ashanmu1/miniconda3/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/users/ashanmu1/miniconda3/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/cli/dask_worker.py", line 539, in <module>
+    main()  # pragma: no cover
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/click/core.py", line 1130, in __call__
+    return self.main(*args, **kwargs)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/click/core.py", line 1055, in main
+    rv = self.invoke(ctx)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/click/core.py", line 1404, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/click/core.py", line 760, in invoke
+    return __callback(*args, **kwargs)
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/cli/dask_worker.py", line 445, in main
+    asyncio.run(run())
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/cli/dask_worker.py", line 442, in run
+    [task.result() for task in done]
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/cli/dask_worker.py", line 442, in <listcomp>
+    [task.result() for task in done]
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/cli/dask_worker.py", line 417, in wait_for_nannies_to_finish
+    await asyncio.gather(*nannies)
+  File "/users/ashanmu1/miniconda3/lib/python3.10/asyncio/tasks.py", line 650, in _wrap_awaitable
+    return (yield from awaitable.__await__())
+  File "/gpfs/home/ashanmu1/seniorthesis/venv/lib/python3.10/site-packages/distributed/core.py", line 536, in start
+    raise RuntimeError(f"{type(self).__name__} failed to start.") from exc
+RuntimeError: Nanny failed to start.
