@@ -6,8 +6,231 @@ from os.path import join
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
+import statsmodels.formula.api as smf
 import figure_utilities
+from differences.did.pscore_cal import pscore_mle
+from typing import List
+
+
+def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pre_treatment_covariates: List[str],
+               value_vars: List[str], month_to_int_dictionary):
+    if analysis == 'crime':
+        value_name = 'crimes'
+    elif analysis == 'zestimate':
+        value_name = 'zestimate'
+    else:
+        raise ValueError("Unrecognized argument for parameter analysis.")
+
+    # Store treatment month and year variables.
+    treatment_month_variable = treatment_date_variable.replace("date", "month")
+    treatment_year_variable = treatment_date_variable.replace("date", "year")
+
+    # Reshape from wide to long.
+    df = pd.melt(df,
+                 id_vars=['case_number', treatment_month_variable, treatment_year_variable,
+                          'judgment_for_plaintiff'] + pre_treatment_covariates,
+                 value_vars=value_vars, var_name='month', value_name=value_name)
+    df = df.sort_values(by=['case_number', 'month'])
+
+    # Convert months from string format to integer format.
+    df.loc[:, 'month'] = df['month'].str.replace(f"_{value_name}", '', regex=False).replace(month_to_int_dictionary)
+    df.loc[:, treatment_month_variable] = df[treatment_month_variable].replace(month_to_int_dictionary)
+    # Set treatment month to 0 for untreated observations.
+    never_treated_mask = (df['judgment_for_plaintiff'] == 0)
+    df.loc[never_treated_mask, treatment_month_variable] = np.NaN
+    df.loc[never_treated_mask, treatment_year_variable] = np.NaN
+
+    # Generate numeric version of case_number.
+    df.loc[:, 'case_number_numeric'] = df['case_number'].astype('category').cat.codes.astype(int)
+
+    # Set index.
+    df = df.set_index(['case_number_numeric', 'month'])
+    return df
+
+
+def add_missing_indicators(df: pd.DataFrame, missing_variables: List[str], pre_treatment_covariates: List[str]):
+    for missing_variable in missing_variables:
+        df.loc[:, missing_variable] = df[missing_variable].fillna(0)
+        df.loc[:, missing_variable + '_missing'] = np.where(df['rent_twobed2015'] == 0, 1, 0)
+        pre_treatment_covariates.append(missing_variable + '_missing')
+
+
+def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.DataFrame, output_directory: str):
+    # Store pre-treatment panel names.
+    pre_treatment_panels = ['Panel A: Pre-treatment Outcomes',
+                            'Panel B: Census Tract Characteristics',
+                            'Panel C: Case Initiation',
+                            'Panel D: Defendant and Plaintiff Characteristics']
+
+    # Balance only on covariates which predict the outcome variable.
+    predicts_outcome_mask = covariate_exploration_df.iloc[:, 0] <= 0.05
+
+    # Build treatment mean columns.
+    pd.options.mode.chained_assignment = None
+    treatment_means, variable_display_names_dict = produce_summary_statistics(
+        df.copy().loc[df['judgment_for_plaintiff'] == 1, :], 'file_date')
+
+    if analysis == 'crime':
+        treatment_means = (treatment_means.loc[pre_treatment_panels, :]
+                           .drop('twenty_seventeen_zestimate', level=1, axis=0)
+                           .drop('change_in_zestimates', level=1, axis=0))
+    elif analysis == 'zestimate':
+        treatment_means = (treatment_means.loc[pre_treatment_panels, :]
+                           .drop('twenty_seventeen_crimes', level=1, axis=0)
+                           .drop('change_in_crimes', level=1, axis=0))
+    else:
+        raise ValueError("Unrecognized argument for parameter analysis.")
+
+    treatment_means = (treatment_means.loc[predicts_outcome_mask, 'mean']
+                       .rename("Cases Won by Plaintiff"))
+    # Save pre-treatment covariates for use in D.R. DiD estimator.
+    pre_treatment_covariates = treatment_means.index.get_level_values(1).tolist()
+    pd.options.mode.chained_assignment = 'warn'
+
+    # Calculate propensity scores for every observation.
+    df.loc[:, 'propensity_score'] = pd.Series(
+        pscore_mle(df.dropna(subset=pre_treatment_covariates)['judgment_for_plaintiff'],
+                   exog=df.dropna(subset=pre_treatment_covariates)[pre_treatment_covariates],
+                   weights=None)[0])  # Calculate propensity scores.
+
+    # Build unweighted columns.
+    difference_unadjusted = []
+    p_values_unadjusted = []
+    for covariate in pre_treatment_covariates:
+        result = smf.ols(formula=f"{covariate} ~ judgment_for_plaintiff",
+                         data=df,
+                         missing='drop').fit()
+        difference_unadjusted.append(result.params.loc['judgment_for_plaintiff'])
+        p_values_unadjusted.append(result.pvalues.loc['judgment_for_plaintiff'])
+    difference_unadjusted = pd.Series(difference_unadjusted, index=treatment_means.index)
+    p_values_unadjusted = pd.Series(p_values_unadjusted, index=treatment_means.index)
+    unweighted_columns = pd.concat([difference_unadjusted, p_values_unadjusted], axis=1)
+    unweighted_columns.columns = ['Unweighted', '\\emph{p}']
+
+    # Build propensity score-weighted columns.
+    differences_propensity_score_adjusted = []
+    p_values_propensity_score_adjusted = []
+    for covariate in pre_treatment_covariates:
+        propensity_score_adjusted_result = smf.ols(formula=f"{covariate} ~ judgment_for_plaintiff + propensity_score",
+                                                   data=df,
+                                                   missing='drop').fit()
+        differences_propensity_score_adjusted.append(
+            propensity_score_adjusted_result.params.loc['judgment_for_plaintiff'])
+        p_values_propensity_score_adjusted.append(
+            propensity_score_adjusted_result.pvalues.loc['judgment_for_plaintiff'])
+    differences_propensity_score_adjusted = pd.Series(differences_propensity_score_adjusted,
+                                                      index=treatment_means.index)
+    p_values_propensity_score_adjusted = pd.Series(p_values_propensity_score_adjusted, index=treatment_means.index)
+    propensity_score_weighted_columns = pd.concat(
+        [differences_propensity_score_adjusted, p_values_propensity_score_adjusted], axis=1)
+    propensity_score_weighted_columns.columns = ['Weighted', '\\emph{p}']
+
+    difference_columns = pd.concat([unweighted_columns, propensity_score_weighted_columns], axis=1)
+    table_columns = [treatment_means, difference_columns]
+    balance_table = pd.concat(table_columns, axis=1, keys=['', 'Difference in Cases Won by Defendant'])
+
+    balance_table = balance_table.rename(index=variable_display_names_dict)
+    # TODO: Figure out how to make the outermost index labels wrap in LaTeX so that I don't have to shorten the panel labels below!
+    balance_table = balance_table.rename(index={"Panel A: Pre-treatment Outcomes": "Panel A",
+                                                "Panel B: Census Tract Characteristics": "Panel B",
+                                                "Panel C: Case Initiation": "Panel C",
+                                                "Panel D: Defendant and Plaintiff Characteristics": "Panel D"})
+
+    # Export to LaTeX.
+    filename = join(output_directory, "balance_table.tex")
+    latex = (balance_table
+             .style
+             .format(thousands=",",
+                     na_rep='',
+                     formatter={('', 'Cases Won by Plaintiff'): "{:,.2f}",
+                                ('Difference in Cases Won by Defendant', 'Unweighted'): "{:,.2f}",
+                                ('Difference in Cases Won by Defendant', '\\emph{p}'): "{:,.2f}",
+                                ('Difference in Cases Won by Defendant', 'Weighted'): "{:,.2f}",
+                                ('', 'N'): "{:,.0f}"})
+             .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
+             .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
+             .to_latex(None,
+                       column_format="llccccc",
+                       hrules=True,
+                       multicol_align='c',
+                       clines="skip-last;data")).replace("{*}", "{3cm}")
+    latex = latex.split("\\\\\n")
+    latex.insert(1, "\\cline{4-7}\n")
+    latex = "\\\\\n".join(latex)
+    with open(filename, 'w') as file:
+        file.write(latex)
+    return balance_table, pre_treatment_covariates
+
+
+def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
+    # Choose covariates to include in D.R. model.
+    # Run produce summary statistics on the DataFrame to add pre-treatment covariate columns.
+    summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'file_date')
+
+    if analysis == 'crime':
+        independent_variable = 'judgment_for_plaintiff'
+        dependent_variable = 'final_month_of_panel_crimes'
+        df.loc[:, dependent_variable] = df.loc[:, '2022-12_crimes']  # Create alias column for Patchy.
+        summary_statistics = (summary_statistics
+                              .drop('twenty_seventeen_zestimate', level=1, axis=0)
+                              .drop('change_in_zestimates', level=1, axis=0))
+        covariate_exploration_table_columns = ["Crime Incidents, Dec. 2022", "Plaintiff victory"]
+    elif analysis == 'zestimate':
+        independent_variable = 'judgment_for_plaintiff'
+        dependent_variable = 'final_month_of_panel_zestimate'
+        df.loc[:, dependent_variable] = df['2022-12_zestimate']
+        summary_statistics = (summary_statistics
+                              .drop('twenty_seventeen_crimes', level=1, axis=0)
+                              .drop('change_in_crimes', level=1, axis=0))
+        covariate_exploration_table_columns = ["Zestimate, Dec. 2022", "Plaintiff victory"]
+    else:
+        raise ValueError("Unrecognized argument for parameter analysis.")
+
+    pre_treatment_panels = ["Panel A: Pre-treatment Outcomes",
+                            "Panel B: Census Tract Characteristics",
+                            "Panel C: Case Initiation",
+                            "Panel D: Defendant and Plaintiff Characteristics"]
+    summary_statistics = summary_statistics.loc[pre_treatment_panels, :]
+    potential_covariates = summary_statistics.index.get_level_values(1)
+    p_values = []
+    for potential_covariate in potential_covariates:
+        # Get p-value from regression of outcome on covariates.
+        p_y = (smf.ols(formula=f"{dependent_variable} ~ {potential_covariate}",
+                       data=df,
+                       missing='drop')
+        .fit().pvalues.loc[potential_covariate])
+        # Get p-value from regression of treatment on covariates.
+        p_x = (smf.ols(formula=f"{independent_variable} ~ {potential_covariate}",
+                       data=df,
+                       missing='drop')
+        .fit().pvalues.loc[potential_covariate])
+        p_values.append((p_y, p_x))
+    covariate_exploration_df = (pd.DataFrame(p_values,
+                                             columns=covariate_exploration_table_columns,
+                                             index=summary_statistics.index))
+    covariate_exploration_df = pd.concat([covariate_exploration_df], axis=1, keys=['Dependent Variable'])
+    covariate_exploration_df.index = covariate_exploration_df.index.set_names(['',
+                                                                               '\\emph{Independent Variable}'])
+    # Export to LaTeX.
+    filename = join(output_directory, "pre_treatment_covariate_tests.tex")
+    latex = (covariate_exploration_df
+             .rename(index=variable_display_names_dict)
+             .style
+             .format(formatter="{:0.2f}")
+             .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
+             .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
+             .to_latex(None,
+                       column_format="llcc",
+                       hrules=True,
+                       multicol_align='c',
+                       clines="skip-last;data")
+             .replace("{*}", "{3cm}"))
+    latex = latex.split("\\\\\n")
+    latex.insert(1, "\\cline{3-4}\n")
+    latex = "\\\\\n".join(latex)
+    with open(filename, 'w') as file:
+        file.write(latex)
+    return covariate_exploration_df
 
 
 def aggregate_by_event_time_and_plot(att_gt,
@@ -101,16 +324,19 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :param treatment_date_variable:
     :return:
     """
-    # Panel A: Pre-treatment Zestimates
-    df.loc[:, 'twenty_seventeen'] = df['2017-01']
-    df.loc[:, 'change_in_zestimates'] = df['2019-01'] - df['2017-01']
-    panel_A_columns = ['twenty_seventeen', 'change_in_zestimates']
+    # Panel A: Pre-treatment Outcomes
+    df.loc[:, 'twenty_seventeen_zestimate'] = df['2017-01_zestimate']
+    df.loc[:, 'change_in_zestimates'] = df['2019-01_zestimate'] - df['2017-01_zestimate']
+    df.loc[:, 'twenty_seventeen_crimes'] = df['2017-01_crimes']
+    df.loc[:, 'change_in_crimes'] = df['2019-01_crimes'] - df['2017-01_crimes']
+    panel_A_columns = ['twenty_seventeen_zestimate', 'change_in_zestimates',
+                       'twenty_seventeen_crimes', 'change_in_crimes']
     panel_A = df[panel_A_columns].describe().T
-    panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Zestimates"])
+    panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
 
     # Panel B: Census Tract Characteristics
     panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'share_white2010', 'frac_coll_plus2010', 'job_density_2013',
-                        'poor_share2010', 'traveltime15_2010', 'rent_twobed2015']
+                       'poor_share2010', 'traveltime15_2010', 'rent_twobed2015']
     panel_B = df[sorted(panel_B_columns)].describe().T
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
@@ -148,36 +374,33 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_E = df[sorted(panel_E_columns)].describe().T
     panel_E = pd.concat([panel_E], keys=["Panel E: Case Resolution"])
 
-    # Panel F: Post-treatment Zestimates
-    # Get month of the latest docket date for each row and use to grab Zestimates at different times prior to treatment.
+    # Panel F: Post-treatment Outcomes
+    # Get month of the latest docket date for each row and use to grab outcomes at different times prior to treatment.
     df.loc[:, treatment_date_variable] = pd.to_datetime(df[treatment_date_variable])
     df.loc[:, 'nan'] = np.nan
     panel_F_columns = []
-    start = 0
-    stop = 4
-    for i in range(start, stop):
-        # This column contains the year-month which is i years relative to treatment for each property.
-        offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)).dt.strftime(
-            '%Y-%m').copy()
+    start = 1
+    stop = 2
+    for i in range(start, stop + 1):
+        for outcome in ['zestimate', 'crimes']:
+            # This column contains the year-month which is i years relative to treatment for each property.
+            offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)) \
+                                      .dt.strftime('%Y-%m').copy() + "_" + outcome
 
-        # Some year-months will be outside the range of our data.
-        # For instance, we do not have Zestimates 2 years post-treatment for evictions which occurred in 2022.
-        # For these observations, the offset docket month needs to map to the column of nans we created earlier.
-        offset_docket_month.loc[~offset_docket_month.isin(df.columns)] = 'nan'
+            # Some year-months will be outside the range of our data.
+            # For instance, we do not have outcomes 2 years post-treatment for evictions which occurred in 2022.
+            # For these observations, the offset docket month needs to map to the column of nans we created earlier.
+            offset_docket_month.loc[~offset_docket_month.isin(df.columns)] = 'nan'
 
-        # Set column accordingly.
-        idx, cols = pd.factorize(offset_docket_month)
-        if i < 0:
-            new_col_name = f'zestimate_minus{-1*i}_years_relative_to_treatment'
-        else:
-            new_col_name = f'zestimate_{i}_years_relative_to_treatment'
-        panel_F_columns.append(new_col_name)
-        df.loc[:, new_col_name] = df.reindex(cols, axis=1).to_numpy()[np.arange(len(df)), idx]
+            idx, cols = pd.factorize(offset_docket_month)
+            if i < 0:
+                new_col_name = f'{outcome}_minus{-1 * i}_years_relative_to_treatment'
+            else:
+                new_col_name = f'{outcome}_{i}_years_relative_to_treatment'
+            panel_F_columns.append(new_col_name)
+            df.loc[:, new_col_name] = df.reindex(cols, axis=1).to_numpy()[np.arange(len(df)), idx]
     panel_F = df[panel_F_columns].describe().T
-    panel_F = pd.concat([panel_F], keys=["Panel F: Post-treatment Zestimates"])
-
-
-
+    panel_F = pd.concat([panel_F], keys=["Panel F: Post-treatment Outcomes"])
 
     # Concatenate Panels A-E
     summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F],
@@ -200,11 +423,14 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'mean_commutetime2000': 'Mean commute time (2000)',
                                    'traveltime15_2010': 'Share with commute $<$15 minutes (2010)',
                                    'poor_share2010': 'Share below poverty line',
-                                   'twenty_seventeen': 'Zestimate, Jan. 2017',
+                                   'twenty_seventeen_zestimate': 'Zestimate, Jan. 2017',
+                                   'twenty_seventeen_crimes': 'Crimes reported, Jan. 2017',
+                                   'change_in_crimes': 'Change in Crimes Reported, Jan. 2017 to Jan. 2019',
                                    'twenty_eighteen': 'Zestimate, Jan. 2018',
-                                   'change_in_zestimates': 'Change, Jan. 2017 to Jan. 2019',
-                                   'zestimate_0_years_relative_to_treatment': "At filing date",
-                                   'zestimate_1_years_relative_to_treatment': "One year after filing date",
-                                   'zestimate_2_years_relative_to_treatment': "Two years after filing date",
-                                   'zestimate_3_years_relative_to_treatment': "Three years after filing date"}
+                                   'change_in_zestimates': 'Change in Zestimate, Jan. 2017 to Jan. 2019',
+                                   'zestimate_1_years_relative_to_treatment': "Zestimate one year after filing date",
+                                   'zestimate_2_years_relative_to_treatment': "Zestimate two years after filing date",
+                                   'crimes_1_years_relative_to_treatment': "Crimes one year after filing date",
+                                   'crimes_2_years_relative_to_treatment': "Crimes two years after filing date",
+                                   }
     return summary_statistics, variable_display_names_dict
