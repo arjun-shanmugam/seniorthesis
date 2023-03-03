@@ -12,6 +12,31 @@ from differences.did.pscore_cal import pscore_mle
 from typing import List
 
 
+def generate_variable_names(analysis: str):
+    if analysis == 'zestimate':
+        pass
+    elif analysis == 'crimes_own_parcel':
+        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
+        years = [str(year) for year in range(2015, 2023)]
+        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
+        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
+        value_vars = value_vars[5:]
+        value_vars.append('2023-01')
+        value_vars_crime = [value_var + "_crimes_own_parcel" for value_var in value_vars]
+        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
+        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
+
+        to_return = value_vars_crime
+    elif analysis == 'any_crime_500m':
+        pass
+    elif analysis == 'any_crime_100m':
+        pass
+    else:
+        raise ValueError("Unrecognized argument for parameter analysis.")
+
+    return to_return, month_to_int_dictionary, int_to_month_dictionary
+
+
 def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pre_treatment_covariates: List[str],
                value_vars: List[str], month_to_int_dictionary):
     if analysis == 'crime':
@@ -163,29 +188,40 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
 
 
 def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
-    # Choose covariates to include in D.R. model.
-    # Run produce summary statistics on the DataFrame to add pre-treatment covariate columns.
-    summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'file_date')
-
-    if analysis == 'crime':
-        independent_variable = 'judgment_for_plaintiff'
-        dependent_variable = 'final_month_of_panel_crimes'
-        df.loc[:, dependent_variable] = df.loc[:, '2022-12_crimes']  # Create alias column for Patchy.
-        summary_statistics = (summary_statistics
-                              .drop('twenty_seventeen_zestimate', level=1, axis=0)
-                              .drop('change_in_zestimates', level=1, axis=0))
-        covariate_exploration_table_columns = ["Crime Incidents, Dec. 2022", "Plaintiff victory"]
-    elif analysis == 'zestimate':
-        independent_variable = 'judgment_for_plaintiff'
-        dependent_variable = 'final_month_of_panel_zestimate'
-        df.loc[:, dependent_variable] = df['2022-12_zestimate']
-        summary_statistics = (summary_statistics
-                              .drop('twenty_seventeen_crimes', level=1, axis=0)
-                              .drop('change_in_crimes', level=1, axis=0))
-        covariate_exploration_table_columns = ["Zestimate, Dec. 2022", "Plaintiff victory"]
+    """Choose covariates to include in D.R. model. TODO: Update documentation"""
+    # Set column names of the covariate exploration table and check that specified analyis is valid.
+    if analysis == 'zestimate':
+        covariate_exploration_table_columns = ["Zestimate, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'crimes_own_parcel':
+        covariate_exploration_table_columns = ["Crime Incidents, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_500m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 500m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_1000m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 1000m, Dec. 2022", "Plaintiff Victory"]
     else:
         raise ValueError("Unrecognized argument for parameter analysis.")
 
+    # Run produce summary statistics on the DataFrame to get names of column names of potential pre-treatment covaiates.
+    summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'file_date')
+
+    # Do not include rows corresponding to other outcomes in the covariate exploration table.
+    outcomes = ['zestimate', 'crime_own_parcel', 'any_crime_500m', 'any_crime_1000m']  # Create list of all outcomes.
+    outcomes.remove(analysis)  # Remove the one which is being currently studied.
+    unneeded_outcomes = outcomes
+    for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
+        # Drop related variables from the summary statistics table.
+        summary_statistics.drop(f'2017-01_{unneeded_outcome}', level=1, axis=0)
+        summary_statistics.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
+
+    # Store independent and dependent variables.
+    independent_variable = 'judgment_for_plaintiff'
+    dependent_variable = f'final_month_of_panel_{analysis}'
+
+    # Must create alias columns for Patchy to work.
+    df.loc[:, dependent_variable] = df[f'2022-12_{analysis}']
+    df.loc[:, f'twenty_seventeen_{analysis}'] = df[f'2017-01_{analysis}']
+
+    # Build covariate exploration table.
     pre_treatment_panels = ["Panel A: Pre-treatment Outcomes",
                             "Panel B: Census Tract Characteristics",
                             "Panel C: Case Initiation",
@@ -198,12 +234,12 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
         p_y = (smf.ols(formula=f"{dependent_variable} ~ {potential_covariate}",
                        data=df,
                        missing='drop')
-        .fit().pvalues.loc[potential_covariate])
+               .fit().pvalues.loc[potential_covariate])
         # Get p-value from regression of treatment on covariates.
         p_x = (smf.ols(formula=f"{independent_variable} ~ {potential_covariate}",
                        data=df,
                        missing='drop')
-        .fit().pvalues.loc[potential_covariate])
+               .fit().pvalues.loc[potential_covariate])
         p_values.append((p_y, p_x))
     covariate_exploration_df = (pd.DataFrame(p_values,
                                              columns=covariate_exploration_table_columns,
@@ -325,12 +361,12 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :return:
     """
     # Panel A: Pre-treatment Outcomes
-    df.loc[:, 'twenty_seventeen_zestimate'] = df['2017-01_zestimate']
-    df.loc[:, 'change_in_zestimates'] = df['2019-01_zestimate'] - df['2017-01_zestimate']
-    df.loc[:, 'twenty_seventeen_crimes'] = df['2017-01_crimes']
-    df.loc[:, 'change_in_crimes'] = df['2019-01_crimes'] - df['2017-01_crimes']
-    panel_A_columns = ['twenty_seventeen_zestimate', 'change_in_zestimates',
-                       'twenty_seventeen_crimes', 'change_in_crimes']
+    outcomes = ['zestimate', 'crime_own_parcel', 'any_crime_500m', 'any_crime_1000m']  # Create list of all outcomes.
+    panel_A_columns = []
+    for outcome in outcomes:
+        panel_A_columns.append(f'2017-01_{outcome}')
+        panel_A_columns.append(f'pre_treatment_change_in_{outcome}')
+        df.loc[:, f'pre_treatment_change_in_{outcome}'] = df[f'2019-01_{outcome}'] - df[f'2017-01_{outcome}']
     panel_A = df[panel_A_columns].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
 
@@ -382,7 +418,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     start = 1
     stop = 2
     for i in range(start, stop + 1):
-        for outcome in ['zestimate', 'crimes']:
+        for outcome in outcomes:
             # This column contains the year-month which is i years relative to treatment for each property.
             offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)) \
                                       .dt.strftime('%Y-%m').copy() + "_" + outcome
@@ -406,6 +442,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F],
                                    axis=0)[['mean', '50%', 'std', 'count']]
 
+    # TODO: Update display names at the end of project!
     variable_display_names_dict = {'for_cause': "For cause", 'no_cause': "No cause",
                                    'non_payment': "Non-payment of rent",
                                    'case_duration': "Case duration", 'defaulted': "Case defaulted",
