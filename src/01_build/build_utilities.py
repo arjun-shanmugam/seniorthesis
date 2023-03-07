@@ -23,8 +23,9 @@ def aggregate_crime_to_case_month(ddf):
         
     # Aggregate.
     aggregated = (ddf.groupby(['case_number', 'month_of_crime_incident'])
-                  .aggregate(agg_dict)
-                  .reset_index())
+                  .aggregate(aggregation_dictionary)
+                  .reset_index()
+                  .compute())
     aggregated = aggregated.rename(columns={'INCIDENT_NUMBER': 'crime_incidents'})
     
     # Pivot from long to wide.
