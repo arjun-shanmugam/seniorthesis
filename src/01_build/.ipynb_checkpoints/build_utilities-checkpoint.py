@@ -11,6 +11,26 @@ from joblib import Parallel, delayed
 from multiprocessing import Manager
 import geopandas as gpd
 
+def aggregate_crime_to_case_month(ddf):
+    # Build aggregation dictionary -- aggregate all columns by 'first' except for crime incident counts.
+    columns_to_aggregate_by_first = ddf.columns.tolist()
+    columns_to_aggregate_by_first.remove('INCIDENT_NUMBER')
+    columns_to_aggregate_by_first.remove('case_number')
+    columns_to_aggregate_by_first.remove('month_of_crime_incident')
+    aggregation_dictionary = {'INCIDENT_NUMBER': 'count'}
+    for column in columns_to_aggregate_by_first:
+        aggregation_dictionary[column] = 'first'
+        
+    # Aggregate.
+    aggregated = (ddf.groupby(['case_number', 'month_of_crime_incident'])
+                  .aggregate(agg_dict)
+                  .reset_index())
+    aggregated = aggregated.rename(columns={'INCIDENT_NUMBER': 'crime_incidents'})
+    
+    # Pivot from long to wide.
+    return pd.pivot(aggregated, index=['case_number'], columns=['month_of_crime_incident'],
+                    values='crime_incidents').reset_index()
+                  
 def generate_variable_names(analysis: str):
     if analysis == 'zestimate':
         years = [str(year) for year in range(2013, 2023)]
