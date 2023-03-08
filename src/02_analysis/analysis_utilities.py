@@ -170,7 +170,8 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
     treatment_means = treatment_means.loc[pre_treatment_panels, :]
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
     outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
-                'any_crime_140m', 'any_crime_200m']  # Create list of all outcomes.
+                'any_crime_140m', 'any_crime_200m',
+                'any_crime_280m', 'any_crime_400m']  # Create list of all outcomes.
     outcomes.remove(analysis)  # Remove the one which is being currently studied.
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
@@ -284,7 +285,8 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
 
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
     outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
-                'any_crime_140m', 'any_crime_200m']  # Create list of all outcomes.
+                'any_crime_140m', 'any_crime_200m',
+                'any_crime_280m', 'any_crime_400m']  # Create list of all outcomes.
     outcomes.remove(analysis)  # Remove the one which is being currently studied.
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
@@ -440,7 +442,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     """
     # Panel A: Pre-treatment Outcomes
     outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
-                'any_crime_140m', 'any_crime_200m']  # Create list of all outcomes.
+                'any_crime_140m', 'any_crime_200m',
+                'any_crime_280m', 'any_crime_400m']  # Create list of all outcomes.
     panel_A_columns = []
     for outcome in outcomes:
         # Create alias column for Patchy.
