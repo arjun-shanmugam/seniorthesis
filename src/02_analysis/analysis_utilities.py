@@ -14,23 +14,86 @@ from typing import List
 
 def generate_variable_names(analysis: str):
     if analysis == 'zestimate':
-        pass
-    elif analysis == 'crimes_own_parcel':
+        years = [str(year) for year in range(2013, 2023)]
+        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
+        value_vars = ["2012-12"] + [str(year) + "-" + str(month) for year in years for month in months]
+        value_vars_zestimate = [value_var + "_zestimate" for value_var in value_vars]
+        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
+        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
+
+        to_return = value_vars_zestimate
+    elif analysis == 'any_crime_60m':
         # Store list of crime variable names and create dictionaries which map between month variable names to integers.
         years = [str(year) for year in range(2015, 2023)]
         months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
         value_vars = [str(year) + "-" + str(month) for year in years for month in months]
         value_vars = value_vars[5:]
         value_vars.append('2023-01')
-        value_vars_crime = [value_var + "_crimes_own_parcel" for value_var in value_vars]
+        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
         month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
         int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
 
         to_return = value_vars_crime
-    elif analysis == 'any_crime_500m':
-        pass
-    elif analysis == 'any_crime_100m':
-        pass
+    elif analysis == 'any_crime_90m':
+        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
+        years = [str(year) for year in range(2015, 2023)]
+        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
+        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
+        value_vars = value_vars[5:]
+        value_vars.append('2023-01')
+        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
+        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
+        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
+
+        to_return = value_vars_crime
+    elif analysis == 'any_crime_140m':
+        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
+        years = [str(year) for year in range(2015, 2023)]
+        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
+        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
+        value_vars = value_vars[5:]
+        value_vars.append('2023-01')
+        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
+        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
+        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
+
+        to_return = value_vars_crime
+    elif analysis == 'any_crime_200m':
+        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
+        years = [str(year) for year in range(2015, 2023)]
+        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
+        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
+        value_vars = value_vars[5:]
+        value_vars.append('2023-01')
+        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
+        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
+        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
+
+        to_return = value_vars_crime
+    elif analysis == 'any_crime_280m':
+        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
+        years = [str(year) for year in range(2015, 2023)]
+        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
+        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
+        value_vars = value_vars[5:]
+        value_vars.append('2023-01')
+        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
+        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
+        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
+
+        to_return = value_vars_crime
+    elif analysis == 'any_crime_400m':
+        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
+        years = [str(year) for year in range(2015, 2023)]
+        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
+        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
+        value_vars = value_vars[5:]
+        value_vars.append('2023-01')
+        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
+        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
+        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
+
+        to_return = value_vars_crime
     else:
         raise ValueError("Unrecognized argument for parameter analysis.")
 
@@ -39,10 +102,20 @@ def generate_variable_names(analysis: str):
 
 def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pre_treatment_covariates: List[str],
                value_vars: List[str], month_to_int_dictionary):
-    if analysis == 'crime':
-        value_name = 'crimes'
-    elif analysis == 'zestimate':
-        value_name = 'zestimate'
+    if analysis == 'zestimate':
+        pass
+    elif analysis == 'any_crime_60m':
+        pass
+    elif analysis == 'any_crime_90m':
+        pass
+    elif analysis == 'any_crime_140m':
+        pass
+    elif analysis == 'any_crime_200m':
+        pass
+    elif analysis == 'any_crime_280m':
+        pass
+    elif analysis == 'any_crime_400m':
+        pass
     else:
         raise ValueError("Unrecognized argument for parameter analysis.")
 
@@ -54,11 +127,11 @@ def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pr
     df = pd.melt(df,
                  id_vars=['case_number', treatment_month_variable, treatment_year_variable,
                           'judgment_for_plaintiff'] + pre_treatment_covariates,
-                 value_vars=value_vars, var_name='month', value_name=value_name)
+                 value_vars=value_vars, var_name='month', value_name=analysis)
     df = df.sort_values(by=['case_number', 'month'])
 
     # Convert months from string format to integer format.
-    df.loc[:, 'month'] = df['month'].str.replace(f"_{value_name}", '', regex=False).replace(month_to_int_dictionary)
+    df.loc[:, 'month'] = df['month'].str.replace(f"_{analysis}", '', regex=False).replace(month_to_int_dictionary)
     df.loc[:, treatment_month_variable] = df[treatment_month_variable].replace(month_to_int_dictionary)
     # Set treatment month to 0 for untreated observations.
     never_treated_mask = (df['judgment_for_plaintiff'] == 0)
@@ -94,17 +167,16 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
     pd.options.mode.chained_assignment = None
     treatment_means, variable_display_names_dict = produce_summary_statistics(
         df.copy().loc[df['judgment_for_plaintiff'] == 1, :], 'file_date')
-
-    if analysis == 'crime':
-        treatment_means = (treatment_means.loc[pre_treatment_panels, :]
-                           .drop('twenty_seventeen_zestimate', level=1, axis=0)
-                           .drop('change_in_zestimates', level=1, axis=0))
-    elif analysis == 'zestimate':
-        treatment_means = (treatment_means.loc[pre_treatment_panels, :]
-                           .drop('twenty_seventeen_crimes', level=1, axis=0)
-                           .drop('change_in_crimes', level=1, axis=0))
-    else:
-        raise ValueError("Unrecognized argument for parameter analysis.")
+    treatment_means = treatment_means.loc[pre_treatment_panels, :]
+    # Do not include rows corresponding to other outcomes in the covariate exploration table.
+    outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
+                'any_crime_140m', 'any_crime_200m']  # Create list of all outcomes.
+    outcomes.remove(analysis)  # Remove the one which is being currently studied.
+    unneeded_outcomes = outcomes
+    for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
+        # Drop related variables from the summary statistics table.
+        treatment_means = treatment_means.drop(f'twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
+        treatment_means = treatment_means.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
     treatment_means = (treatment_means.loc[predicts_outcome_mask, 'mean']
                        .rename("Cases Won by Plaintiff"))
@@ -192,12 +264,18 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     # Set column names of the covariate exploration table and check that specified analyis is valid.
     if analysis == 'zestimate':
         covariate_exploration_table_columns = ["Zestimate, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'crimes_own_parcel':
-        covariate_exploration_table_columns = ["Crime Incidents, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_500m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 500m, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_1000m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 1000m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_60m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 60m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_90m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 90m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_140m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 140m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_200m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 200m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_280m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 280m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'any_crime_400m':
+        covariate_exploration_table_columns = ["Any Crime Incidents Within 400m, Dec. 2022", "Plaintiff Victory"]
     else:
         raise ValueError("Unrecognized argument for parameter analysis.")
 
@@ -205,13 +283,14 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'file_date')
 
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
-    outcomes = ['zestimate', 'crime_own_parcel', 'any_crime_500m', 'any_crime_1000m']  # Create list of all outcomes.
+    outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
+                'any_crime_140m', 'any_crime_200m']  # Create list of all outcomes.
     outcomes.remove(analysis)  # Remove the one which is being currently studied.
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
         # Drop related variables from the summary statistics table.
-        summary_statistics.drop(f'2017-01_{unneeded_outcome}', level=1, axis=0)
-        summary_statistics.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
+        summary_statistics = summary_statistics.drop(f'twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
+        summary_statistics = summary_statistics.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
     # Store independent and dependent variables.
     independent_variable = 'judgment_for_plaintiff'
@@ -219,7 +298,6 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
 
     # Must create alias columns for Patchy to work.
     df.loc[:, dependent_variable] = df[f'2022-12_{analysis}']
-    df.loc[:, f'twenty_seventeen_{analysis}'] = df[f'2017-01_{analysis}']
 
     # Build covariate exploration table.
     pre_treatment_panels = ["Panel A: Pre-treatment Outcomes",
@@ -234,12 +312,12 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
         p_y = (smf.ols(formula=f"{dependent_variable} ~ {potential_covariate}",
                        data=df,
                        missing='drop')
-               .fit().pvalues.loc[potential_covariate])
+        .fit().pvalues.loc[potential_covariate])
         # Get p-value from regression of treatment on covariates.
         p_x = (smf.ols(formula=f"{independent_variable} ~ {potential_covariate}",
                        data=df,
                        missing='drop')
-               .fit().pvalues.loc[potential_covariate])
+        .fit().pvalues.loc[potential_covariate])
         p_values.append((p_y, p_x))
     covariate_exploration_df = (pd.DataFrame(p_values,
                                              columns=covariate_exploration_table_columns,
@@ -361,10 +439,13 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :return:
     """
     # Panel A: Pre-treatment Outcomes
-    outcomes = ['zestimate', 'crime_own_parcel', 'any_crime_500m', 'any_crime_1000m']  # Create list of all outcomes.
+    outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
+                'any_crime_140m', 'any_crime_200m']  # Create list of all outcomes.
     panel_A_columns = []
     for outcome in outcomes:
-        panel_A_columns.append(f'2017-01_{outcome}')
+        # Create alias column for Patchy.
+        df.loc[:, f'twenty_seventeen_{outcome}'] = df[f'2017-01_{outcome}']
+        panel_A_columns.append(f'twenty_seventeen_{outcome}')
         panel_A_columns.append(f'pre_treatment_change_in_{outcome}')
         df.loc[:, f'pre_treatment_change_in_{outcome}'] = df[f'2019-01_{outcome}'] - df[f'2017-01_{outcome}']
     panel_A = df[panel_A_columns].describe().T
