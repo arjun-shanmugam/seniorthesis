@@ -57,6 +57,7 @@ def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pr
     # Standardize control variables.
     [pre_treatment_covariates.remove(missing_indicator) for missing_indicator in missing_indicators]
     df.loc[:, pre_treatment_covariates] = StandardScaler().fit_transform(df[pre_treatment_covariates])
+    [pre_treatment_covariates.append(missing_indicator) for missing_indicator in missing_indicators]
 
     # Convert months from string format to integer format.
     df.loc[:, 'month'] = df['month'].str.replace(f"_{analysis}", '', regex=False).replace(month_to_int_dictionary)
@@ -412,8 +413,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
 
     # Panel B: Census Tract Characteristics
-    panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'share_white2010', 'frac_coll_plus2010', 'job_density_2013',
-                       'poor_share2010', 'traveltime15_2010', 'rent_twobed2015']
+    panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'frac_coll_plus2010', 'job_density_2013',
+                       'poor_share2010']
     panel_B = df[sorted(panel_B_columns)].describe().T
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
