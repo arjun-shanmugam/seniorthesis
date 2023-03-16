@@ -62,6 +62,10 @@ def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pr
     # Convert months from string format to integer format.
     df.loc[:, 'month'] = df['month'].str.replace(f"_{analysis}", '', regex=False).replace(month_to_int_dictionary)
     df.loc[:, treatment_month_variable] = df[treatment_month_variable].replace(month_to_int_dictionary)
+
+    # Generate alias treatment month variable which will not be used for DiD so that we can calculate sample size later.
+    df.loc[:, treatment_month_variable+'_alias'] = df[treatment_month_variable]
+
     # Set treatment month to 0 for untreated observations.
     never_treated_mask = (df['judgment_for_plaintiff'] == 0)
     df.loc[never_treated_mask, treatment_month_variable] = np.NaN
@@ -346,7 +350,8 @@ def aggregate_by_event_time_and_plot(att_gt,
 
     # Plot sample size at each event-time.
     df_copy = df.copy().reset_index()
-    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable]
+    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable+'_alias']
+
     cases_per_year = df_copy.groupby('event_time')['case_number'].nunique().loc[start_period:end_period]
     x = cases_per_year.index
     y = cases_per_year.values
