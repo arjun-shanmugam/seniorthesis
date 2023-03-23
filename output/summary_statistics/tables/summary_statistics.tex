@@ -3,60 +3,69 @@
  &  & Mean & Median & S.D. & N \\
 Panel & Variable &  &  &  &  \\
 \midrule
-\multirow[c]{14}{4cm}{\textit{Panel A: Pre-treatment Outcomes}} & Zestimate, Jan. 2017 & 298,898.22 & 235,078.00 & 352,756.46 & 10,176 \\
- & pre_treatment_change_in_any_crime_140m & 0.02 & 0.00 & 2.42 & 40,734 \\
- & pre_treatment_change_in_any_crime_200m & 0.05 & 0.00 & 3.31 & 40,734 \\
- & pre_treatment_change_in_any_crime_60m & 0.01 & 0.00 & 1.16 & 40,734 \\
- & pre_treatment_change_in_any_crime_60m & 0.01 & 0.00 & 1.16 & 40,734 \\
- & pre_treatment_change_in_any_crime_90m & 0.03 & 0.00 & 1.71 & 40,734 \\
- & pre_treatment_change_in_any_crime_90m & 0.03 & 0.00 & 1.71 & 40,734 \\
- & pre_treatment_change_in_zestimate & 46,593.08 & 37,330.00 & 158,125.24 & 10,160 \\
- & twenty_seventeen_any_crime_140m & 1.41 & 0.00 & 5.01 & 40,734 \\
- & twenty_seventeen_any_crime_200m & 2.68 & 0.00 & 8.69 & 40,734 \\
- & twenty_seventeen_any_crime_60m & 0.29 & 0.00 & 1.31 & 40,734 \\
- & twenty_seventeen_any_crime_60m & 0.29 & 0.00 & 1.31 & 40,734 \\
- & twenty_seventeen_any_crime_90m & 0.62 & 0.00 & 2.42 & 40,734 \\
- & twenty_seventeen_any_crime_90m & 0.62 & 0.00 & 2.42 & 40,734 \\
+\multirow[c]{6}{4cm}{\textit{Panel A: Pre-treatment Outcomes}} & pre_treatment_change_in_group_0_crimes_100m & -0.54 & 0.00 & 4.26 & 6,060 \\
+ & pre_treatment_change_in_group_1_crimes_100m & 0.01 & 0.00 & 1.00 & 6,060 \\
+ & pre_treatment_change_in_group_3_crimes_100m & 0.05 & 0.00 & 1.04 & 6,060 \\
+ & twenty_seventeen_group_0_crimes_100m & 5.16 & 4.00 & 5.77 & 6,060 \\
+ & twenty_seventeen_group_1_crimes_100m & 0.41 & 0.00 & 0.80 & 6,060 \\
+ & twenty_seventeen_group_3_crimes_100m & 0.45 & 0.00 & 0.82 & 6,060 \\
 \cline{1-6}
-\multirow[c]{8}{4cm}{\textit{Panel B: Census Tract Characteristics}} & Jobs per square mile (2010) & 4,802.71 & 1,355.40 & 17,583.20 & 40,732 \\
- & Median household income (2016) & 52,695.02 & 47,105.00 & 27,212.35 & 40,732 \\
- & Median two bedroom rent (2015) & 1,116.73 & 1,055.00 & 396.69 & 30,546 \\
- & Population density (2010) & 9,151.92 & 5,982.68 & 9,537.28 & 40,732 \\
- & Share below poverty line & 0.20 & 0.16 & 0.15 & 40,732 \\
- & Share white (2010) & 0.58 & 0.63 & 0.29 & 40,732 \\
- & Share with bachelor's degree & 0.26 & 0.22 & 0.17 & 40,732 \\
- & Share with commute $<$15 minutes (2010) & 0.28 & 0.27 & 0.11 & 40,732 \\
+\multirow[c]{5}{4cm}{\textit{Panel B: Census Tract Characteristics}} & frac_coll_plus2010 & 0.31 & 0.24 & 0.22 & 6,060 \\
+ & job_density_2013 & 14,806.08 & 2,425.15 & 40,595.37 & 6,060 \\
+ & med_hhinc2016 & 47,188.87 & 41,146.00 & 24,703.65 & 6,060 \\
+ & poor_share2010 & 0.28 & 0.25 & 0.14 & 6,060 \\
+ & popdensity2010 & 22,704.52 & 20,644.44 & 13,091.45 & 6,060 \\
 \cline{1-6}
-\multirow[c]{3}{4cm}{\textit{Panel C: Case Initiation}} & For cause & 0.12 & 0.00 & 0.33 & 40,734 \\
- & No cause & 0.11 & 0.00 & 0.31 & 40,734 \\
- & Non-payment of rent & 0.75 & 1.00 & 0.43 & 40,734 \\
+\multirow[c]{3}{4cm}{\textit{Panel C: Case Initiation}} & for_cause & 0.17 & 0.00 & 0.37 & 6,060 \\
+ & no_cause & 0.05 & 0.00 & 0.22 & 6,060 \\
+ & non_payment & 0.78 & 1.00 & 0.42 & 6,060 \\
 \cline{1-6}
-\multirow[c]{4}{4cm}{\textit{Panel D: Defendant and Plaintiff Characteristics}} & Defendant has an attorney & 0.09 & 0.00 & 0.28 & 40,734 \\
- & Defendant is an entity & 0.01 & 0.00 & 0.08 & 40,734 \\
- & Plaintiff has an attorney & 0.84 & 1.00 & 0.37 & 40,734 \\
- & Plaintiff is an entity & 0.70 & 1.00 & 0.46 & 40,734 \\
+\multirow[c]{4}{4cm}{\textit{Panel D: Defendant and Plaintiff Characteristics}} & hasAttyD & 0.08 & 0.00 & 0.27 & 6,060 \\
+ & hasAttyP & 0.88 & 1.00 & 0.32 & 6,060 \\
+ & isEntityD & 0.02 & 0.00 & 0.14 & 6,060 \\
+ & isEntityP & 0.81 & 1.00 & 0.39 & 6,060 \\
 \cline{1-6}
-\multirow[c]{6}{4cm}{\textit{Panel E: Case Resolution}} & Case defaulted & 0.20 & 0.00 & 0.40 & 40,734 \\
- & Case dismised & 0.29 & 0.00 & 0.45 & 40,734 \\
- & Case duration & 57.81 & 21.00 & 78.28 & 39,094 \\
- & Case heard & 0.06 & 0.00 & 0.23 & 40,734 \\
- & Case mediated & 0.41 & 0.00 & 0.49 & 40,734 \\
- & Money judgment & 1,890.02 & 0.00 & 5,279.08 & 40,734 \\
+\multirow[c]{6}{4cm}{\textit{Panel E: Case Resolution}} & case_duration & 58.17 & 19.00 & 88.96 & 5,500 \\
+ & defaulted & 0.19 & 0.00 & 0.39 & 6,060 \\
+ & dismissed & 0.27 & 0.00 & 0.44 & 6,060 \\
+ & heard & 0.03 & 0.00 & 0.17 & 6,060 \\
+ & judgment & 1,938.57 & 0.00 & 5,337.87 & 6,060 \\
+ & mediated & 0.40 & 0.00 & 0.49 & 6,060 \\
 \cline{1-6}
-\multirow[c]{14}{4cm}{\textit{Panel F: Post-treatment Outcomes}} & Zestimate one year after filing date & 421,590.21 & 347,444.00 & 344,333.24 & 10,443 \\
- & Zestimate two years after filing date & 477,931.84 & 393,800.00 & 457,699.06 & 9,175 \\
- & any_crime_140m_1_years_relative_to_treatment & 1.41 & 0.00 & 4.90 & 40,734 \\
- & any_crime_140m_2_years_relative_to_treatment & 1.50 & 0.00 & 5.04 & 35,684 \\
- & any_crime_200m_1_years_relative_to_treatment & 2.65 & 0.00 & 8.37 & 40,734 \\
- & any_crime_200m_2_years_relative_to_treatment & 2.84 & 0.00 & 8.74 & 35,684 \\
- & any_crime_60m_1_years_relative_to_treatment & 0.31 & 0.00 & 1.41 & 40,734 \\
- & any_crime_60m_1_years_relative_to_treatment & 0.31 & 0.00 & 1.41 & 40,734 \\
- & any_crime_60m_2_years_relative_to_treatment & 0.34 & 0.00 & 1.44 & 35,684 \\
- & any_crime_60m_2_years_relative_to_treatment & 0.34 & 0.00 & 1.44 & 35,684 \\
- & any_crime_90m_1_years_relative_to_treatment & 0.66 & 0.00 & 2.50 & 40,734 \\
- & any_crime_90m_1_years_relative_to_treatment & 0.66 & 0.00 & 2.50 & 40,734 \\
- & any_crime_90m_2_years_relative_to_treatment & 0.69 & 0.00 & 2.53 & 35,684 \\
- & any_crime_90m_2_years_relative_to_treatment & 0.69 & 0.00 & 2.53 & 35,684 \\
+\multirow[c]{34}{4cm}{\textit{Panel F: Post-treatment Outcomes}} & group_0_crimes_100m_1_years_relative_to_treatment & 3.46 & 2.00 & 5.84 & 6,060 \\
+ & group_0_crimes_100m_2_years_relative_to_treatment & 3.49 & 2.00 & 4.72 & 5,338 \\
+ & group_0_crimes_150m_1_years_relative_to_treatment & 7.26 & 5.00 & 11.68 & 6,060 \\
+ & group_0_crimes_150m_2_years_relative_to_treatment & 7.38 & 5.00 & 11.77 & 5,338 \\
+ & group_0_crimes_200m_1_years_relative_to_treatment & 12.94 & 9.00 & 19.28 & 6,060 \\
+ & group_0_crimes_200m_2_years_relative_to_treatment & 13.39 & 9.00 & 20.13 & 5,338 \\
+ & group_0_crimes_50m_1_years_relative_to_treatment & 1.03 & 0.00 & 3.59 & 6,060 \\
+ & group_0_crimes_50m_2_years_relative_to_treatment & 1.04 & 0.00 & 2.01 & 5,338 \\
+ & group_1_crimes_100m_1_years_relative_to_treatment & 0.27 & 0.00 & 0.67 & 6,060 \\
+ & group_1_crimes_100m_2_years_relative_to_treatment & 0.24 & 0.00 & 0.60 & 5,338 \\
+ & group_1_crimes_150m_1_years_relative_to_treatment & 0.54 & 0.00 & 1.04 & 6,060 \\
+ & group_1_crimes_150m_2_years_relative_to_treatment & 0.51 & 0.00 & 0.97 & 5,338 \\
+ & group_1_crimes_200m_1_years_relative_to_treatment & 0.91 & 0.00 & 1.49 & 6,060 \\
+ & group_1_crimes_200m_2_years_relative_to_treatment & 0.88 & 0.00 & 1.43 & 5,338 \\
+ & group_1_crimes_50m_1_years_relative_to_treatment & 0.09 & 0.00 & 0.41 & 6,060 \\
+ & group_1_crimes_50m_2_years_relative_to_treatment & 0.07 & 0.00 & 0.30 & 5,338 \\
+ & group_2_crimes_100m_1_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 6,060 \\
+ & group_2_crimes_100m_2_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 5,338 \\
+ & group_2_crimes_150m_1_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 6,060 \\
+ & group_2_crimes_150m_2_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 5,338 \\
+ & group_2_crimes_200m_1_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 6,060 \\
+ & group_2_crimes_200m_2_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 5,338 \\
+ & group_2_crimes_50m_1_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 6,060 \\
+ & group_2_crimes_50m_2_years_relative_to_treatment & 0.00 & 0.00 & 0.00 & 5,338 \\
+ & group_3_crimes_100m_1_years_relative_to_treatment & 0.55 & 0.00 & 1.28 & 6,060 \\
+ & group_3_crimes_100m_2_years_relative_to_treatment & 0.60 & 0.00 & 1.16 & 5,338 \\
+ & group_3_crimes_150m_1_years_relative_to_treatment & 1.08 & 1.00 & 1.80 & 6,060 \\
+ & group_3_crimes_150m_2_years_relative_to_treatment & 1.22 & 1.00 & 1.96 & 5,338 \\
+ & group_3_crimes_200m_1_years_relative_to_treatment & 1.87 & 1.00 & 2.68 & 6,060 \\
+ & group_3_crimes_200m_2_years_relative_to_treatment & 2.21 & 1.00 & 3.29 & 5,338 \\
+ & group_3_crimes_50m_1_years_relative_to_treatment & 0.17 & 0.00 & 0.76 & 6,060 \\
+ & group_3_crimes_50m_2_years_relative_to_treatment & 0.18 & 0.00 & 0.51 & 5,338 \\
+ & zestimate_1_years_relative_to_treatment & 793,120.53 & 708,645.00 & 498,598.36 & 1,154 \\
+ & zestimate_2_years_relative_to_treatment & 879,154.76 & 788,300.00 & 577,909.62 & 1,041 \\
 \cline{1-6}
 \bottomrule
 \end{tabular}

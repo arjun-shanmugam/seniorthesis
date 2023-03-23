@@ -2,28 +2,28 @@
 Functions useful for analysis.
 """
 from os.path import join
-
+from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 import figure_utilities
+from analysis_constants import Variables
 from differences.did.pscore_cal import pscore_mle
 from typing import List
 
 
 def generate_variable_names(analysis: str):
     if analysis == 'zestimate':
+        # For zestimate analysis, need to create column names for 2012-12 through 2022-12
         years = [str(year) for year in range(2013, 2023)]
         months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
         value_vars = ["2012-12"] + [str(year) + "-" + str(month) for year in years for month in months]
         value_vars_zestimate = [value_var + "_zestimate" for value_var in value_vars]
         month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
         int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-
-        to_return = value_vars_zestimate
-    elif analysis == 'any_crime_60m':
-        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
+        return value_vars_zestimate, month_to_int_dictionary, int_to_month_dictionary
+    elif 'crime' in analysis:
         years = [str(year) for year in range(2015, 2023)]
         months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
         value_vars = [str(year) + "-" + str(month) for year in years for month in months]
@@ -32,91 +32,15 @@ def generate_variable_names(analysis: str):
         value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
         month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
         int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-
-        to_return = value_vars_crime
-    elif analysis == 'any_crime_90m':
-        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
-        years = [str(year) for year in range(2015, 2023)]
-        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
-        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
-        value_vars = value_vars[5:]
-        value_vars.append('2023-01')
-        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
-        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
-        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-
-        to_return = value_vars_crime
-    elif analysis == 'any_crime_140m':
-        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
-        years = [str(year) for year in range(2015, 2023)]
-        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
-        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
-        value_vars = value_vars[5:]
-        value_vars.append('2023-01')
-        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
-        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
-        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-
-        to_return = value_vars_crime
-    elif analysis == 'any_crime_200m':
-        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
-        years = [str(year) for year in range(2015, 2023)]
-        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
-        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
-        value_vars = value_vars[5:]
-        value_vars.append('2023-01')
-        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
-        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
-        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-
-        to_return = value_vars_crime
-    elif analysis == 'any_crime_280m':
-        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
-        years = [str(year) for year in range(2015, 2023)]
-        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
-        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
-        value_vars = value_vars[5:]
-        value_vars.append('2023-01')
-        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
-        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
-        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-
-        to_return = value_vars_crime
-    elif analysis == 'any_crime_400m':
-        # Store list of crime variable names and create dictionaries which map between month variable names to integers.
-        years = [str(year) for year in range(2015, 2023)]
-        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
-        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
-        value_vars = value_vars[5:]
-        value_vars.append('2023-01')
-        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
-        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
-        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-
-        to_return = value_vars_crime
+        return value_vars_crime, month_to_int_dictionary, int_to_month_dictionary
     else:
         raise ValueError("Unrecognized argument for parameter analysis.")
 
-    return to_return, month_to_int_dictionary, int_to_month_dictionary
-
 
 def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pre_treatment_covariates: List[str],
+               missing_indicators: List[str],
                value_vars: List[str], month_to_int_dictionary):
-    if analysis == 'zestimate':
-        pass
-    elif analysis == 'any_crime_60m':
-        pass
-    elif analysis == 'any_crime_90m':
-        pass
-    elif analysis == 'any_crime_140m':
-        pass
-    elif analysis == 'any_crime_200m':
-        pass
-    elif analysis == 'any_crime_280m':
-        pass
-    elif analysis == 'any_crime_400m':
-        pass
-    else:
+    if analysis not in Variables.outcomes:
         raise ValueError("Unrecognized argument for parameter analysis.")
 
     # Store treatment month and year variables.
@@ -130,9 +54,18 @@ def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pr
                  value_vars=value_vars, var_name='month', value_name=analysis)
     df = df.sort_values(by=['case_number', 'month'])
 
+    # Standardize control variables.
+    [pre_treatment_covariates.remove(missing_indicator) for missing_indicator in missing_indicators]
+    df.loc[:, pre_treatment_covariates] = StandardScaler().fit_transform(df[pre_treatment_covariates])
+    [pre_treatment_covariates.append(missing_indicator) for missing_indicator in missing_indicators]
+
     # Convert months from string format to integer format.
     df.loc[:, 'month'] = df['month'].str.replace(f"_{analysis}", '', regex=False).replace(month_to_int_dictionary)
     df.loc[:, treatment_month_variable] = df[treatment_month_variable].replace(month_to_int_dictionary)
+
+    # Generate alias treatment month variable which will not be used for DiD so that we can calculate sample size later.
+    df.loc[:, treatment_month_variable+'_alias'] = df[treatment_month_variable]
+
     # Set treatment month to 0 for untreated observations.
     never_treated_mask = (df['judgment_for_plaintiff'] == 0)
     df.loc[never_treated_mask, treatment_month_variable] = np.NaN
@@ -147,11 +80,13 @@ def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pr
 
 
 def add_missing_indicators(df: pd.DataFrame, missing_variables: List[str], pre_treatment_covariates: List[str]):
+    missing_indicators = []
     for missing_variable in missing_variables:
         df.loc[:, missing_variable] = df[missing_variable].fillna(0)
         df.loc[:, missing_variable + '_missing'] = np.where(df['rent_twobed2015'] == 0, 1, 0)
         pre_treatment_covariates.append(missing_variable + '_missing')
-
+        missing_indicators.append(missing_variable + '_missing')
+    return missing_indicators
 
 def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.DataFrame, output_directory: str):
     # Store pre-treatment panel names.
@@ -169,9 +104,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
         df.copy().loc[df['judgment_for_plaintiff'] == 1, :], 'file_date')
     treatment_means = treatment_means.loc[pre_treatment_panels, :]
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
-    outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
-                'any_crime_140m', 'any_crime_200m',
-                'any_crime_280m', 'any_crime_400m']  # Create list of all outcomes.
+    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
     outcomes.remove(analysis)  # Remove the one which is being currently studied.
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
@@ -265,18 +198,50 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     # Set column names of the covariate exploration table and check that specified analyis is valid.
     if analysis == 'zestimate':
         covariate_exploration_table_columns = ["Zestimate, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_60m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 60m, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_90m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 90m, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_140m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 140m, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_200m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 200m, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_280m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 280m, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'any_crime_400m':
-        covariate_exploration_table_columns = ["Any Crime Incidents Within 400m, Dec. 2022", "Plaintiff Victory"]
+    elif analysis == 'group_0_crimes_50m':
+        covariate_exploration_table_columns = ["Crime Incidents Within 50m, Oct. 2022", "Plaintiff Victory"]
+    elif analysis == 'group_0_crimes_100m':
+        covariate_exploration_table_columns = ["Crime Incidents Within 100m, Oct. 2022", "Plaintiff Victory"]
+    elif analysis == 'group_0_crimes_150m':
+        covariate_exploration_table_columns = ["Crime Incidents Within 150m, Oct. 2022", "Plaintiff Victory"]
+    elif analysis == 'group_0_crimes_200m':
+        covariate_exploration_table_columns = ["Crime Incidents Within 200m, Oct. 2022", "Plaintiff Victory"]
+    elif analysis == 'group_1_crimes_50m':
+        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 50m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_1_crimes_100m':
+        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 100m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_1_crimes_150m':
+        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 150m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_1_crimes_200m':
+        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 200m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_2_crimes_50m':
+        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 50m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_2_crimes_100m':
+        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 100m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_2_crimes_150m':
+        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 150m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_2_crimes_200m':
+        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 200m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_3_crimes_50m':
+        covariate_exploration_table_columns = ["Investigations Within 50m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_3_crimes_100m':
+        covariate_exploration_table_columns = ["Investigations Within 100m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_3_crimes_150m':
+        covariate_exploration_table_columns = ["Investigations Within 150m, Oct. 2022",
+                                               "Plaintiff Victory"]
+    elif analysis == 'group_3_crimes_200m':
+        covariate_exploration_table_columns = ["Investigations Within 200m, Oct. 2022",
+                                               "Plaintiff Victory"]
     else:
         raise ValueError("Unrecognized argument for parameter analysis.")
 
@@ -284,9 +249,7 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'file_date')
 
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
-    outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
-                'any_crime_140m', 'any_crime_200m',
-                'any_crime_280m', 'any_crime_400m']  # Create list of all outcomes.
+    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
     outcomes.remove(analysis)  # Remove the one which is being currently studied.
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
@@ -299,7 +262,7 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     dependent_variable = f'final_month_of_panel_{analysis}'
 
     # Must create alias columns for Patchy to work.
-    df.loc[:, dependent_variable] = df[f'2022-12_{analysis}']
+    df.loc[:, dependent_variable] = df[f'2022-10_{analysis}']
 
     # Build covariate exploration table.
     pre_treatment_panels = ["Panel A: Pre-treatment Outcomes",
@@ -310,6 +273,7 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     potential_covariates = summary_statistics.index.get_level_values(1)
     p_values = []
     for potential_covariate in potential_covariates:
+
         # Get p-value from regression of outcome on covariates.
         p_y = (smf.ols(formula=f"{dependent_variable} ~ {potential_covariate}",
                        data=df,
@@ -386,7 +350,8 @@ def aggregate_by_event_time_and_plot(att_gt,
 
     # Plot sample size at each event-time.
     df_copy = df.copy().reset_index()
-    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable]
+    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable+'_alias']
+
     cases_per_year = df_copy.groupby('event_time')['case_number'].nunique().loc[start_period:end_period]
     x = cases_per_year.index
     y = cases_per_year.values
@@ -441,9 +406,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :return:
     """
     # Panel A: Pre-treatment Outcomes
-    outcomes = ['zestimate', 'any_crime_60m', 'any_crime_90m',
-                'any_crime_140m', 'any_crime_200m',
-                'any_crime_280m', 'any_crime_400m']  # Create list of all outcomes.
+    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
     panel_A_columns = []
     for outcome in outcomes:
         # Create alias column for Patchy.
@@ -455,8 +418,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
 
     # Panel B: Census Tract Characteristics
-    panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'share_white2010', 'frac_coll_plus2010', 'job_density_2013',
-                       'poor_share2010', 'traveltime15_2010', 'rent_twobed2015']
+    panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'frac_coll_plus2010', 'job_density_2013',
+                       'poor_share2010']
     panel_B = df[sorted(panel_B_columns)].describe().T
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
@@ -527,31 +490,5 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    axis=0)[['mean', '50%', 'std', 'count']]
 
     # TODO: Update display names at the end of project!
-    variable_display_names_dict = {'for_cause': "For cause", 'no_cause': "No cause",
-                                   'non_payment': "Non-payment of rent",
-                                   'case_duration': "Case duration", 'defaulted': "Case defaulted",
-                                   'heard': "Case heard",
-                                   'judgment': "Money judgment", 'mediated': "Case mediated",
-                                   'dismissed': 'Case dismised',
-                                   'hasAttyD': "Defendant has an attorney", 'hasAttyP': "Plaintiff has an attorney",
-                                   'isEntityD': "Defendant is an entity", 'isEntityP': "Plaintiff is an entity",
-                                   'med_hhinc2016': 'Median household income (2016)',
-                                   'popdensity2010': 'Population density (2010)',
-                                   'share_white2010': 'Share white (2010)',
-                                   'rent_twobed2015': 'Median two bedroom rent (2015)',
-                                   'frac_coll_plus2010': 'Share with bachelor\'s degree',
-                                   'job_density_2013': 'Jobs per square mile (2010)',
-                                   'mean_commutetime2000': 'Mean commute time (2000)',
-                                   'traveltime15_2010': 'Share with commute $<$15 minutes (2010)',
-                                   'poor_share2010': 'Share below poverty line',
-                                   'twenty_seventeen_zestimate': 'Zestimate, Jan. 2017',
-                                   'twenty_seventeen_crimes': 'Crimes reported, Jan. 2017',
-                                   'change_in_crimes': 'Change in Crimes Reported, Jan. 2017 to Jan. 2019',
-                                   'twenty_eighteen': 'Zestimate, Jan. 2018',
-                                   'change_in_zestimates': 'Change in Zestimate, Jan. 2017 to Jan. 2019',
-                                   'zestimate_1_years_relative_to_treatment': "Zestimate one year after filing date",
-                                   'zestimate_2_years_relative_to_treatment': "Zestimate two years after filing date",
-                                   'crimes_1_years_relative_to_treatment': "Crimes one year after filing date",
-                                   'crimes_2_years_relative_to_treatment': "Crimes two years after filing date",
-                                   }
+    variable_display_names_dict = {}
     return summary_statistics, variable_display_names_dict

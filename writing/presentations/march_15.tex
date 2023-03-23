@@ -1,0 +1,192 @@
+\documentclass [xcolor=svgnames, t] {beamer} 
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs, comment} 
+\usepackage[absolute, overlay]{textpos} 
+\usepackage{pgfpages}
+\usepackage[font=footnotesize]{caption}
+\useoutertheme{infolines} 
+
+
+
+\definecolor{brownbrown}{RGB}{56, 28, 0}
+\definecolor{brownred}{RGB}{228, 0, 43}
+
+\setbeamercolor{title in head/foot}{bg=brownred, fg=brownbrown}
+\setbeamercolor{author in head/foot}{bg=myuniversity}
+\setbeamertemplate{page number in head/foot}{}
+\usepackage{csquotes}
+
+
+\usepackage{amsmath}
+\usepackage[makeroom]{cancel}
+
+
+\usepackage{textpos}
+
+\usepackage{tikz}
+
+\usetheme{Madrid}
+\definecolor{myuniversity}{RGB}{56, 28, 0}
+\usecolortheme[named=myuniversity]{structure}
+\usepackage{tikz}
+
+
+
+\title[Eviction and Property Values]{Estimating the Effect of Eviction on Assessment Values}
+
+
+\author[Arjun Shanmugam]{}
+\setbeamertemplate{navigation symbols}{}
+
+
+\date{\today}
+
+
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+\begin{document}
+\begin{frame}
+\maketitle
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Table of Contents}
+\tableofcontents
+\end{frame}
+
+\section{Introduction}
+\begin{frame}{Introduction and Literature}
+   \begin{enumerate}
+       \item Eviction is a bigger problem in America than in other rich countries
+       \begin{enumerate}
+           \item Most poor renting families in America
+spend over half of their incomes on rent (Desmond, 2017)
+       \end{enumerate}
+       \item Sociologists have found large effects of evictions using non-experimental methods=
+       \item Economists are just beginning to study eviction
+       \begin{enumerate}
+           \item Increased probability of job loss (Desmond, Gershenson, 2016)
+           \item Increased probability of depression (Desmond, Kimbro, 2015)
+       \end{enumerate} 
+       \item However, these estimates are likely confounded
+       \begin{enumerate}
+           \item ``Ashenfelter dip''
+           \item Observable and unobservable confounders
+       \end{enumerate}
+       \item Only recently have economists began to apply quasi-experimental methods to study eviction
+        \begin{enumerate}
+            \item Van Dijk et al. find effects on durable consumption, access to credit, and more
+        \end{enumerate}
+   \end{enumerate}
+\end{frame}
+
+\section{Motivation}
+
+
+\begin{frame}{Motivation}
+\begin{enumerate}
+    \item Strong negative correlation between the presence of eviction and crime
+    \item Several potential channels through which eviction might affect crime
+    \begin{enumerate}
+        \item Maybe eviction weakens community bonds that discourage crime
+        \item Maybe evicted tenants are more likely to commit crime after receiving notice of eviction
+        \item Or, perhaps landlords are evicting problematic tenants
+    \end{enumerate}
+    \item Either way, understanding effect is important to understanding how eviction is affecting communitiies
+    \item Kroeger and La Mattina (2020): Nuisance ordinances increase eviction risk in Ohio
+    \item Falcone (2022): Evictions cause crime! But only if nuisance ordinances affect crime only through evictions...
+\end{enumerate}
+\end{frame}
+
+\section{Data}
+\begin{frame}{Data}
+    \begin{enumerate}
+        \item Eviction data from MassLandlords, a trade association
+        \begin{enumerate}
+            \item Scraped around 50,000 eviction case records
+            \item Collects case outcome data, including method of resolution, judge name, and more
+        \end{enumerate}
+        \item Crime data from the Boston Police Department (BPD)
+        \begin{enumerate}
+            \item Incident-level data for every incident that BPD has responded to since 2015
+            \item Coordinates of each incident
+        \end{enumerate}
+        \item Create 100m radius around every eviction and match to crimes which fall into that radius
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Data}
+\begin{table}[H]
+    \centering
+    \tiny
+    \input{output/01_exploratory/tables/summary_statistics.tex}
+    \label{tab:my_label}
+\end{table}
+\end{frame}
+
+
+\begin{frame}{Data}
+\begin{table}[H]
+    \centering
+    \tiny
+    \input{output/01_exploratory/tables/balance_table.tex}
+    \label{tab:my_label}
+\end{table}
+\end{frame}
+
+
+
+
+\section{Empirical Strategy}
+\begin{frame}{Empirical Strategy}
+    \begin{enumerate}
+        \item Most eviction cases in Massachusetts are filed in the Massachusetts Housing Court
+        \item Within the Housing Court, cases are assigned to about 15 judges quasi-randomly conditional on city and time
+        \item This is the basis for an examiner design study, which uses judge dummies as instruments
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Empirical Strategy}
+\begin{table}[H]
+    \centering
+    \tiny
+    \input{output/01_exploratory/tables/placebo_first_stage.tex}
+    \label{tab:my_label}
+\end{table}    
+\end{frame}
+
+\begin{frame}{Preliminary Results}
+    \begin{table}[H]
+        \centering
+        \tiny
+        \input{output/01_exploratory/tables/ln_total_val_results_table.tex}
+        \label{tab:my_label}
+    \end{table}
+\end{frame}
+\begin{frame}{Preliminary Results}
+    \begin{table}[H]
+        \centering
+        \tiny
+        \input{output/01_exploratory/tables/ln_bldg_val_results_table.tex}
+        \label{tab:my_label}
+    \end{table}
+\end{frame}
+
+
+\begin{frame}{Next Steps}
+    \begin{enumerate}
+        \item Figure out what to do about my lack of power
+        \item Find a systematic way to drop observations in sparse city-years
+        \item Speak to an assessor from Massachusetts to understand whether there is even a mechanism through which I might see an effect
+        \item Think about whether my instrument is truly valid
+    \end{enumerate}
+\end{frame}
+
+\end{document}
+Close
