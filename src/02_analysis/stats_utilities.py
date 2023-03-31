@@ -8,75 +8,15 @@ import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 import figure_utilities
-from analysis_constants import Variables
+from constants import Variables
 from differences.did.pscore_cal import pscore_mle
 from typing import List
 
 
-def generate_variable_names(analysis: str):
-    if analysis == 'zestimate':
-        # For zestimate analysis, need to create column names for 2012-12 through 2022-12
-        years = [str(year) for year in range(2013, 2023)]
-        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
-        value_vars = ["2012-12"] + [str(year) + "-" + str(month) for year in years for month in months]
-        value_vars_zestimate = [value_var + "_zestimate" for value_var in value_vars]
-        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
-        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-        return value_vars_zestimate, month_to_int_dictionary, int_to_month_dictionary
-    elif 'crime' in analysis:
-        years = [str(year) for year in range(2015, 2023)]
-        months = ["0" + str(month) for month in range(1, 10)] + [str(month) for month in range(10, 13)]
-        value_vars = [str(year) + "-" + str(month) for year in years for month in months]
-        value_vars = value_vars[5:]
-        value_vars.append('2023-01')
-        value_vars_crime = [value_var + f"_{analysis}" for value_var in value_vars]
-        month_to_int_dictionary = {key: value + 1 for value, key in enumerate(value_vars)}
-        int_to_month_dictionary = {key + 1: value for key, value in enumerate(value_vars)}
-        return value_vars_crime, month_to_int_dictionary, int_to_month_dictionary
-    else:
-        raise ValueError("Unrecognized argument for parameter analysis.")
 
 
-def prepare_df(df: pd.DataFrame, analysis: str, treatment_date_variable: str, pre_treatment_covariates: List[str],
-               missing_indicators: List[str],
-               value_vars: List[str], month_to_int_dictionary):
-    if analysis not in Variables.outcomes:
-        raise ValueError("Unrecognized argument for parameter analysis.")
 
-    # Store treatment month and year variables.
-    treatment_month_variable = treatment_date_variable.replace("date", "month")
-    treatment_year_variable = treatment_date_variable.replace("date", "year")
 
-    # Reshape from wide to long.
-    df = pd.melt(df,
-                 id_vars=['case_number', treatment_month_variable, treatment_year_variable,
-                          'judgment_for_plaintiff'] + pre_treatment_covariates,
-                 value_vars=value_vars, var_name='month', value_name=analysis)
-    df = df.sort_values(by=['case_number', 'month'])
-
-    # Standardize control variables.
-    [pre_treatment_covariates.remove(missing_indicator) for missing_indicator in missing_indicators]
-    df.loc[:, pre_treatment_covariates] = StandardScaler().fit_transform(df[pre_treatment_covariates])
-    [pre_treatment_covariates.append(missing_indicator) for missing_indicator in missing_indicators]
-
-    # Convert months from string format to integer format.
-    df.loc[:, 'month'] = df['month'].str.replace(f"_{analysis}", '', regex=False).replace(month_to_int_dictionary)
-    df.loc[:, treatment_month_variable] = df[treatment_month_variable].replace(month_to_int_dictionary)
-
-    # Generate alias treatment month variable which will not be used for DiD so that we can calculate sample size later.
-    df.loc[:, treatment_month_variable+'_alias'] = df[treatment_month_variable]
-
-    # Set treatment month to 0 for untreated observations.
-    never_treated_mask = (df['judgment_for_plaintiff'] == 0)
-    df.loc[never_treated_mask, treatment_month_variable] = np.NaN
-    df.loc[never_treated_mask, treatment_year_variable] = np.NaN
-
-    # Generate numeric version of case_number.
-    df.loc[:, 'case_number_numeric'] = df['case_number'].astype('category').cat.codes.astype(int)
-
-    # Set index.
-    df = df.set_index(['case_number_numeric', 'month'])
-    return df
 
 
 def add_missing_indicators(df: pd.DataFrame, missing_variables: List[str], pre_treatment_covariates: List[str]):
@@ -109,7 +49,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
         # Drop related variables from the summary statistics table.
-        treatment_means = treatment_means.drop(f'twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
+        treatment_means = treatment_means.drop(f'total_twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
         treatment_means = treatment_means.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
     treatment_means = (treatment_means.loc[predicts_outcome_mask, 'mean']
@@ -119,10 +59,11 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
     pd.options.mode.chained_assignment = 'warn'
 
     # Calculate propensity scores for every observation.
+
     df.loc[:, 'propensity_score'] = pd.Series(
         pscore_mle(df.dropna(subset=pre_treatment_covariates)['judgment_for_plaintiff'],
                    exog=df.dropna(subset=pre_treatment_covariates)[pre_treatment_covariates],
-                   weights=None)[0])  # Calculate propensity scores.
+                   weights=None)[0], index=df.index)  # Calculate propensity scores.
 
     # Build unweighted columns.
     difference_unadjusted = []
@@ -194,56 +135,8 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
 
 
 def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
-    """Choose covariates to include in D.R. model. TODO: Update documentation"""
-    # Set column names of the covariate exploration table and check that specified analyis is valid.
-    if analysis == 'zestimate':
-        covariate_exploration_table_columns = ["Zestimate, Dec. 2022", "Plaintiff Victory"]
-    elif analysis == 'group_0_crimes_50m':
-        covariate_exploration_table_columns = ["Crime Incidents Within 50m, Oct. 2022", "Plaintiff Victory"]
-    elif analysis == 'group_0_crimes_100m':
-        covariate_exploration_table_columns = ["Crime Incidents Within 100m, Oct. 2022", "Plaintiff Victory"]
-    elif analysis == 'group_0_crimes_150m':
-        covariate_exploration_table_columns = ["Crime Incidents Within 150m, Oct. 2022", "Plaintiff Victory"]
-    elif analysis == 'group_0_crimes_200m':
-        covariate_exploration_table_columns = ["Crime Incidents Within 200m, Oct. 2022", "Plaintiff Victory"]
-    elif analysis == 'group_1_crimes_50m':
-        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 50m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_1_crimes_100m':
-        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 100m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_1_crimes_150m':
-        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 150m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_1_crimes_200m':
-        covariate_exploration_table_columns = ["Assault-Related Crime Incidents Within 200m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_2_crimes_50m':
-        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 50m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_2_crimes_100m':
-        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 100m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_2_crimes_150m':
-        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 150m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_2_crimes_200m':
-        covariate_exploration_table_columns = ["Drug-Related Crime Incidents Within 200m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_3_crimes_50m':
-        covariate_exploration_table_columns = ["Investigations Within 50m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_3_crimes_100m':
-        covariate_exploration_table_columns = ["Investigations Within 100m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_3_crimes_150m':
-        covariate_exploration_table_columns = ["Investigations Within 150m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    elif analysis == 'group_3_crimes_200m':
-        covariate_exploration_table_columns = ["Investigations Within 200m, Oct. 2022",
-                                               "Plaintiff Victory"]
-    else:
-        raise ValueError("Unrecognized argument for parameter analysis.")
+    """Choose covariates to include in D.R. model."""
+    covariate_exploration_table_columns = ["", ""] # TODO: Add column naming logic.
 
     # Run produce summary statistics on the DataFrame to get names of column names of potential pre-treatment covaiates.
     summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'file_date')
@@ -254,15 +147,15 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
         # Drop related variables from the summary statistics table.
-        summary_statistics = summary_statistics.drop(f'twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
+        summary_statistics = summary_statistics.drop(f'total_twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
         summary_statistics = summary_statistics.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
     # Store independent and dependent variables.
     independent_variable = 'judgment_for_plaintiff'
-    dependent_variable = f'final_month_of_panel_{analysis}'
-
-    # Must create alias columns for Patchy to work.
-    df.loc[:, dependent_variable] = df[f'2022-10_{analysis}']
+    dependent_variable = f'change_in_{analysis}_over_all_treated_weeks'
+    last_week_in_panel = '2023-02'
+    first_treated_week = df['file_week'].sort_values().iloc[0]
+    df.loc[:, dependent_variable] = df[f'{last_week_in_panel}_{analysis}'] - df[f'{first_treated_week}_{analysis}']
 
     # Build covariate exploration table.
     pre_treatment_panels = ["Panel A: Pre-treatment Outcomes",
@@ -313,89 +206,7 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     return covariate_exploration_df
 
 
-def aggregate_by_event_time_and_plot(att_gt,
-                                     output_folder: str,
-                                     filename: str,
-                                     start_period: int,
-                                     end_period: int,
-                                     title: str,
-                                     treatment_month_variable: str,
-                                     df: pd.DataFrame):
-    # Get event study-aggregated ATT(t)s.
-    results_df = att_gt.aggregate('event')
-    results_df = results_df.loc[start_period:end_period]
-    results_df.columns = results_df.columns.droplevel().droplevel()
 
-    # Plot event study-style plot of ATTs.
-    fig, (ax, ax2) = plt.subplots(2, 1, sharex=True, height_ratios=[4, 1], layout='constrained')
-    x = results_df.index
-    y = results_df['ATT']
-    y_upper = results_df['upper']
-    y_lower = results_df['lower']
-    ax.set_ylabel("ATT")
-    ax.set_title(title)
-    figure_utilities.plot_labeled_vline(ax, x=0, text="Treatment Month", color='black', linestyle='-',
-                                        text_y_location_normalized=0.95)
-    figure_utilities.plot_scatter_with_shaded_errors(ax,
-                                                     x.values,
-                                                     y.values,
-                                                     y_upper.values,
-                                                     y_lower.values,
-                                                     point_color='black',
-                                                     error_color='white',
-                                                     edge_color='grey',
-                                                     edge_style='--',
-                                                     zorder=1)
-    figure_utilities.plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
-
-    # Plot sample size at each event-time.
-    df_copy = df.copy().reset_index()
-    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable+'_alias']
-
-    cases_per_year = df_copy.groupby('event_time')['case_number'].nunique().loc[start_period:end_period]
-    x = cases_per_year.index
-    y = cases_per_year.values
-    ax2.plot(x, y, color='black')
-    ax2.set_xlabel("Month Relative to Treatment")
-    ax2.set_ylabel("Number of Units")
-    ax2.grid(True)
-    ax2.set_title("Sample Size")
-
-    plt.show()
-    figure_utilities.save_figure_and_close(fig, join(output_folder, filename))
-
-
-def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_folder: str, filename: str, title: str):
-    # Get time-aggregated ATTs.
-    results_df = att_gt.aggregate('time')
-
-    # Plot event study-style plot of ATTs.
-    fig, ax = plt.subplots()
-    results_df = results_df.rename(index=int_to_month_dictionary)
-    x = results_df.index
-    y = results_df.iloc[:, 0]
-    y_upper = results_df.iloc[:, 3]
-    y_lower = results_df.iloc[:, 2]
-    ax.set_xlabel("Month")
-    ax.set_ylabel("ATT")
-    ax.set_title(title)
-    figure_utilities.plot_labeled_vline(ax, x=results_df.index.tolist()[0], text="Earliest Treatment Date in Sample",
-                                        color='black', linestyle='-',
-                                        text_y_location_normalized=0.95)
-    figure_utilities.plot_scatter_with_shaded_errors(ax,
-                                                     x.values,
-                                                     y.values,
-                                                     y_upper.values,
-                                                     y_lower.values,
-                                                     point_color='black',
-                                                     error_color='white',
-                                                     edge_color='grey',
-                                                     edge_style='--',
-                                                     zorder=1)
-    figure_utilities.plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-')
-    ax.set_xticks(range(0, len(x), 12))
-    plt.show()
-    figure_utilities.save_figure_and_close(fig, join(output_folder, filename))
 
 
 def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
@@ -410,10 +221,11 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_A_columns = []
     for outcome in outcomes:
         # Create alias column for Patchy.
-        df.loc[:, f'twenty_seventeen_{outcome}'] = df[f'2017-01_{outcome}']
-        panel_A_columns.append(f'twenty_seventeen_{outcome}')
+        columns_from_2017 = [column for column in df.columns if column.startswith('2017') and column.endswith(outcome)]
+        df.loc[:, f'total_twenty_seventeen_{outcome}'] = df[columns_from_2017].sum(axis=1)
+        panel_A_columns.append(f'total_twenty_seventeen_{outcome}')
         panel_A_columns.append(f'pre_treatment_change_in_{outcome}')
-        df.loc[:, f'pre_treatment_change_in_{outcome}'] = df[f'2019-01_{outcome}'] - df[f'2017-01_{outcome}']
+        df.loc[:, f'pre_treatment_change_in_{outcome}'] = df[f'2019-00_{outcome}'] - df[f'2017-02_{outcome}']
     panel_A = df[panel_A_columns].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
 

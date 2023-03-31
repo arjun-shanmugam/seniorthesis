@@ -7,6 +7,8 @@ and plot on that axis. They do not interact with Matplotlib Figure instances.
 Thus, the user must instantiate all subplots and close all figures
 separately.
 """
+from os.path import join
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
@@ -15,6 +17,90 @@ from matplotlib.colors import to_rgba
 
 import figure_and_table_constants
 import matplotlib.transforms as transforms
+
+def aggregate_by_event_time_and_plot(att_gt,
+                                     output_folder: str,
+                                     filename: str,
+                                     start_period: int,
+                                     end_period: int,
+                                     title: str,
+                                     treatment_month_variable: str,
+                                     df: pd.DataFrame):
+    # Get event study-aggregated ATT(t)s.
+    results_df = att_gt.aggregate('event')
+    results_df = results_df.loc[start_period:end_period]
+    results_df.columns = results_df.columns.droplevel().droplevel()
+
+    # Plot event study-style plot of ATTs.
+    fig, (ax, ax2) = plt.subplots(2, 1, sharex=True, height_ratios=[4, 1], layout='constrained')
+    x = results_df.index
+    y = results_df['ATT']
+    y_upper = results_df['upper']
+    y_lower = results_df['lower']
+    ax.set_ylabel("ATT")
+    ax.set_title(title)
+    plot_labeled_vline(ax, x=0, text="Treatment Month", color='black', linestyle='-',
+                                        text_y_location_normalized=0.95)
+    plot_scatter_with_shaded_errors(ax,
+                                                     x.values,
+                                                     y.values,
+                                                     y_upper.values,
+                                                     y_lower.values,
+                                                     point_color='black',
+                                                     error_color='white',
+                                                     edge_color='grey',
+                                                     edge_style='--',
+                                                     zorder=1)
+    plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
+
+    # Plot sample size at each event-time.
+    df_copy = df.copy().reset_index()
+    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable+'_alias']
+
+    cases_per_year = df_copy.groupby('event_time')['case_number'].nunique().loc[start_period:end_period]
+    x = cases_per_year.index
+    y = cases_per_year.values
+    ax2.plot(x, y, color='black')
+    ax2.set_xlabel("Month Relative to Treatment")
+    ax2.set_ylabel("Number of Units")
+    ax2.grid(True)
+    ax2.set_title("Sample Size")
+
+    plt.show()
+    save_figure_and_close(fig, join(output_folder, filename))
+
+
+def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_folder: str, filename: str, title: str):
+    # Get time-aggregated ATTs.
+    results_df = att_gt.aggregate('time')
+
+    # Plot event study-style plot of ATTs.
+    fig, ax = plt.subplots()
+    results_df = results_df.rename(index=int_to_month_dictionary)
+    x = results_df.index
+    y = results_df.iloc[:, 0]
+    y_upper = results_df.iloc[:, 3]
+    y_lower = results_df.iloc[:, 2]
+    ax.set_xlabel("Month")
+    ax.set_ylabel("ATT")
+    ax.set_title(title)
+    plot_labeled_vline(ax, x=results_df.index.tolist()[0], text="Earliest Treatment Date in Sample",
+                                        color='black', linestyle='-',
+                                        text_y_location_normalized=0.95)
+    plot_scatter_with_shaded_errors(ax,
+                                                     x.values,
+                                                     y.values,
+                                                     y_upper.values,
+                                                     y_lower.values,
+                                                     point_color='black',
+                                                     error_color='white',
+                                                     edge_color='grey',
+                                                     edge_style='--',
+                                                     zorder=1)
+    plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-')
+    ax.set_xticks(range(0, len(x), 12))
+    plt.show()
+    save_figure_and_close(fig, join(output_folder, filename))
 
 
 def save_figure_and_close(figure: plt.Figure,
