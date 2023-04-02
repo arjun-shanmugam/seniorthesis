@@ -53,19 +53,6 @@ def aggregate_by_event_time_and_plot(att_gt,
                                                      zorder=1)
     plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
 
-    # Plot sample size at each event-time.
-    df_copy = df.copy().reset_index()
-    df_copy.loc[:, 'event_time'] = df_copy['month'] - df_copy[treatment_month_variable+'_alias']
-
-    cases_per_year = df_copy.groupby('event_time')['case_number'].nunique().loc[start_period:end_period]
-    x = cases_per_year.index
-    y = cases_per_year.values
-    ax2.plot(x, y, color='black')
-    ax2.set_xlabel("Month Relative to Treatment")
-    ax2.set_ylabel("Number of Units")
-    ax2.grid(True)
-    ax2.set_title("Sample Size")
-
     plt.show()
     save_figure_and_close(fig, join(output_folder, filename))
 
