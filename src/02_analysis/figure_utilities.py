@@ -52,6 +52,10 @@ def aggregate_by_event_time_and_plot(att_gt,
                                                      edge_style='--',
                                                      zorder=1)
     plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 680591684e02dfd7cfa4c25bbe88df310844c4e9
     plt.show()
     save_figure_and_close(fig, join(output_folder, filename))
 

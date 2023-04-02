@@ -134,7 +134,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
     return balance_table, pre_treatment_covariates
 
 
-def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
+def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: str, output_directory: str):
     """Choose covariates to include in D.R. model."""
     covariate_exploration_table_columns = ["", ""] # TODO: Add column naming logic.
 
@@ -154,7 +154,7 @@ def select_controls(df: pd.DataFrame, analysis: str, output_directory: str):
     independent_variable = 'judgment_for_plaintiff'
     dependent_variable = f'change_in_{analysis}_over_all_treated_weeks'
     last_week_in_panel = '2023-02'
-    first_treated_week = df['file_week'].sort_values().iloc[0]
+    first_treated_week = df[treatment_date_variable].sort_values().iloc[0]
     df.loc[:, dependent_variable] = df[f'{last_week_in_panel}_{analysis}'] - df[f'{first_treated_week}_{analysis}']
 
     # Build covariate exploration table.
