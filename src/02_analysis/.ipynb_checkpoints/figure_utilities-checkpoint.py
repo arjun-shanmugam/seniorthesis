@@ -39,7 +39,8 @@ def aggregate_by_event_time_and_plot(att_gt,
     y_lower = results_df['lower']
     ax.set_ylabel("ATT")
     ax.set_title(title)
-    plot_labeled_vline(ax, x=0, text="Treatment Month", color='black', linestyle='-',
+    ax.set_xlabel("Two Week Period Relative to Treatment")
+    plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
                                         text_y_location_normalized=0.95)
     plot_scatter_with_shaded_errors(ax,
                                                      x.values,
@@ -52,6 +53,7 @@ def aggregate_by_event_time_and_plot(att_gt,
                                                      edge_style='--',
                                                      zorder=1)
     plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
+
     plt.show()
     save_figure_and_close(fig, join(output_folder, filename))
 
@@ -69,6 +71,7 @@ def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_fol
     y_lower = results_df.iloc[:, 2]
     ax.set_xlabel("Month")
     ax.set_ylabel("ATT")
+    ax.set_xlabel("Two Week Period Relative to Treatment")
     ax.set_title(title)
     plot_labeled_vline(ax, x=results_df.index.tolist()[0], text="Earliest Treatment Date in Sample",
                                         color='black', linestyle='-',
@@ -84,7 +87,6 @@ def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_fol
                                                      edge_style='--',
                                                      zorder=1)
     plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-')
-    ax.set_xticks(range(0, len(x), 12))
     plt.show()
     save_figure_and_close(fig, join(output_folder, filename))
 
