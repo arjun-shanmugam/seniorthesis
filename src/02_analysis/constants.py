@@ -6,7 +6,6 @@ class Variables:
                 'group_4_crimes_50m',
                 'group_5_crimes_50m',
                 'group_6_crimes_50m',
-                'group_7_crimes_50m',
                 'group_0_crimes_100m',
                 'group_1_crimes_100m',
                 'group_2_crimes_100m', 
@@ -14,7 +13,6 @@ class Variables:
                 'group_4_crimes_100m',
                 'group_5_crimes_100m',
                 'group_6_crimes_100m',
-                'group_7_crimes_100m',
                 'group_0_crimes_500m',
                 'group_1_crimes_500m',
                 'group_2_crimes_500m', 
@@ -22,13 +20,11 @@ class Variables:
                 'group_4_crimes_500m',
                 'group_5_crimes_500m',
                 'group_6_crimes_500m',
-                'group_7_crimes_500m',
                 'group_0_crimes_1000m',
                 'group_1_crimes_1000m',
                 'group_2_crimes_1000m', 
                 'group_3_crimes_1000m',
                 'group_4_crimes_1000m',
                 'group_5_crimes_1000m',
-                'group_6_crimes_1000m',
-                'group_7_crimes_1000m']
+                'group_6_crimes_1000m']
 
