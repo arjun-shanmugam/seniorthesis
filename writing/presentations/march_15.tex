@@ -5,7 +5,8 @@
 \usepackage{pgfpages}
 \usepackage[font=footnotesize]{caption}
 \useoutertheme{infolines} 
-
+\usepackage{tabularx}
+\usepackage{multirow}
 
 
 \definecolor{brownbrown}{RGB}{56, 28, 0}
@@ -32,7 +33,7 @@
 
 
 
-\title[Eviction and Property Values]{Estimating the Effect of Eviction on Assessment Values}
+\title[Eviction and Property Values]{Estimating the Effect of Eviction on Crime}
 
 
 \author[Arjun Shanmugam]{}
@@ -68,7 +69,7 @@
            \item Most poor renting families in America
 spend over half of their incomes on rent (Desmond, 2017)
        \end{enumerate}
-       \item Sociologists have found large effects of evictions using non-experimental methods=
+       \item Sociologists have found large effects of evictions using non-experimental methods
        \item Economists are just beginning to study eviction
        \begin{enumerate}
            \item Increased probability of job loss (Desmond, Gershenson, 2016)
@@ -98,7 +99,7 @@ spend over half of their incomes on rent (Desmond, 2017)
         \item Maybe evicted tenants are more likely to commit crime after receiving notice of eviction
         \item Or, perhaps landlords are evicting problematic tenants
     \end{enumerate}
-    \item Either way, understanding effect is important to understanding how eviction is affecting communitiies
+    \item Either way, understanding effect is important to understanding how eviction is affecting communities
     \item Kroeger and La Mattina (2020): Nuisance ordinances increase eviction risk in Ohio
     \item Falcone (2022): Evictions cause crime! But only if nuisance ordinances affect crime only through evictions...
 \end{enumerate}
@@ -117,7 +118,7 @@ spend over half of their incomes on rent (Desmond, 2017)
             \item Incident-level data for every incident that BPD has responded to since 2015
             \item Coordinates of each incident
         \end{enumerate}
-        \item Create 100m radius around every eviction and match to crimes which fall into that radius
+        \item Create 1000m radius around every eviction and match to crimes which fall into that radius
     \end{enumerate}
 \end{frame}
 
@@ -125,17 +126,7 @@ spend over half of their incomes on rent (Desmond, 2017)
 \begin{table}[H]
     \centering
     \tiny
-    \input{output/01_exploratory/tables/summary_statistics.tex}
-    \label{tab:my_label}
-\end{table}
-\end{frame}
-
-
-\begin{frame}{Data}
-\begin{table}[H]
-    \centering
-    \tiny
-    \input{output/01_exploratory/tables/balance_table.tex}
+    \input{output/summary_statistics}
     \label{tab:my_label}
 \end{table}
 \end{frame}
@@ -145,46 +136,87 @@ spend over half of their incomes on rent (Desmond, 2017)
 
 \section{Empirical Strategy}
 \begin{frame}{Empirical Strategy}
-    \begin{enumerate}
-        \item Most eviction cases in Massachusetts are filed in the Massachusetts Housing Court
-        \item Within the Housing Court, cases are assigned to about 15 judges quasi-randomly conditional on city and time
-        \item This is the basis for an examiner design study, which uses judge dummies as instruments
-    \end{enumerate}
+
+    
+    Let $G_i$ be the month during which the eviction case involving property $i$ was filed, such that $G_i = g \in \{\text{May} \; 2019, \text{June} \; 2019, ..., \text{May} \; 2021\}$. Let $C_i = 1$ if the eviction case involving $i$ resulted in a victory for the defendant and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$ (cohort $g$). If $C_i=1$, then property $i$ is a never-treated property. 
+    
+    Let $Y_{i,t}$ be property $i$'s outcome during month $t$ and define $\Delta Y_{i, g-1, t} \equiv Y_{i,t} - Y_{i,g-1}$ so that $\Delta Y_{i, g-1, t}$ is the change in property $i$'s Zestimate between months $t$ and $g-1$.
+
+    
+
+    The following is an unconditional estimator for $ATT(g,t)$, the average treatment affect during month $t$ for cohort $g$.
+    \begin{align}
+        \hat{ATT}^{nev}_{un}(g, t) = \frac{\sum_i\Delta Y_{i, g-1, t}\mathds{1}\{G_i=g\}}{\sum_i\mathds{1}\{G_i=g\}} - \frac{\sum_i\Delta Y_{i, g-1, t}\mathds{1}\{C_i=1\}}{\sum_i\mathds{1}\{C_i=1\}}
+    \end{align}
+
+\end{frame}
+
+\section{Empirical Strategy}
+\begin{frame}{Empirical Strategy}
+\begin{table}[H]
+    \centering
+    \tiny
+    \input{output/treatment_timings}
+    \label{tab:my_label}
+\end{table}
 \end{frame}
 
 \begin{frame}{Empirical Strategy}
 \begin{table}[H]
     \centering
     \tiny
-    \input{output/01_exploratory/tables/placebo_first_stage.tex}
+    \input{output/pre_treatment_covariate_tests}
     \label{tab:my_label}
 \end{table}    
 \end{frame}
 
-\begin{frame}{Preliminary Results}
+\begin{frame}{Empirical Strategy}
+\begin{table}[H]
+    \centering
+    \tiny
+    \input{output/balance_table}
+    \label{tab:my_label}
+\end{table}    
+\end{frame}
+
+
+
+\begin{frame}{Results: All Crime}
+    
     \begin{table}[H]
         \centering
         \tiny
-        \input{output/01_exploratory/tables/ln_total_val_results_table.tex}
+        \includegraphics[scale=0.6]{output/all.png}
         \label{tab:my_label}
     \end{table}
 \end{frame}
-\begin{frame}{Preliminary Results}
+\begin{frame}{Results: Assaults}
+    
     \begin{table}[H]
         \centering
         \tiny
-        \input{output/01_exploratory/tables/ln_bldg_val_results_table.tex}
+        \includegraphics[scale=0.6]{output/assaults.png}
         \label{tab:my_label}
     \end{table}
 \end{frame}
+\begin{frame}{Results: Investigations}
+    
+    \begin{table}[H]
+        \centering
+        \tiny
+        \includegraphics[scale=0.6]{output/investigations.png}
+        \label{tab:my_label}
+    \end{table}
+\end{frame}
+
 
 
 \begin{frame}{Next Steps}
     \begin{enumerate}
-        \item Figure out what to do about my lack of power
-        \item Find a systematic way to drop observations in sparse city-years
-        \item Speak to an assessor from Massachusetts to understand whether there is even a mechanism through which I might see an effect
-        \item Think about whether my instrument is truly valid
+        \item Robustness checks
+
+        \item Qualitiative analysis of what is happening in the 2 months before filing
+        \item Am I double counting crimes?
     \end{enumerate}
 \end{frame}
 
