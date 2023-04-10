@@ -35,11 +35,12 @@ def aggregate_by_event_time_and_plot(att_gt,
     fig, ax = plt.subplots(layout='constrained')
     x = results_df.index
     y = results_df['ATT']
-    y_upper = results_df['upper']
-    y_lower = results_df['lower']
+    y_upper = results_df['upper'].where(results_df['upper'].notna(), y)
+    y_lower = results_df['lower'].where(results_df['lower'].notna(), y)
     ax.set_ylabel("ATT")
     ax.set_title(title)
-    ax.set_xlabel("Two Week Period Relative to Treatment")
+    ax.set_xlabel("Month Relative to Treatment")
+    ax.set_xticks(x)
     plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
                                         text_y_location_normalized=0.95)
     plot_scatter_with_shaded_errors(ax,
@@ -71,7 +72,7 @@ def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_fol
     y_lower = results_df.iloc[:, 2]
     ax.set_xlabel("Month")
     ax.set_ylabel("ATT")
-    ax.set_xlabel("Two Week Period Relative to Treatment")
+    ax.set_xlabel("Month Relative to Treatment")
     ax.set_title(title)
     plot_labeled_vline(ax, x=results_df.index.tolist()[0], text="Earliest Treatment Date in Sample",
                                         color='black', linestyle='-',
