@@ -13,12 +13,6 @@ from differences.did.pscore_cal import pscore_mle
 from typing import List
 
 
-
-
-
-
-
-
 def add_missing_indicators(df: pd.DataFrame, missing_variables: List[str], pre_treatment_covariates: List[str]):
     missing_indicators = []
     for missing_variable in missing_variables:
@@ -27,6 +21,7 @@ def add_missing_indicators(df: pd.DataFrame, missing_variables: List[str], pre_t
         pre_treatment_covariates.append(missing_variable + '_missing')
         missing_indicators.append(missing_variable + '_missing')
     return missing_indicators
+
 
 def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.DataFrame, output_directory: str):
     # Store pre-treatment panel names.
@@ -111,6 +106,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
     # Export to LaTeX.
     filename = join(output_directory, "balance_table.tex")
     latex = (balance_table
+             .rename(index=variable_display_names_dict)
              .style
              .format(thousands=",",
                      na_rep='',
@@ -136,7 +132,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
 
 def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: str, output_directory: str):
     """Choose covariates to include in D.R. model."""
-    covariate_exploration_table_columns = ["", ""] # TODO: Add column naming logic.
+    covariate_exploration_table_columns = ["", ""]  # TODO: Add column naming logic.
 
     # Run produce summary statistics on the DataFrame to get names of column names of potential pre-treatment covaiates.
     summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'latest_docket_date')
@@ -153,7 +149,10 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     # Store independent and dependent variables.
     independent_variable = 'judgment_for_plaintiff'
     dependent_variable = f'change_in_{analysis}_over_all_treated_weeks'
-    last_week_in_panel = '2023-02'
+    if "month" in treatment_date_variable:
+        last_week_in_panel = '2023-01'
+    else:
+        last_week_in_panel = '2023-00'
     first_treated_week = df[treatment_date_variable].sort_values().iloc[0]
     df.loc[:, dependent_variable] = df[f'{last_week_in_panel}_{analysis}'] - df[f'{first_treated_week}_{analysis}']
 
@@ -166,7 +165,6 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     potential_covariates = summary_statistics.index.get_level_values(1)
     p_values = []
     for potential_covariate in potential_covariates:
-
         # Get p-value from regression of outcome on covariates.
         p_y = (smf.ols(formula=f"{dependent_variable} ~ {potential_covariate}",
                        data=df,
@@ -206,9 +204,6 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     return covariate_exploration_df
 
 
-
-
-
 def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     """
 
@@ -225,7 +220,10 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
         df.loc[:, f'total_twenty_seventeen_{outcome}'] = df[columns_from_2017].sum(axis=1)
         panel_A_columns.append(f'total_twenty_seventeen_{outcome}')
         panel_A_columns.append(f'pre_treatment_change_in_{outcome}')
-        df.loc[:, f'pre_treatment_change_in_{outcome}'] = df[f'2019-00_{outcome}'] - df[f'2017-02_{outcome}']
+        columns_from_2019 = [column for column in df.columns if column.startswith('2019') and column.endswith(outcome)]
+        df.loc[:, f'total_twenty_nineteen_{outcome}'] = df[columns_from_2019].sum(axis=1)
+        df.loc[:, f'pre_treatment_change_in_{outcome}'] = df[f'total_twenty_nineteen_{outcome}'] - df[
+            f'total_twenty_seventeen_{outcome}']
     panel_A = df[panel_A_columns].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
 
@@ -302,5 +300,34 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    axis=0)[['mean', '50%', 'std', 'count']]
 
     # TODO: Update display names at the end of project!
-    variable_display_names_dict = {}
+    variable_display_names_dict = {'frac_coll_plus2010': "Bachelor's degree, 2010",
+                                   'job_density_2013': "Job density, 2013",
+                                   'med_hhinc2016': "Median household income, 2016",
+                                   'poor_share2010': "Poverty rate, 2010",
+                                   'popdensity2010': "Population density, 2010",
+                                   'for_cause': "Filing for cause",
+                                   'no_cause': "Filing without cause",
+                                   'non_payment': "Filing for nonpayment",
+
+                                   'hasAttyD': "Defendant has attorney",
+                                   'hasAttyP': "Plaintiff has attorney",
+                                   "isEntityD": "Defendant is entity",
+                                   "isEntityP": "Plaintiff is entity",
+                                   "case_duration": "Case duration",
+                                   "defaulted": "Judgment by default",
+                                   "heard": "Case heard",
+                                    'dismissed': "Case dismissed",
+                                   "judgment": "Money judgment",
+                                   "mediated": "Case mediated",
+
+
+                                   }
+    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
+    for outcome in outcomes:
+        pretreatment_change_display_name = f"$\Delta$ Group {outcome.split('_')[1]} Incidents, 2017-2019"
+        variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
+        pretreatment_level_display_name = f"Total Group {outcome.split('_')[1]} Incidents, 2017"
+        variable_display_names_dict[f'total_twenty_seventeen_{outcome}'] = pretreatment_level_display_name
+
+
     return summary_statistics, variable_display_names_dict
