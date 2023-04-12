@@ -110,10 +110,10 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
 \section{Data} \label{sec:data}
 
     \subsection{Evictions Data}
-    I obtain records of every summary process case filed in Boston since April 2019 from MassLandlords, a trade association of landlords in Massachusetts. At the beginning of the pandemic, MassLandlords developed a sophisticated system for manually collecting and programatically scraping court dockets. Crucially, each record includes the resolution of the case, the last date on the case docket, and the address of the disputed property. Each record also includes details such as the court in which the case was initially filed, the duration of the case, whether the tenant and landlord had attorneys, and the type of notice to quit that was initially filed by the landlord. I use a paid geocoding service known as Geocodio to obtain highly accurate latitude and longitude coordinates for each property. 
+    I obtain records of every summary process case that concluded in Boston between April 2019 and Janury 2023 from MassLandlords, a trade association of landlords in Massachusetts. At the beginning of the pandemic, MassLandlords developed a sophisticated system for manually collecting and programatically scraping court dockets. Crucially, each record includes the resolution of the case, the last date on the case docket, and the address of the disputed property. Each record also includes details such as the court in which the case was initially filed, the duration of the case, whether the tenant and landlord had attorneys, and the type of notice to quit that was initially filed by the landlord. I use a paid geocoding service known as Geocodio to obtain highly accurate latitude and longitude coordinates for each property. 
 
+    I restrict my sample in five ways. First, I drop all cases missing a most recent docket date. Second, I drop all cases missing property addresses. Third, I drop cases which concluded during April 2020 or later. Fourth, I drop all cases resolved through mediation. Lastly, I drop all cases for which a judgment could not be scraped. Table 1 outlines how these sample restrictions altered the number of observations in my study. Figure 2 displays the number of evictions in my sample filed during each month. 
 
-    I restrict my sample in two ways. First, I drop 1651 cases which were resolved through mediation. Second, I drop 69 cases which were not resolved through mediation, but for which a final judgment could not be found. Out of just under 3352 Boston summary process cases adjudicated between April 2019 and March 2020, I am left with a sample of 1632 cases. Figure 2 displays the number of evictions in my sample filed during each month. 
 
         \begin{figure}[H]
             \centering
@@ -191,14 +191,20 @@ There are two main reasons that the traditional two-way fixed effects estimator 
 
     The above unconditional parallel trends assumption is unlikely to hold, as eviction case outcomes and crime incident counts may be related to their socioeconomic surroundings. Table 3 explores this theory further, reporting results from univariate regressions of the change in crime incidents between May 2020 and April 2019 and an indicator for treatment on the pre-treatment characteristics listed in Panels A through D of Table 2. Each cell gives the p-value from a regression of the variable which labels its column on the variable which labels its row. Table 3 shows significant associations between pre-treatment characteristics and trends in crime incident counts and pre-treatment characteristics and case outcomes, suggesting that the unconditional parallel trends assumption imposed earlier may not be valid.
 
+\begin{landscape}
+\newgeometry{top=10cm}
+    \thispagestyle{empty} 
     \begin{table}[H]
         \centering
         \input{output/group_0_crimes_500m/tables/pre_treatment_covariate_tests}
-        \caption{Relationship Between Pre-Treatment Characteristics and the Dependent and Independent Variables}
+        \caption{Pre-Treatment Covariate Tests}
         \label{tab:my_label}
     \end{table}
+\restoregeometry
+    \end{landscape}
 
-    My next strategy uses covariates to construct a more credible counterfactual for the observed path of outcomes in the treatment group using the doubly robust difference-in-differences estimator proposed by \cite{santanna_doubly_2018}. For each property, let $X_i$ be a vector containing the covariates whose univariate regression coefficients from column 1 of table 3 are significant at the 5 percent level. To attempt to identify $ATT(g, t)$ using the doubly robust estimator, I first estimate $\hat{p}_g(X_i)$, a logit regression propensity score model for being in cohort $g$. I assign a weight $\hat{w}_i(X_i) \equiv\frac{\hat{p}_g(X_i)}{1 - \hat{p}_g(X_i)}$ to each never-treated property $i$; $\hat{w}_i(X_i) \equiv 1$ for treated properties. Define $\hat{w}^*_i(X_i) = \frac{\hat{w}_i(X_i)}{\sum_i \hat{w}_i(X_i)}$. Second, using only never-treated counties, I regress $\Delta Y_{i, g-1, t}$ on $X_j$, weighting by $\hat{w}_i(X_i)$. Using the estimated coefficients $\hat{\beta}_{g-1, t}^{X}$, I define $\Delta \hat{\mu}_{g-1, t}(X_i) \equiv \hat{\beta}_{g-1, t}^{X}X_i$ so that $\Delta \hat{\mu}_{g-1, t}(X_i)$ is the predicted change in property $i$'s crime incident counts between months $t$ and $g-1$.
+
+    My next strategy uses covariates to construct a more credible counterfactual for the observed path of outcomes in the treatment group using the doubly robust difference-in-differences estimator proposed by \cite{santanna_doubly_2018}. For each property, let $X_i$ be a vector containing the covariates whose univariate regression coefficients from column 1 of table 3 are significant at the 5 percent level. To attempt to identify $ATT(g, t)$ using the doubly robust estimator, I first estimate $\hat{p}_g(X_i)$, a logit regression propensity score model for being in cohort $g$. I assign a weight $\hat{w}_i(X_i) \equiv\frac{\hat{p}_g(X_i)}{1 - \hat{p}_g(X_i)}$ to each never-treated property $i$; $\hat{w}_i(X_i) \equiv 1$ for treated properties. Define $\hat{w}^*_i(X_i) = \frac{\hat{w}_i(X_i)}{\sum_i \hat{w}_i(X_i)}$. Second, using only never-treated properties, I regress $\Delta Y_{i, g-1, t}$ on $X_j$, weighting by $\hat{w}_i(X_i)$. Using the estimated coefficients $\hat{\beta}_{g-1, t}^{X}$, I define $\Delta \hat{\mu}_{g-1, t}(X_i) \equiv \hat{\beta}_{g-1, t}^{X}X_i$ so that $\Delta \hat{\mu}_{g-1, t}(X_i)$ is the predicted change in property $i$'s crime incident counts between months $t$ and $g-1$.
     The doubly robust estimator for $ATT(g, t)$ is as follows.
     \begin{align}
         \hat{ATT}^{nev}_{DR, X}(g,t) = \frac{1}{N}\sum_i[(\frac{D_i}{\Bar{D_i}} - \frac{\hat{w}^*_i(X_i)C_i}{\Bar{C_i}})(\Delta Y_{i, g-1, t} - \hat{\mu}_{g-1, t}(X_i))]
@@ -228,10 +234,10 @@ There are two main reasons that the traditional two-way fixed effects estimator 
 \section{Results and Mechanisms} \label{sec:result}
 
     \subsection{D.R. Estimates of the ATT}
-    \begin{figure}
+    \begin{figure}[H]
         \centering
         \includegraphics{output/group_0_crimes_500m/figures/att_gt_dr_event_study_long_horizon.png}
-        \caption{Caption}
+        \caption{Relationship Between Treatment and Crime Incidents Within 500 Meters}
         \label{fig:my_label}
     \end{figure}
 
