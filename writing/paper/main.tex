@@ -113,7 +113,8 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
     \subsection{Evictions Data}
     I obtain records of every summary process case filed in Boston since April 2019 from MassLandlords, a trade association of landlords in Massachusetts. At the beginning of the pandemic, MassLandlords developed a sophisticated system for manually collecting and programatically scraping court dockets. Crucially, each record includes the resolution of the case, the last date on the case docket, and the address of the disputed property. Each record also includes details such as the court in which the case was initially filed, the duration of the case, whether the tenant and landlord had attorneys, and the type of notice to quit that was initially filed by the landlord. I use a paid geocoding service known as Geocodio to obtain highly accurate latitude and longitude coordinates for each property. 
 
-    I restrict my sample in 4 ways. First, I drop all records which could not be geocoded. Second, I drop the less than one percent of records for which a latest docket date could not be found. Third, I drop all cases which were resolved through mediation. Lastly, I drop cases for which a judgment could not be found. Out of \textcolor{red}{X} cases filed in Boston between April 2019 and March 2020, I am left with a sample of \textcolor{red}{Y} cases. Figure 1 displays the number of evictions in my sample filed during each month. 
+
+    I restrict my sample in two ways. First, I drop 1651 cases which were resolved through mediation. Second, I drop 69 cases which were not resolved through mediation, but for which a final judgment could not be found. Out of just under 3352 Boston summary process cases adjudicated between April 2019 and March 2020, I am left with a sample of 1632 cases. Figure 2 displays the number of evictions in my sample filed during each month. 
 
         \begin{figure}[H]
             \centering
@@ -127,7 +128,7 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
     I obtain incident-level records of every crime incident to which BPD offers responded to from August 2015 to present. Each record includes the a date, latitude and longitude coordinates, and an offense code indicating the type of crime incident that occurred. I drop all records missing any of these three variables.  
 
     \subsection{Census Tract Characteristics Data}
-    I obtain time-invariant census tract level characteristics of the properties in my sample from Opportunity Insights \citep{chetty_impacts_2018}. This data includes information such as population density, job density, median household income, and poverty rate. Figure 2 plots the locations of the evictions in my sample, coloring Boston's census tracts according to their poverty rates. It shows that the density of eviction filings tends to be higher in poor areas. This result is consistent with existing research that finds strong associations between poverty and the prevalence of eviction \citep{desmond_housing_2016}.
+    I obtain time-invariant census tract level characteristics of the properties in my sample from Opportunity Insights \citep{chetty_impacts_2018}. This data includes information such as population density, job density, median household income, and poverty rate. Figure 2 plots the locations of the evictions in my sample, coloring Boston's census tracts according to their poverty rates. It shows that the density of eviction filings tends to be higher in poor areas. This result is consistent with existing research that finds strong associations between poverty and the prevalence of eviction \citep{desmond_housing_2016}. Indeed, <>, mirroring the findings of \cite{collinson_eviction_2022} in New York City and Chicago.
     
             \begin{figure}[H]
             \centering
@@ -165,13 +166,24 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
 
 
 \section{Empirical Strategy: Difference-in-Differences}
-    \subsection{Conceptualizing Treatment}
-    I seek to estimate the average treatment effects of plaintiff victory in eviction cases on treated properties. I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. 
-    
-    
-    Let $G_i$ be the month during which the eviction case involving property $i$ was filed, such that $G_i = g \in \{\text{May} \; 2019, \text{June} \; 2019, ..., \text{May} \; 2021\}$. Let $C_i = 1$ if the eviction case involving $i$ resulted in a victory for the defendant and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$ (cohort $g$). If $C_i=1$, then property $i$ is a never-treated property. Let $Y_{i,t}$ be property $i$'s Zestimate during month $t$ and define $\Delta Y_{i, g-1, t} \equiv Y_{i,t} - Y_{i,g-1}$ so that $\Delta Y_{i, g-1, t}$ is the change in property $i$'s Zestimate between months $t$ and $g-1$.
+I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. 
+    \subsection{Conceptualizing Experiment}
+    \textbf{Treatment group.} I consider any property which was the site of an eviction case that was heard by a judge and decided in favor of the plaintiff or decided by default in favor of the plaintiff a treated property.
 
-    \subsection{Unconditional Estimates of the ATT}
+    
+    \textbf{Control group.} I consider any property which was the site of an eviction case that was heard by a judge and decided in favor of the defendant or decided by dismissal in favor of the defendant a treated property.
+
+
+    \textbf{Treatment timing.} I consider each property's treatment timing to be the month of its latest docket date.
+
+
+    
+    
+       \subsection{Unconditional Estimates of the ATT}
+    
+    Let $G_i$ be the month of the latest docket date in the eviction case involving property $i$, such that $G_i = g \in \{\text{April} \; 2019, \text{May} \; 2019, ..., \text{March} \; 2020\}$. Let $C_i = 1$ if the eviction case involving $i$ resulted in a victory for the defendant and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$ (cohort $g$). If $C_i=1$, then property $i$ is a never-treated property. Let $Y_{i,t}$ be property $i$'s Zestimate during month $t$ and define $\Delta Y_{i, g-1, t} \equiv Y_{i,t} - Y_{i,g-1}$ so that $\Delta Y_{i, g-1, t}$ is the change in property $i$'s Zestimate between months $t$ and $g-1$.
+
+ 
     The following is an unconditional estimator for $ATT(g,t)$, the average treatment affect during month $t$ for cohort $g$.
     \begin{align}
         \hat{ATT}^{nev}_{un}(g, t) = \frac{\sum_i\Delta Y_{i, g-1, t}\mathds{1}\{G_i=g\}}{\sum_i\mathds{1}\{G_i=g\}} - \frac{\sum_i\Delta Y_{i, g-1, t}\mathds{1}\{C_i=1\}}{\sum_i\mathds{1}\{C_i=1\}}
