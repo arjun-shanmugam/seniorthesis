@@ -49,9 +49,9 @@ def aggregate_by_event_time_and_plot(att_gt,
                                                      y_upper.values,
                                                      y_lower.values,
                                                      point_color='black',
-                                                     error_color='white',
+                                                     error_color='grey',
                                                      edge_color='grey',
-                                                     edge_style='--',
+                                                     edge_style='-',
                                                      zorder=1)
     plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
 

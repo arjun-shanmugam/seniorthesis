@@ -121,7 +121,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
                        column_format="llccccc",
                        hrules=True,
                        multicol_align='c',
-                       clines="skip-last;data")).replace("{*}", "{3cm}")
+                       clines="skip-last;data")).replace("{*}", "{.75cm}")
     latex = latex.split("\\\\\n")
     latex.insert(1, "\\cline{4-7}\n")
     latex = "\\\\\n".join(latex)
@@ -324,6 +324,12 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    }
     outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
     for outcome in outcomes:
+        if outcome.split('_')[1] == '0':
+            pretreatment_change_display_name = f"Change in Crime Incidents, 2017-2019"
+            variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
+            pretreatment_level_display_name = f"Total Crime Incidents, 2017"
+            variable_display_names_dict[f'total_twenty_seventeen_{outcome}'] = pretreatment_level_display_name
+            continue
         pretreatment_change_display_name = f"$\Delta$ Group {outcome.split('_')[1]} Incidents, 2017-2019"
         variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
         pretreatment_level_display_name = f"Total Group {outcome.split('_')[1]} Incidents, 2017"
