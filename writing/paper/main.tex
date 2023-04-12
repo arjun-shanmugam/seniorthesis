@@ -169,19 +169,14 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
 I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. 
     \subsection{Conceptualizing Experiment}
     \textbf{Treatment group.} I consider any property which was the site of an eviction case that was heard by a judge and decided in favor of the plaintiff or decided by default in favor of the plaintiff a treated property.
-
     
     \textbf{Control group.} I consider any property which was the site of an eviction case that was heard by a judge and decided in favor of the defendant or decided by dismissal in favor of the defendant a treated property.
-
-
-    \textbf{Treatment timing.} I consider each property's treatment timing to be the month of its latest docket date.
-
-
+    
     
     
        \subsection{Unconditional Estimates of the ATT}
     
-    Let $G_i$ be the month of the latest docket date in the eviction case involving property $i$, such that $G_i = g \in \{\text{April} \; 2019, \text{May} \; 2019, ..., \text{March} \; 2020\}$. Let $C_i = 1$ if the eviction case involving $i$ resulted in a victory for the defendant and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$ (cohort $g$). If $C_i=1$, then property $i$ is a never-treated property. Let $Y_{i,t}$ be property $i$'s Zestimate during month $t$ and define $\Delta Y_{i, g-1, t} \equiv Y_{i,t} - Y_{i,g-1}$ so that $\Delta Y_{i, g-1, t}$ is the change in property $i$'s Zestimate between months $t$ and $g-1$.
+    Let $G_i$ be the month of the latest docket date in the eviction case involving property $i$, such that $G_i = g \in \{\text{April} \; 2019, \text{May} \; 2019, ..., \text{March} \; 2020\}$. Let $C_i = 1$ property $i$ is treated at some point during the sample period and $0$ otherwise. If $G_i = g$ and $C_i = 0$, then property $i$ is a treated property and a member of the cohort first treated during month $g$ (cohort $g$). If $C_i=1$, then property $i$ is a never-treated property. Let $Y_{i,t}$ be property $i$'s crime incident count during month $t$ and define $\Delta Y_{i, g-1, t} \equiv Y_{i,t} - Y_{i,g-1}$ so that $\Delta Y_{i, g-1, t}$ is the change in property $i$'s crime incident count between months $t$ and $g-1$.
 
  
     The following is an unconditional estimator for $ATT(g,t)$, the average treatment affect during month $t$ for cohort $g$.
@@ -192,16 +187,16 @@ I use the staggered difference-in-difference estimator proposed in \cite{callawa
 
     \subsection{D.R. Estimates of the ATT}
 
-    The above unconditional parallel trends assumption is unlikely to hold, as eviction case outcomes and zestimates may be related to their socioeconomic surroundings. Table 3 explores this theory further, reporting results from univariate regressions of January 2022 Zestimates and an indicator for plaintiff victory on the pre-treatment characteristics listed in Panels A through D of Table 2. Each cell gives the p-value from a regression of the variable which labels its column on the variable which labels its row. Table 3 shows significant associations between pre-treatment characteristics and Zestimates and pre-treatment characteristics and case outcomes, suggesting that the unconditional parallel trends assumption imposed earlier may not be valid.
+    The above unconditional parallel trends assumption is unlikely to hold, as eviction case outcomes and crime incident counts may be related to their socioeconomic surroundings. Table 3 explores this theory further, reporting results from univariate regressions of the change in crime incidents between May 2020 and April 2019 and an indicator for treatment on the pre-treatment characteristics listed in Panels A through D of Table 2. Each cell gives the p-value from a regression of the variable which labels its column on the variable which labels its row. Table 3 shows significant associations between pre-treatment characteristics and trends in crime incident counts and pre-treatment characteristics and case outcomes, suggesting that the unconditional parallel trends assumption imposed earlier may not be valid.
 
     \begin{table}[H]
         \centering
-        \input{}
+        \input{output/group_0_crimes_500m/tables/pre_treatment_covariate_tests}
         \caption{Relationship Between Pre-Treatment Characteristics and the Dependent and Independent Variables}
         \label{tab:my_label}
     \end{table}
 
-    My next strategy uses covariates to construct a more credible counterfactual for the observed path of outcomes in the treatment group using the doubly robust difference-in-differences estimator proposed by \cite{santanna_doubly_2018}. For each property, let $X_i$ be a vector containing the covariates whose univariate regression coefficients from column 1 of table 3 are significant at the 5 percent level. To attempt to identify $ATT(g, t)$ using the doubly robust estimator, I first estimate $\hat{p}_g(X_i)$, a logit regression propensity score model for being in cohort $g$. I assign a weight $\hat{w}_i(X_i) \equiv\frac{\hat{p}_g(X_i)}{1 - \hat{p}_g(X_i)}$ to each never-treated property $i$; $\hat{w}_i(X_i) \equiv 1$ for treated properties. Define $\hat{w}^*_i(X_i) = \frac{\hat{w}_i(X_i)}{\sum_i \hat{w}_i(X_i)}$. Second, using only never-treated counties, I regress $\Delta Y_{i, g-1, t}$ on $X_j$, weighting by $\hat{w}_i(X_i)$. Using the estimated coefficients $\hat{\beta}_{g-1, t}^{X}$, I define $\Delta \hat{\mu}_{g-1, t}(X_i) \equiv \hat{\beta}_{g-1, t}^{X}X_i$ so that $\Delta \hat{\mu}_{g-1, t}(X_i)$ is the predicted change in property $i$'s Zestimate between months $t$ and $g-1$.
+    My next strategy uses covariates to construct a more credible counterfactual for the observed path of outcomes in the treatment group using the doubly robust difference-in-differences estimator proposed by \cite{santanna_doubly_2018}. For each property, let $X_i$ be a vector containing the covariates whose univariate regression coefficients from column 1 of table 3 are significant at the 5 percent level. To attempt to identify $ATT(g, t)$ using the doubly robust estimator, I first estimate $\hat{p}_g(X_i)$, a logit regression propensity score model for being in cohort $g$. I assign a weight $\hat{w}_i(X_i) \equiv\frac{\hat{p}_g(X_i)}{1 - \hat{p}_g(X_i)}$ to each never-treated property $i$; $\hat{w}_i(X_i) \equiv 1$ for treated properties. Define $\hat{w}^*_i(X_i) = \frac{\hat{w}_i(X_i)}{\sum_i \hat{w}_i(X_i)}$. Second, using only never-treated counties, I regress $\Delta Y_{i, g-1, t}$ on $X_j$, weighting by $\hat{w}_i(X_i)$. Using the estimated coefficients $\hat{\beta}_{g-1, t}^{X}$, I define $\Delta \hat{\mu}_{g-1, t}(X_i) \equiv \hat{\beta}_{g-1, t}^{X}X_i$ so that $\Delta \hat{\mu}_{g-1, t}(X_i)$ is the predicted change in property $i$'s crime incident counts between months $t$ and $g-1$.
     The doubly robust estimator for $ATT(g, t)$ is as follows.
     \begin{align}
         \hat{ATT}^{nev}_{DR, X}(g,t) = \frac{1}{N}\sum_i[(\frac{D_i}{\Bar{D_i}} - \frac{\hat{w}^*_i(X_i)C_i}{\Bar{C_i}})(\Delta Y_{i, g-1, t} - \hat{\mu}_{g-1, t}(X_i))]
@@ -213,20 +208,20 @@ I use the staggered difference-in-difference estimator proposed in \cite{callawa
 
     The estimator defined in equation 2 simultaneously models the counterfactual change in \emph{observed} outcomes for untreated properties ($\hat{w}_i(X_i)$) and the \emph{predicted} change in outcomes for untreated properties ($\hat{\mu}_{g-1, t}(X_i)$). As long as one of these two models is correctly specified, the doubly robust estimator will identify $ATT(g, t)$.
 
-    \newpage
     \begin{landscape}
-       \begin{table}[H]
+        
+    \begin{table}[H]
         \centering
-        \input{}
+        \input{output/group_0_crimes_500m/tables/balance_table}
         \caption{Balance Tests}
         \label{tab:my_label}
     \end{table} 
+    
     \end{landscape}
 
-    \subsection{Aggregating Treatment Effects Across Cohort and Time}
-        \subsubsection{ATTs Across Cohorts}
-        \subsubsection{ATTs Across Time Periods}
-        \subsubsection{Event-Study ATTs}
+
+    \subsection{Aggregating Treatment Effects}
+        \subsection{}
     
 \section{Results} \label{sec:result}
 
