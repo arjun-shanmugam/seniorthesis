@@ -18,7 +18,10 @@
 \date{\today}
 \maketitle
 \begin{abstract}
-\noindent This paper investigates the effects of eviction on the frequency of crime incident responses in the immediate vicinity of a property. I use a difference-in-differences research design based on the staggered conclusion of eviction cases in Boston, Massachusetts between June 2019 and March 2020. Using properties where eviction was unsuccessful as the counterfactual for properties where eviction was successful, I find negative effects of eviction on crime incident responses which persist for about eleven months after case resolution. The magnitudes of these effects are approximately 0.5 percent of the mean number of crimes per month in the immediate vicinity of a property in 2017. Placebo tests using larceny and burglary incident responses as an outcome variable suggest that these effects are driven by the movement of individuals involved in crime incidents outside the radii of properties where evictions are successful. Analysis of treatment effects using only cases resolved before the beginning of the pandemic provides evidence against the hypothesis that my results are driven by a pandemic-related shift in characteristics of evicted tenants.
+\noindent This paper investigates the effects of eviction on the frequency of crime incident responses in the immediate vicinity of a property. I use a doubly robust difference-in-differences research design based on the staggered conclusion of eviction cases in Boston, Massachusetts between April 2019 and March 2020. Using properties where eviction was unsuccessful as the counterfactual for properties where eviction was successful, I find negative effects of eviction on crime incident responses which persist for 3 years after case resolution. Point estimates of the magnitudes of these effects are approximately between 2 and 4 percent of the mean number of crimes per month in the immediate vicinity of a property in 2017. Effects are driven by impacts during warm months.
+
+
+Placebo tests using larceny and burglary incident responses as an outcome variable suggest that these effects are driven by the movement of individuals involved in crime incidents outside the radii of properties where evictions are successful. Analysis of treatment effects using only cases resolved before the beginning of the pandemic provides evidence against the hypothesis that my results are driven by a pandemic-related shift in characteristics of evicted tenants.
 
 
 \bigskip
@@ -34,7 +37,7 @@
 Fueled by stagnating incomes and rising housing costs, an eviction crisis has burdened low-income families in the United States for decades. Most poor renting families in America spend over half of their incomes on rent, meaning that unanticipated shocks can force families into homelessness \citep{desmond_evicted:_2017}. A number of studies have investigated the effects of eviction on individuals, motivated by its high prevalence in the United States relative to other rich countries \citep{oecd_affordable_housing_database_hc3.3._2021} and non-experimental evidence that it is destructive to its victims. But comparatively less work has explored how eviction impacts small communities. Researchers have noted that eviction is negatively associated with both economic connnectedness, the degree of interaction between low- and high- income people, and social cohesiveness, the degree to which social networks are fragmented into cliques \citep{weaver_no_2023, chetty_social_2022}. Understanding the ways that eviction interacts with the social fabric of small communities is critical to understanding its full range of impacts. 
 
 
-This paper seeks to reinforce our knowledge of eviction's effects on small communities by estimating the effect of eviction on the frequency of crime incidents within 500 meters of a property. Empirical research of eviction and its impacts faces two main roadblocks \citep{collinson_eviction_2022}. The first is the difficulty of conducting analysis at the individual- or property-level. Eviction case records are often scattered across disjoint public and private organizations and difficult to obtain in bulk. It is also challenging to link eviction case records to individual- and property-level outcomes. I overcome this barrier by obtaining crime incident-level data from the Boston Police Department and eviction case-level data from MassLandlords, a trade association of landlords in Massachusetts. Armed with records of every eviction case resolved in Massachusetts Housing Court since June 2019 and every Boston Police Department crime incident response since August 2015, I spatially join each eviction record from Boston with any crime incident responses which occurred within 500 meters of the associated property. Using this comprehensive crime incident response data, I produce a panel that allows me to observe crime incident counts near each property for several years before and after case resolution. 
+This paper seeks to reinforce our knowledge of eviction's effects on small communities by estimating the effect of eviction on the frequency of crime incidents within 500 meters of a property. Empirical research of eviction and its impacts faces two main roadblocks \citep{collinson_eviction_2022}. The first is the difficulty of conducting analysis at the individual- or property-level. Eviction case records are often scattered across disjoint public and private organizations and difficult to obtain in bulk. It is also challenging to link eviction case records to individual- and property-level outcomes. I overcome this barrier by obtaining crime incident-level data from the Boston Police Department (BPD) and eviction case-level data from MassLandlords, a trade association of landlords in Massachusetts. Armed with records of every eviction case resolved in Massachusetts Housing Court since June 2019 and every BPD crime incident response since August 2015, I spatially join each eviction record from Boston with any crime incident responses which occurred within 500 meters of the associated property. Using this comprehensive crime incident response data, I produce a panel that allows me to observe crime incident counts near each property for several years before and after case resolution. 
 
 
 The second main roadblock to empirical eviction research is the endogeneity of eviction. For instance, partly due to generations of housing policies which sought to systematically exclude African-Americans from home ownership, eviction is strongly correlated with race \citep{rothstein_color_2017}. Eviction is also correlated with income, renter-occupied rates, and a host of other socioeconomic variables, many of which are also correlated with crime levels. I attempt to address this second barrier in two ways. First, I restrict my study to properties where an eviction case was filed. I use properties where an eviction was filed but unsuccessful as the counterfactual for properties where an eviction was successful. Properties where evictions are successful are more similar to properties where evictions are unsuccessfully filed than to properties which are not involved in eviction filings \citep{robinson_eviction_2021}. In this sense, restricting my analysis to properties involved in an eviction case makes the treatment properties more similar to control properties and should reduce the potential for bias in my estimates. Second, taking advantage of my rich outcome data, I use a difference-in-differences research design based on the staggered conclusions of eviction cases which eliminates bias in my estimates from confounders that are invariant over time. 
@@ -58,7 +61,6 @@ This paper is one of relatively few in the economics literature to address the r
 
 Section 2 discusses the institutional context of the study. Section 3 discusses in greater depth the data I obtain and the dataset I assemble for my analysis. Section 4 outlines my empirical strategy. Section 5 provides and discusses results, and Section 6 concludes.
 
-ADD DISCUSISON NOF PANDEMIC: ONLY THE MOST SERIOUS EVICTIONS PROCEEDED, BIASING EVICTEES TO BE MORE SERIOUS OFFENDERS
 
 
 \section{Institutional Context}
@@ -82,7 +84,7 @@ ADD DISCUSISON NOF PANDEMIC: ONLY THE MOST SERIOUS EVICTIONS PROCEEDED, BIASING 
         Four features distinguish the Housing Court as a legal institution from the District Court and Boston Municipal Court \citep{noauthor_housing_nodate}. First, it is led by justices with significant knowledge and experience when it comes to housing-related legal matters, such as summary process cases. Second, it is staffed by housing specialists, employees of the Court with detailed knowledge of Massachusetts housing law who provide information and referrals to resources for landlords and tenants. Third, it offers a service known as mediation, in which cases may be resolved prior to arguments in front of a judge. Mediation is facilitated by a housing specialist, who helps the defendant and plaintiff come to an agreement and records promises made by both sides. Rather than risk defeat at the hands of a judge, many tenants and landlords prefer to reach mutually agreeable terms of resolution during mediation. If either party violates the terms of the specified mediation agreement, the other may return to the judge in a more favorable legal position. Fourth, either party in a summary process case filed in District Court or Boston Municipal Court has the right to transfer the case to the Housing Court at any time prior to trial . For these reasons, tenant advocacy groups and landlord associations alike in Massachusetts generally recommend filing summary process cases in the Housing Court \citep{noauthor_massachusetts_nodate, noauthor_housing_nodate}.
 
         
-        \subsubsection{The Eviction Process}
+        \subsubsection{The Eviction Process in Massachusetts}
         Tenants in Massachusetts can rent from landlords under the terms of a lease or without one. If a tenant is renting from a landlord without a lease, their tenancy is \textit{at will}. The nature of the agreement between the tenant and the landlord—the \textit{landlord-tenant agreement}—determines the steps that the landlord must take to evict the tenant.
 
         
@@ -100,38 +102,50 @@ ADD DISCUSISON NOF PANDEMIC: ONLY THE MOST SERIOUS EVICTIONS PROCEEDED, BIASING 
 
         
         
-    \subsection{Crime Incident Responses}
+    \subsection{Crime in Boston}
+
+    1. How much crime is in Boston compared to most cities?
+    2. Where is crime worst in Boston?
+    3. When does the boston police department respond to an incident?
 
 \section{Data} \label{sec:data}
 
     \subsection{Evictions Data}
+    I obtain records of every summary process case filed in Boston since April 2019 from MassLandlords, a trade association of landlords in Massachusetts. At the beginning of the pandemic, MassLandlords developed a sophisticated system for manually collecting and programatically scraping court dockets. Crucially, each record includes the resolution of the case, the last date on the case docket, and the address of the disputed property. Each record also includes details such as the court in which the case was initially filed, the duration of the case, whether the tenant and landlord had attorneys, and the type of notice to quit that was initially filed by the landlord. I use a paid geocoding service known as Geocodio to obtain highly accurate latitude and longitude coordinates for each property. 
 
-        \newpage
+    I restrict my sample in 4 ways. First, I drop all records which could not be geocoded. Second, I drop the less than one percent of records for which a latest docket date could not be found. Third, I drop all cases which were resolved through mediation. Lastly, I drop cases for which a judgment could not be found. Out of \textcolor{red}{X} cases filed in Boston between April 2019 and March 2020, I am left with a sample of \textcolor{red}{Y} cases. Figure 1 displays the number of evictions in my sample filed during each month. 
+
         \begin{figure}[H]
+            \centering
+            \includegraphics{output/summary_statistics/figures/filings_over_time.png}
+            \caption{Eviction Filings Over Time in Boston}
+            \label{fig:my_label}
+        \end{figure}
+
+
+    \subsection{Crime Incidents Data}
+    I obtain incident-level records of every crime incident to which BPD offers responded to from August 2015 to present. Each record includes the a date, latitude and longitude coordinates, and an offense code indicating the type of crime incident that occurred. I drop all records missing any of these three variables.  
+
+    \subsection{Census Tract Characteristics Data}
+    I obtain time-invariant census tract level characteristics of the properties in my sample from Opportunity Insights \citep{chetty_impacts_2018}. This data includes information such as population density, job density, median household income, and poverty rate. Figure 2 plots the locations of the evictions in my sample, coloring Boston's census tracts according to their poverty rates. It shows that the density of eviction filings tends to be higher in poor areas.
+    
+            \begin{figure}[H]
             \centering
             \includegraphics{output/summary_statistics/figures/evictions_map.png}
             \caption{Spatial Incidence of Eviction}
             \label{fig:my_label}
         \end{figure}
 
-        \begin{landscape}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[scale=1.25]{output/summary_statistics/figures/filings_over_time.png}
-            \caption{Eviction Filings Over Time in Boston}
-            \label{fig:my_label}
-        \end{figure}
-\end{landscape}
-        \begin{table}[H]
-            \centering
-            \small
-            \input{output/summary_statistics/tables/treatment_timings.tex}
-            \caption{Distribution of Eviction Filings and Outcomes}
-            \label{tab:my_label}
-        \end{table}
+    \subsection{Merged Dataset}
+    My final dataset is a panel dataset of nearby crime incident counts at the property month-level. To produce this dataset, I use GIS tools to draw circles of radius 500 meters around each property in my dataset of evictions. I match each property with all crimes that fall within its radius. Then, for each property, I count the number of crimes that occurred within its radius during each month from August 2015 to present. 
 
 
-    \subsection{Summary Statistics}
+    Table 1 contains descriptive statistics for the panel dataset. 
+    
+    
+
+
+
          \begin{table}[H]
             \centering
             \small
@@ -139,7 +153,16 @@ ADD DISCUSISON NOF PANDEMIC: ONLY THE MOST SERIOUS EVICTIONS PROCEEDED, BIASING 
             \caption{Summary Statistics}
             \label{tab:table_1}
         \end{table}
-        \newpage
+
+
+       \begin{table}[H]
+            \centering
+            \small
+            \input{output/summary_statistics/tables/treatment_timings.tex}
+            \caption{Distribution of Eviction Filings and Outcomes}
+            \label{tab:my_label}
+        \end{table}
+
 
 \section{Empirical Strategy: Difference-in-Differences}
     \subsection{Conceptualizing Treatment}
