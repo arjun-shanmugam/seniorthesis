@@ -35,6 +35,10 @@ def aggregate_by_event_time_and_plot(att_gt,
     fig, ax = plt.subplots(layout='constrained')
     x = results_df.index
     y = results_df['ATT']
+    print(y.loc[1:36].min())
+    print(y.loc[1:36].median())
+    print(y.loc[1:36].mean())
+    print(y.loc[1:36].max())
     y_upper = results_df['upper'].where(results_df['upper'].notna(), y)
     y_lower = results_df['lower'].where(results_df['lower'].notna(), y)
     ax.set_ylabel("ATT")
