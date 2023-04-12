@@ -258,7 +258,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                        'unknown_execution']
     origin_columns = ['disposition_found', 'disposition_found', 'disposition_found',
                       'disposition_found', 'execution', 'execution', 'execution', 'execution']
-    target_values = ["Mediated", "Dismissed", "Defaulted", "Heard", "Levied", "Issued", "Requested", np.nan]
+    target_values = ["Mediated", "Dismissed", "Defaulted", "Heard", "Levied", "Issued", "Requested", None]
 
     for dummy_column, origin_column, target_value in zip(panel_E_columns, origin_columns, target_values):
         df.loc[:, dummy_column] = np.where(df[origin_column] == target_value, 1, 0)
