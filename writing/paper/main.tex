@@ -69,12 +69,15 @@ ADD DISCUSISON NOF PANDEMIC: ONLY THE MOST SERIOUS EVICTIONS PROCEEDED, BIASING 
         
         The vast majority of summary process cases are adjudicated in the Housing Court, established in 1971 with the specific purpose of dealing with housing-related matters. The court has been expanded several times since then. Since the passage of the most recent Housing Court expansion law in 2017, every Massachusetts resident has access to a Housing Court \citep{gee_housing_2017}. Across the state, 15 judges preside over cases across six divisions: Central, Eastern, Metro South, Northeast, Southeast, and Western. 
 
+\begin{landscape}
+    
+
         \begin{figure}
             \centering
-            \includegraphics{research/institutional_context/sources/map_of_where_court_sits_-_jan_2019.pdf}
-            \caption{Divisions of the Massachusetts Housing Court}
+            \includegraphics[scale=0.75]{research/institutional_context/sources/map_of_where_court_sits_-_jan_2019.pdf}
+            \caption{Divisions of the Massachusetts Housing Court \citep{housing_court_4_all_housing_nodate}}
         \end{figure}
-        
+\end{landscape}        
         
         Four features distinguish the Housing Court as a legal institution from the District Court and Boston Municipal Court \citep{noauthor_housing_nodate}. First, it is led by justices with significant knowledge and experience when it comes to housing-related legal matters, such as summary process cases. Second, it is staffed by housing specialists, employees of the Court with detailed knowledge of Massachusetts housing law who provide information and referrals to resources for landlords and tenants. Third, it offers a service known as mediation, in which cases may be resolved prior to arguments in front of a judge. Mediation is facilitated by a housing specialist, who helps the defendant and plaintiff come to an agreement and records promises made by both sides. Rather than risk defeat at the hands of a judge, many tenants and landlords prefer to reach mutually agreeable terms of resolution during mediation. If either party violates the terms of the specified mediation agreement, the other may return to the judge in a more favorable legal position. Fourth, either party in a summary process case filed in District Court or Boston Municipal Court has the right to transfer the case to the Housing Court at any time prior to trial . For these reasons, tenant advocacy groups and landlord associations alike in Massachusetts generally recommend filing summary process cases in the Housing Court \citep{noauthor_massachusetts_nodate, noauthor_housing_nodate}.
 
@@ -87,13 +90,14 @@ ADD DISCUSISON NOF PANDEMIC: ONLY THE MOST SERIOUS EVICTIONS PROCEEDED, BIASING 
         
         If the notice to quit is served for nonpayment of rent, then regardless of the nature of the landlord-tenant agreement, this time period given by the notice to quit is 14 days. The tenant may \textit{cure} the nonpayment of rent, nullifying the notice to quit, by paying the landlord all owed rent with interest and costs within 14 days \footnote{Tenants at-will do not have the option to cure nonpayment of rent if they have received a separate notice to quit for nonpayment of rent during the last 12 months.}. If the notice to quit is served for cause and a lease defines the landlord-tenant agreement, then the amount of time that given by the notice to quit must be specified in the lease. If the landlord-tenant agreement is at will, then the time period given by the notice to quit is 30 days. No fault notices to quit waiting period of 30 days or one full rental period—whichever is longer—before tenancy can be terminated. 
 
-        After the length of time specified by the notice to quit has passed \footnote{If the notice to quit was for nonpayment of rent, the specified length of time must pass without curing of the nonpayment by the tenant.}, the tenant's rental agreement has ended. To continue with the eviction, the landlord is required to hire a local law enforcement officer to serve the tenant with a \textit{summary process summons and complaint}. Massachusetts law says that the summary process summons and complaint must then be filed with the court on a Monday between seven and 30 days after it was served. The date on which the summons and complaint is filed with the court is known as the \textit{entry date}. If a landlord fails to follow any of the above protocol—say, by serving a notice to quit that specifies too short of a time period or by failing to deliver a summary process summons and complaint to the tenant—her case may be dismissed, automatically awarding victory to the tenant.
+        After the length of time specified by the notice to quit has passed \footnote{If the notice to quit was for nonpayment of rent, the specified length of time must pass without curing of the nonpayment by the tenant.}, the tenant's rental agreement has ended. To continue with the eviction, the landlord is required to hire a local law enforcement officer to serve the tenant with a \textit{summary process summons and complaint}. Massachusetts law says that the landlord must then file the summary process complaint with the court on a Monday between seven and 30 days after it was served. The date on which the summons and complaint is filed with the court is known as the \textit{entry date}. If a landlord fails to follow any of the above protocol—say, by serving a notice to quit that specifies too short of a time period or by failing to deliver a summary process summons and complaint to the tenant—her case may be dismissed, automatically awarding victory to the tenant.
 
-        
+        Upon receiving the summons and complaint, the tenant may file a Summary Process Answer form with the court. This is the tenant's opportunity to provide \textit{defenses}, or legal reasons that the landlord should not evict the tenant, and \textit{counterclaims}, or claims that the tenant has against the landlord. The tenant may also file for \textit{discovery} at this stage. Discovery is the process by which the tenant may request information from her landlord, which the landlord must provide under oath. Tenants often use discovery as a means of postponing a trial: as long as the court receives the request for discovery before mediation begins, the eviction process is halted by two weeks.
 
-        
+        Once the summons and complaint has been filed with the court, the tenant has had a chance to answer, and the discovery process is finished, mediation begins. Housing specialists facilitate mediation with the goal of avoiding a trial by producing a legally binding agreement acceptable for both the tenant and the landlord. Mediation is confidential—matters discussed during mediation may not go before a judge. 
 
-        
+        If mediation does not result in an agreement between the landlord and the tenant, a trial is held in front of a judge, who rules in favor of the landlord, the plaintiff, or the tenant, the defendant. If the judge rules in favor of the tenant, the eviction process has concluded. If the judge rules in favor of the landlord, then the tenant has ten days after the judgment to appeal the case. After the tenth day, the landlord may obtain an \textit{execution for possession} from the court. For the next 90 days, the landlord may hire a law enforcement officer to force a tenant to leave the property with 48 hours notice. 
+
         
         
     \subsection{Crime Incident Responses}
@@ -138,6 +142,7 @@ ADD DISCUSISON NOF PANDEMIC: ONLY THE MOST SERIOUS EVICTIONS PROCEEDED, BIASING 
         \newpage
 
 \section{Empirical Strategy: Difference-in-Differences}
+    \subsection{Conceptualizing Treatment}
     I seek to estimate the average treatment effects of plaintiff victory in eviction cases on treated properties. I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. 
     
     
