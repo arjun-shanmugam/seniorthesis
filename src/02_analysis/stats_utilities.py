@@ -132,7 +132,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
 
 def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: str, output_directory: str):
     """Choose covariates to include in D.R. model."""
-    covariate_exploration_table_columns = ["", ""]  # TODO: Add column naming logic.
+    covariate_exploration_table_columns = ["Change in Crime Incidents, April 2019-March 2020", "Treated Property"]  # TODO: Add column naming logic.
 
     # Run produce summary statistics on the DataFrame to get names of column names of potential pre-treatment covaiates.
     summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'latest_docket_date')
@@ -150,7 +150,7 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     independent_variable = 'judgment_for_plaintiff'
     dependent_variable = f'change_in_{analysis}_over_all_treated_weeks'
     if "month" in treatment_date_variable:
-        last_week_in_panel = '2023-01'
+        last_week_in_panel = '2020-03'
     else:
         last_week_in_panel = '2023-00'
     first_treated_week = df[treatment_date_variable].sort_values().iloc[0]
@@ -254,11 +254,11 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_D = pd.concat([panel_D], keys=["Panel D: Defendant and Plaintiff Characteristics"])
 
     # Panel E: Case Resolution
-    panel_E_columns = ['mediated', 'dismissed', 'defaulted', 'heard', 'levied', 'issued', 'requested',
+    panel_E_columns = ['dismissed', 'defaulted', 'heard', 'levied', 'issued', 'requested',
                        'unknown_execution']
-    origin_columns = ['disposition_found', 'disposition_found', 'disposition_found',
+    origin_columns = ['disposition_found', 'disposition_found',
                       'disposition_found', 'execution', 'execution', 'execution', 'execution']
-    target_values = ["Mediated", "Dismissed", "Defaulted", "Heard", "Levied", "Issued", "Requested", np.nan]
+    target_values = ["Dismissed", "Defaulted", "Heard", "Levied", "Issued", "Requested", None]
 
     for dummy_column, origin_column, target_value in zip(panel_E_columns, origin_columns, target_values):
         df.loc[:, dummy_column] = np.where(df[origin_column] == target_value, 1, 0)

@@ -10,7 +10,6 @@ OUTPUT_DATA = "../../data/02_intermediate/evictions.csv"
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, encoding='unicode_escape')
 original_N = len(evictions_df)
 VERBOSE = True
-
 # Clean court division.
 court_division_replacement_dict = {"central": "Central",
                                    "eastern": "Eastern",
@@ -19,10 +18,6 @@ court_division_replacement_dict = {"central": "Central",
                                    "southeast": "Southeast",
                                    "western": "Western"}
 evictions_df.loc[:, 'court_division'] = evictions_df.loc[:, 'court_division'].replace(court_division_replacement_dict)
-
-# Drop BMC and District Court cases.
-mask = evictions_df['court_division'].isin(["Central", "Eastern", "Metro South", "Southeast", "Northeast", "Western"])
-evictions_df = evictions_df.loc[mask, :]
 
 # Clean initiating actions.
 initiating_action_replacement_dict = {"Efiled SP Summons and Complaint - Cause": "SP Summons and Complaint - Cause",
