@@ -18,8 +18,7 @@
 \date{\today}
 \maketitle
 \begin{abstract}
-\noindent This paper investigates the effects of eviction on the frequency of crime incident responses in the immediate vicinity of a property. I use a doubly robust difference-in-differences research design based on the staggered conclusion of eviction cases in Boston, Massachusetts between April 2019 and March 2020. Using properties where eviction was unsuccessful as the counterfactual for properties where eviction was successful, I find negative effects of eviction on crime incident responses which persist for 3 years after case resolution. Point estimates of the magnitudes of these effects are approximately between 2 and 4 percent of the mean number of crimes per month in the immediate vicinity of a property in 2017. Effects are driven by impacts during warm months.
-
+\noindent This paper investigates the effects of eviction on the frequency of crime incident responses in the immediate vicinity of a property. I use a doubly robust difference-in-differences research design based on the staggered conclusion of eviction cases in Boston, Massachusetts between April 2019 and March 2020. Using properties where eviction was unsuccessful as the counterfactual for properties where eviction was successful, I find negative effects of eviction on crime incident responses which persist for 3 years after case resolution. Point estimates of the magnitudes of these effects are approximately between 2 and 4 percent of the mean number of crimes per month in the immediate vicinity of a property in 2017. 
 
 Placebo tests using larceny and burglary incident responses as an outcome variable suggest that these effects are driven by the movement of individuals involved in crime incidents outside the radii of properties where evictions are successful. Analysis of treatment effects using only cases resolved before the beginning of the pandemic provides evidence against the hypothesis that my results are driven by a pandemic-related shift in characteristics of evicted tenants.
 
@@ -102,7 +101,7 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
 
         
         
-    \subsection{Crime in Boston}
+    \subsection{Crime in Boston TODO}
 
     1. How much crime is in Boston compared to most cities?
     2. Where is crime worst in Boston?
@@ -204,7 +203,7 @@ I use the staggered difference-in-difference estimator proposed in \cite{callawa
     Note that $\Bar{D_i}$ and $\Bar{C_i}$ are sample averages. Under the assumption of parallel trends among units with the same covariates, $\hat{ATT}^{nev}_{DR, X}(g,t)$ will identify $ATT(g, t)$.
     
 
-    Columns 2 and 3 of table 4 shows significant pre-treatment imbalance in covariates between the treatment and control groups. Each row of column 2 reports the coefficient from a univariate regression of one covariate on an indicator for plaintiff victory. Column 3 reports the p-values associated with each of these coefficients. In each row of column 4, I regress one covariate on an indicator for plaintiff victory and $\hat{w}_i(X_i)$ and report the coefficient on the indicator for plaintiff victory. Column 5 reports the p-values associated with each coefficient and shows that conditioning on pre-treatment covariates makes virtually all pre-treatment differences in covariates insignificant.
+    Columns 2 and 3 of table 4 shows significant pre-treatment imbalance in covariates between the treatment and control groups. Each row of column 2 reports the coefficient from a univariate regression of one covariate on an indicator for plaintiff victory. Column 3 reports the p-values associated with each of these coefficients. In each row of column 4, I regress one covariate on an indicator for plaintiff victory and $\hat{w}_i(X_i)$ and report the coefficient on the indicator for plaintiff victory. Column 5 reports the p-values associated with each coefficient and shows that conditioning on pre-treatment covariates makes almost all pre-treatment differences in covariates insignificant.
 
     The estimator defined in equation 2 simultaneously models the counterfactual change in \emph{observed} outcomes for untreated properties ($\hat{w}_i(X_i)$) and the \emph{predicted} change in outcomes for untreated properties ($\hat{\mu}_{g-1, t}(X_i)$). As long as one of these two models is correctly specified, the doubly robust estimator will identify $ATT(g, t)$.
 
@@ -221,15 +220,19 @@ I use the staggered difference-in-difference estimator proposed in \cite{callawa
 
 
     \subsection{Aggregating Treatment Effects}
-        \subsection{}
+        The estimator in equation (2) produces estimates of $ATT(g, t)$ for each cohort at many different time periods. As such, following the recommendations of \cite{callaway_difference--differences_2021}, I aggregate my estimates of these $ATT(g, t)$ parameters according to time since treatment. For each $ATT(g, t)$, time since treatment $e$ is equal to $t-g$. I produce 95 percent confidence intervals around my estimates of $ATT(e)$ across diferent event times.
     
-\section{Results} \label{sec:result}
-
-    \subsection{Unconditional Estimates of the ATT}
-
- 
+\section{Results and Mechanisms} \label{sec:result}
 
     \subsection{D.R. Estimates of the ATT}
+    \begin{figure}
+        \centering
+        \includegraphics{output/group_0_crimes_500m/figures/att_gt_dr_event_study_long_horizon.png}
+        \caption{Caption}
+        \label{fig:my_label}
+    \end{figure}
+
+    \subsection{Mechanisms}
 
 
     
