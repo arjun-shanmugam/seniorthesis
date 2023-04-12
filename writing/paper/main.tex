@@ -166,6 +166,9 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
 
 \section{Empirical Strategy: Difference-in-Differences}
 I use the staggered difference-in-difference estimator proposed in \cite{callaway_difference--differences_2021}, which uses two-period, two-unit difference-in-difference estimators to estimate time- and cohort-specific ATTs and then aggregates them, weighting by cohort size, to produce summaries of the ATT. 
+
+There are two main reasons that the traditional two-way fixed effects estimator is inferior to \cite{callaway_difference--differences_2021}'s estimator. \cite{goodman-bacon_difference--differences_2021} shows that the treatment effect produced by the two-way fixed effects estimator is a weighted average of many canonical two unit, two period difference-in-differences estimates. The first reason that the two-way fixed effects estimator is inferior is that some of these two unit, two period difference-in-differences estimates make ``forbidden comparisons'' between units which have both already been treated. Because these comparisons use already treated units as the counterfactual for other already treated units, they are inconsistent with the spirit of a quasi-experimental approach. \cite{callaway_difference--differences_2021}'s estimator individually calculates only those two unit, two period difference-in-differences estimates which make comparisons between treated and untreated units. The second reason is that the two-way fixed estimator weights this average of two unit, two period difference-in-differences estimates using treatment variances, whereas \cite{callaway_difference--differences_2021}'s estimator simply uses  the share of treated units.
+
     \subsection{Conceptualizing Experiment}
     \textbf{Treatment group.} I consider any property which was the site of an eviction case that was heard by a judge and decided in favor of the plaintiff or decided by default in favor of the plaintiff a treated property.
     
@@ -220,7 +223,7 @@ I use the staggered difference-in-difference estimator proposed in \cite{callawa
 
 
     \subsection{Aggregating Treatment Effects}
-        The estimator in equation (2) produces estimates of $ATT(g, t)$ for each cohort at many different time periods. As such, following the recommendations of \cite{callaway_difference--differences_2021}, I aggregate my estimates of these $ATT(g, t)$ parameters according to time since treatment. For each $ATT(g, t)$, time since treatment $e$ is equal to $t-g$. I produce 95 percent confidence intervals around my estimates of $ATT(e)$ across diferent event times.
+        The estimator in equation (2) produces estimates of $ATT(g, t)$ for each cohort at many different time periods. As such, following \cite{callaway_difference--differences_2021} and \cite{goodman-bacon_changes_2019}, I aggregate my estimates of these $ATT(g, t)$ parameters according to time since treatment. For each $ATT(g, t)$, time since treatment $e$ is equal to $t-g$. I produce 95 percent confidence intervals around my estimates of $ATT(e)$ across different event times.
     
 \section{Results and Mechanisms} \label{sec:result}
 
