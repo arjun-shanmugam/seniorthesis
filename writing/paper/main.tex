@@ -264,55 +264,50 @@ There are two main reasons that the traditional two-way fixed effects estimator 
 
     Second, a placebo test using crimes that are more common in wealthier census tracts do not produce significant treatment effects. If the above mechanism is correct—if the effects I observe are the result of the removal of individuals who interact with crime in some capacity—then my model should estimate weaker effects of eviction on crime incidents which are less common in areas with similar poverty rates to areas where evictions are common. To implement this placebo test, I first restrict my crime dataset only to crimes which occurred between January 2019 and March 2020. For each category of crime incident in my data, I calculate the median, 75th percentile, and 99th percentile of the poverty rates of the census tracts in which that cateogry of incident occurred. I listed the ten crime incident categories with the ten lowest median census tract poverty rates. From these ten categories, I selected three: shoplifting, motor vehicle accidents, and motor vehicle towing. Table 4 gives information about the distribution of poverty rates in census tracts where these crimes occur, along with information about the distribution of poverty rates in census tracts where evictions are filed. Column 1 shows that the poverty rate of the median census tract containing a shoplifting, motor vehicle accident, or motor vehicle towing incident has a much lower poverty rate than the poverty rate of the median census tract containing an eviction filing. Similar results are shown in columns 2 and 3. Table 4 shows that shoplifting, motor vehicle accident, and motor vehicle towing incidents tend to occur in census tracts with much lower poverty rates than eviction filings. 
 
+\begin{landscape}
+    
     \begin{table}[H]
         \centering
         \input{output/group_0_crimes_500m/tables/placebo_poverty_rates}
         \caption{TODO}
         \label{tab:my_label}
     \end{table}
+    \end{landscape}
+
 
     Figure 5 shows that applying the doubly robust estimator from the previous section produces treatment effects that extremely small in magnitude compared to the treatment effects estimated using all crime incidents as the outcome variable. Point estimates are not uniformly positive or negative. The lack of a treatment effect of eviction on crimes which are less common in high poverty areas and which theory suggests should not be affected by eviction provides strong evidence for the mechanism I hypothesize. 
+
+    \begin{figure}
+        \centering
+        \includegraphics{output/group_1_crimes_500m/figures/att_gt_dr_event_study_long_horizon.png}
+        \caption{TODO}
+        \label{fig:my_label}
+    \end{figure}
     
     
-    I select three categories of crime incidents which are more common in 
 
 
-
-    Second, treatment effects are driven by evictions that were concluded during warm months. Post-treatment impacts of eviction are uniformly smaller in magnitude during cold months and largely insignificant from 0, as shown in Figures 4 and 5. \textcolor{red}{todo!}
+    Third, treatment effects are driven by evictions that were concluded during warm months. Post-treatment impacts of eviction are uniformly smaller in magnitude during cold months and largely insignificant from 0, as shown in Figures 4 and 5. A large body of research has found evidence of significant seasonal increases in crime during warmer months \citep{lauritsen_seasonal_2014}. The fact that treatment effects are largest during warm months is consistent with the hypothesis that evicted tenants interact with crime to a greater extent than the tenants that replace them. 
 
     \begin{figure}[H]
         \centering
-        \includegraphics{output/group_0_crimes_warm_500m/figures/att_gt_dr_event_study_long_horizon.png}
+        \includegraphics{output/group_0_crimes_cold_500m/figures/att_gt_dr_event_study_long_horizon.png}
         \caption{Relationship Between Treatment and Crime Incidents Within 500 Meters (Cases Concluded During Warm Months)}
         \label{fig:my_label}
     \end{figure}
 
        \begin{figure}[H]
         \centering
-        \includegraphics{output/group_0_crimes_cold_500m/figures/att_gt_dr_event_study_long_horizon.png}
+        \includegraphics{output/group/figures/att_gt_unconditional_event_study_long_horizon.png}
         \caption{Relationship Between Treatment and Crime Incidents Within 500 Meters (Cases Concluded During Cold Months)}
         \label{fig:my_label}
     \end{figure}
 
-    
-
-    Third, placebo tests using \<crimes that are most common in wealthy areas\> as an outcome do not show evidence 
-
-    1. placebo test
-
-    2. warm results
-
-    3. Steady increase 
-    
-    
-    Point estimates of the post-treatment $ATT(e)$'s become negative and significantly different from zero almost immediately after treatment and remain so for the next three years. Assuming that the units in my sample are vacant for less than three years after eviction, this means that treatment effects are negative both while the property is vacant and once a new tenant arrives. 
-    
-    
-    This suggests two things about evicted tenants. First, it suggests that just before eviction, they are culprits of, accessories to, or targets of crime incidents. 
-    
-    Point estimates of the post-treatment ATT remain negative and significantly different from zero not just for the first few months after treatment, but for the first three years after treatment. 
 
     \subsection{Robustness}
+    1. Remove large apartment buildings
+
+    
     \subsection{How does the lack of execution data bias my results?}
 
     
