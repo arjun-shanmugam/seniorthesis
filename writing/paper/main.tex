@@ -115,6 +115,13 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
     I restrict my sample in five ways. First, I drop all cases missing a most recent docket date. Second, I drop all cases missing property addresses. Third, I drop cases which concluded during April 2020 or later. Fourth, I drop all cases resolved through mediation. Lastly, I drop all cases for which a judgment could not be scraped. Table 1 outlines how these sample restrictions altered the number of observations in my study. Figure 2 displays the number of evictions in my sample filed during each month. 
 
 
+\begin{table}[H]
+    \centering
+    \input{output/summary_statistics/tables/sample_restriction}
+    \caption{Sample Construction}
+    \label{tab:my_label}
+\end{table}
+
         \begin{figure}[H]
             \centering
             \includegraphics{output/summary_statistics/figures/filings_over_time.png}
@@ -124,14 +131,14 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
 
 
     \subsection{Crime Incidents Data}
-    I obtain incident-level records of every crime incident to which BPD offers responded to from August 2015 to present. Each record includes the a date, latitude and longitude coordinates, and an offense code indicating the type of crime incident that occurred. I drop all records missing any of these three variables.  
+    I obtain incident-level records of every crime incident to which BPD offers responded to from August 2015 to present. Each record includes the a date, latitude and longitude coordinates, and an offense code indicating the type of crime incident that occurred. I drop all crime incident records missing any of these three variables.  
 
     \subsection{Census Tract Characteristics Data}
-    I obtain time-invariant census tract level characteristics of the properties in my sample from Opportunity Insights \citep{chetty_impacts_2018}. This data includes information such as population density, job density, median household income, and poverty rate. Figure 2 plots the locations of the evictions in my sample, coloring Boston's census tracts according to their poverty rates. It shows that the density of eviction filings tends to be higher in poor areas. This result is consistent with existing research that finds strong associations between poverty and the prevalence of eviction \citep{desmond_housing_2016}. Indeed, <>, mirroring the findings of \cite{collinson_eviction_2022} in New York City and Chicago.
+    I obtain time-invariant census tract level characteristics of the properties in my sample from Opportunity Insights \citep{chetty_impacts_2018}. This data includes information such as population density, job density, median household income, and poverty rate. Figure 2 plots the locations of the evictions in my sample, coloring Boston's census tracts according to their poverty rates. It shows that the density of eviction filings tends to be higher in poor areas. This result is consistent with existing research that finds strong associations between poverty and the prevalence of eviction \citep{desmond_housing_2016}. Indeed, 64 percent of eviction cases won by the plaintiff concern properties in census tracts with povery rates above 20 percent. This descriptive finding mirrors that of \cite{collinson_eviction_2022}: they show that 58 percent of evictions in New York and 46 percent of evictions in Cook County occur in census tracts with poverty rates above 20 percent. 
     
             \begin{figure}[H]
             \centering
-            \includegraphics{output/summary_statistics/figures/evictions_map.png}
+            \includegraphics[scale=1.3]{output/summary_statistics/figures/evictions_map.png}
             \caption{Spatial Incidence of Eviction}
             \label{fig:my_label}
         \end{figure}
@@ -140,7 +147,7 @@ Section 2 discusses the institutional context of the study. Section 3 discusses 
     My final dataset is a panel dataset of nearby crime incident counts at the property month-level. To produce this dataset, I use GIS tools to draw circles of radius 500 meters around each property in my dataset of evictions. I match each property with all crimes that fall within its radius. Then, for each property, I count the number of crimes that occurred within its radius during each month from August 2015 to present. 
 
 
-    Table 1 contains descriptive statistics for the panel dataset. 
+    Table 1 contains descriptive statistics for the panel dataset. \textcolor{red}{TODO}
     
     
 
@@ -231,9 +238,13 @@ There are two main reasons that the traditional two-way fixed effects estimator 
     \subsection{Aggregating Treatment Effects}
         The estimator in equation (2) produces estimates of $ATT(g, t)$ for each cohort at many different time periods. As such, following \cite{callaway_difference--differences_2021} and \cite{goodman-bacon_changes_2019}, I aggregate my estimates of these $ATT(g, t)$ parameters according to time since treatment. For each $ATT(g, t)$, time since treatment $e$ is equal to $t-g$. I produce 95 percent confidence intervals around my estimates of $ATT(e)$ across different event times.
     
-\section{Results and Mechanisms} \label{sec:result}
+\section{Results and Potential Mechanisms} \label{sec:result}
 
-    \subsection{D.R. Estimates of the ATT}
+    \subsection{Doubly Robust Estimates of the ATT}
+    Doubly robust estimates of event-time aggregated treatment effects become negative and significantly different from zero during month two after treatment, and remain so for the next 34 months. \textcolor{red}{My identifying assumption of parallel trends between groups with the same pre-treatment characteristics appears satisfied; treatment effects at event times $-5$ through $-1$ are extremely close to 0. Treatment effects at event times $-6$ through $-1$ are not significantly different from 0.} Crime incident counts in the vicinity of treated properties and the vicinity of untreated properties only begin to change relative to each other after treatment occurs.
+
+    Treatment effects from months 1 to 36 after treatment range from -1.54 to -4.94. The magnitudes of these point estimates are between 1.60 and 5.15 percent of the average number of crimes per month in a single property's radius in 2017.
+    
     \begin{figure}[H]
         \centering
         \includegraphics{output/group_0_crimes_500m/figures/att_gt_dr_event_study_long_horizon.png}
@@ -241,8 +252,68 @@ There are two main reasons that the traditional two-way fixed effects estimator 
         \label{fig:my_label}
     \end{figure}
 
+
+    
     \subsection{Mechanisms}
 
+    In this section, I argue that the most likely mechanism for the treatment effects I observe is the removal of individuals who are targets of, accessories to, and/or culprits of crime incidents from the immediate vicinity of the property. Three pieces of evidence support this hypothesis.
+
+
+    First, the steady increase in estimated treatment effects during the first three months after treatment is consistent with the timeline by which tenants are removed from properties. During months 0, 1, 2, and 3 relative to treatment, the magnitude of treatment effects steadily increases. This steady increase in estimated treatment effects during the first three months after treatment is consistent with the fact that an execution for possession remains valid for 90 days after its issuance and suggests that progressively more tenants are removed from units during the first three months after treatment. In contrast, treatment effect magnitudes at event times 4 and greater do not follow any clear pattern.
+
+
+    Second, a placebo test using crimes that are more common in wealthier census tracts do not produce significant treatment effects. If the above mechanism is correct—if the effects I observe are the result of the removal of individuals who interact with crime in some capacity—then my model should estimate weaker effects of eviction on crime incidents which are less common in areas with similar poverty rates to areas where evictions are common. To implement this placebo test, I first restrict my crime dataset only to crimes which occurred between January 2019 and March 2020. For each category of crime incident in my data, I calculate the median, 75th percentile, and 99th percentile of the poverty rates of the census tracts in which that cateogry of incident occurred. I listed the ten crime incident categories with the ten lowest median census tract poverty rates. From these ten categories, I selected three: shoplifting, motor vehicle accidents, and motor vehicle towing. Table 4 gives information about the distribution of poverty rates in census tracts where these crimes occur, along with information about the distribution of poverty rates in census tracts where evictions are filed. Column 1 shows that the poverty rate of the median census tract containing a shoplifting, motor vehicle accident, or motor vehicle towing incident has a much lower poverty rate than the poverty rate of the median census tract containing an eviction filing. Similar results are shown in columns 2 and 3. Table 4 shows that shoplifting, motor vehicle accident, and motor vehicle towing incidents tend to occur in census tracts with much lower poverty rates than eviction filings. 
+
+    \begin{table}[H]
+        \centering
+        \input
+        \caption{Caption}
+        \label{tab:my_label}
+    \end{table}
+
+    Figure 5 shows that applying the doubly robust estimator from the previous section produces treatment effects that extremely small in magnitude compared to the treatment effects estimated using all crime incidents as the outcome variable. Point estimates are not uniformly positive or negative. The lack of a treatment effect of eviction on crimes which are less common in high poverty areas and which theory suggests should not be affected by eviction provides strong evidence for the mechanism I hypothesize. 
+    
+    
+    I select three categories of crime incidents which are more common in 
+
+
+
+    Second, treatment effects are driven by evictions that were concluded during warm months. Post-treatment impacts of eviction are uniformly smaller in magnitude during cold months and largely insignificant from 0, as shown in Figures 4 and 5. \textcolor{red}{todo!}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics{output/group_0_crimes_warm_500m/figures/att_gt_dr_event_study_long_horizon.png}
+        \caption{Relationship Between Treatment and Crime Incidents Within 500 Meters (Cases Concluded During Warm Months)}
+        \label{fig:my_label}
+    \end{figure}
+
+       \begin{figure}[H]
+        \centering
+        \includegraphics{output/group_0_crimes_cold_500m/figures/att_gt_dr_event_study_long_horizon.png}
+        \caption{Relationship Between Treatment and Crime Incidents Within 500 Meters (Cases Concluded During Cold Months)}
+        \label{fig:my_label}
+    \end{figure}
+
+    
+
+    Third, placebo tests using \<crimes that are most common in wealthy areas\> as an outcome do not show evidence 
+
+    1. placebo test
+
+    2. warm results
+
+    3. Steady increase 
+    
+    
+    Point estimates of the post-treatment $ATT(e)$'s become negative and significantly different from zero almost immediately after treatment and remain so for the next three years. Assuming that the units in my sample are vacant for less than three years after eviction, this means that treatment effects are negative both while the property is vacant and once a new tenant arrives. 
+    
+    
+    This suggests two things about evicted tenants. First, it suggests that just before eviction, they are culprits of, accessories to, or targets of crime incidents. 
+    
+    Point estimates of the post-treatment ATT remain negative and significantly different from zero not just for the first few months after treatment, but for the first three years after treatment. 
+
+    \subsection{Robustness}
+    \subsection{How does the lack of execution data bias my results?}
 
     
 
