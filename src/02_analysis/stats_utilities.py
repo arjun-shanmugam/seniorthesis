@@ -23,7 +23,7 @@ def add_missing_indicators(df: pd.DataFrame, missing_variables: List[str], pre_t
     return missing_indicators
 
 
-def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.DataFrame, output_directory: str):
+def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.DataFrame, output_directory: str = None):
     # Store pre-treatment panel names.
     pre_treatment_panels = ['Panel A: Pre-treatment Outcomes',
                             'Panel B: Census Tract Characteristics',
@@ -102,37 +102,39 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
                                                 "Panel B: Census Tract Characteristics": "Panel B",
                                                 "Panel C: Case Initiation": "Panel C",
                                                 "Panel D: Defendant and Plaintiff Characteristics": "Panel D"})
+    if output_directory is not None:
+        # Export to LaTeX.
+        filename = join(output_directory, "balance_table.tex")
+        latex = (balance_table
+                 .rename(index=variable_display_names_dict)
+                 .style
+                 .format(thousands=",",
+                         na_rep='',
+                         formatter={('', 'Cases Won by Plaintiff'): "{:,.2f}",
+                                    ('Difference in Cases Won by Defendant', 'Unweighted'): "{:,.2f}",
+                                    ('Difference in Cases Won by Defendant', '\\emph{p}'): "{:,.2f}",
+                                    ('Difference in Cases Won by Defendant', 'Weighted'): "{:,.2f}",
+                                    ('', 'N'): "{:,.0f}"})
+                 .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
+                 .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
+                 .to_latex(None,
+                           column_format="llccccc",
+                           hrules=True,
+                           multicol_align='c',
+                           clines="skip-last;data")).replace("{*}", "{.75cm}")
+        latex = latex.split("\\\\\n")
+        latex.insert(1, "\\cline{4-7}\n")
+        latex = "\\\\\n".join(latex)
 
-    # Export to LaTeX.
-    filename = join(output_directory, "balance_table.tex")
-    latex = (balance_table
-             .rename(index=variable_display_names_dict)
-             .style
-             .format(thousands=",",
-                     na_rep='',
-                     formatter={('', 'Cases Won by Plaintiff'): "{:,.2f}",
-                                ('Difference in Cases Won by Defendant', 'Unweighted'): "{:,.2f}",
-                                ('Difference in Cases Won by Defendant', '\\emph{p}'): "{:,.2f}",
-                                ('Difference in Cases Won by Defendant', 'Weighted'): "{:,.2f}",
-                                ('', 'N'): "{:,.0f}"})
-             .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
-             .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
-             .to_latex(None,
-                       column_format="llccccc",
-                       hrules=True,
-                       multicol_align='c',
-                       clines="skip-last;data")).replace("{*}", "{.75cm}")
-    latex = latex.split("\\\\\n")
-    latex.insert(1, "\\cline{4-7}\n")
-    latex = "\\\\\n".join(latex)
-    with open(filename, 'w') as file:
-        file.write(latex)
+        with open(filename, 'w') as file:
+            file.write(latex)
     return balance_table, pre_treatment_covariates
 
 
-def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: str, output_directory: str):
+def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: str, output_directory: str = None):
     """Choose covariates to include in D.R. model."""
-    covariate_exploration_table_columns = ["Change in Crime Incidents, April 2019-March 2020", "Treated Property"]  # TODO: Add column naming logic.
+    covariate_exploration_table_columns = ["Change in Crime Incidents, April 2019-March 2020",
+                                           "Treated Property"]  # TODO: Add column naming logic.
 
     # Run produce summary statistics on the DataFrame to get names of column names of potential pre-treatment covaiates.
     summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'latest_docket_date')
@@ -182,25 +184,27 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     covariate_exploration_df = pd.concat([covariate_exploration_df], axis=1, keys=['Dependent Variable'])
     covariate_exploration_df.index = covariate_exploration_df.index.set_names(['',
                                                                                '\\emph{Independent Variable}'])
-    # Export to LaTeX.
-    filename = join(output_directory, "pre_treatment_covariate_tests.tex")
-    latex = (covariate_exploration_df
-             .rename(index=variable_display_names_dict)
-             .style
-             .format(formatter="{:0.2f}")
-             .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
-             .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
-             .to_latex(None,
-                       column_format="llcc",
-                       hrules=True,
-                       multicol_align='c',
-                       clines="skip-last;data")
-             .replace("{*}", "{3cm}"))
-    latex = latex.split("\\\\\n")
-    latex.insert(1, "\\cline{3-4}\n")
-    latex = "\\\\\n".join(latex)
-    with open(filename, 'w') as file:
-        file.write(latex)
+    if output_directory != None:
+        # Export to LaTeX.
+        filename = join(output_directory, "pre_treatment_covariate_tests.tex")
+        latex = (covariate_exploration_df
+                 .rename(index=variable_display_names_dict)
+                 .style
+                 .format(formatter="{:0.2f}")
+                 .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
+                 .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
+                 .to_latex(None,
+                           column_format="llcc",
+                           hrules=True,
+                           multicol_align='c',
+                           clines="skip-last;data")
+                 .replace("{*}", "{3cm}"))
+        latex = latex.split("\\\\\n")
+        latex.insert(1, "\\cline{3-4}\n")
+        latex = "\\\\\n".join(latex)
+
+        with open(filename, 'w') as file:
+            file.write(latex)
     return covariate_exploration_df
 
 
@@ -229,7 +233,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
 
     # Panel B: Census Tract Characteristics
     panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'frac_coll_plus2010', 'job_density_2013',
-                       'poor_share2010']
+                       'poor_share2010', 'share_white2010']
     panel_B = df[sorted(panel_B_columns)].describe().T
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
@@ -317,7 +321,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    "case_duration": "Case duration",
                                    "defaulted": "Judgment by default",
                                    "heard": "Case heard",
-                                    'dismissed': "Case dismissed",
+                                   'dismissed': "Case dismissed",
                                    "judgment": "Money judgment",
                                    "mediated": "Case mediated",
                                    'levied': "Execution levied",
@@ -338,6 +342,5 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
         variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
         pretreatment_level_display_name = f"Total Group {outcome.split('_')[1]} Incidents, 2017"
         variable_display_names_dict[f'total_twenty_seventeen_{outcome}'] = pretreatment_level_display_name
-
 
     return summary_statistics, variable_display_names_dict

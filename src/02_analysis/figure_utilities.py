@@ -19,26 +19,18 @@ import figure_and_table_constants
 import matplotlib.transforms as transforms
 
 def aggregate_by_event_time_and_plot(att_gt,
-                                     output_folder: str,
-                                     filename: str,
                                      start_period: int,
                                      end_period: int,
                                      title: str,
-                                     treatment_month_variable: str,
-                                     df: pd.DataFrame):
+                                     ax: Axes):
     # Get event study-aggregated ATT(t)s.
     results_df = att_gt.aggregate('event')
     results_df = results_df.loc[start_period:end_period]
     results_df.columns = results_df.columns.droplevel().droplevel()
 
     # Plot event study-style plot of ATTs.
-    fig, ax = plt.subplots(layout='constrained')
     x = results_df.index
     y = results_df['ATT']
-    print(y.loc[1:36].min())
-    print(y.loc[1:36].median())
-    print(y.loc[1:36].mean())
-    print(y.loc[1:36].max())
     y_upper = results_df['upper'].where(results_df['upper'].notna(), y)
     y_lower = results_df['lower'].where(results_df['lower'].notna(), y)
     ax.set_ylabel("ATT")
@@ -47,21 +39,27 @@ def aggregate_by_event_time_and_plot(att_gt,
     ax.set_xticks(range(start_period, end_period + 1, 6))
     plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
                                         text_y_location_normalized=0.95)
+
+
     plot_scatter_with_shaded_errors(ax,
                                                      x.values,
                                                      y.values,
                                                      y_upper.values,
                                                      y_lower.values,
                                                      point_color='black',
-                                                     error_color='grey',
+                                                     error_color='white',
                                                      edge_color='grey',
-                                                     edge_style='-',
+                                                     edge_style='--',
                                                      zorder=1)
     plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
 
-    plt.show()
-    save_figure_and_close(fig, join(output_folder, filename))
+    # Label graph with average treatment effect across positive relative periods.
+    average_post_treatment_att = att_gt.aggregate('event', overall=True)
+    point_estimate = round(average_post_treatment_att['EventAggregationOverall'].iloc[0, 0], 2)
+    se = round(average_post_treatment_att['EventAggregationOverall'].iloc[0, 1], 2)
+    label = f"Avg.\nPost-Treatment\nATT: {point_estimate}\n(SE: {se})"
 
+    plot_labeled_hline(ax, y=point_estimate, size='x-small', text=label, color='black', linestyle='--', zorder=6, text_x_location_normalized=0.085)
 
 def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_folder: str, filename: str, title: str):
     # Get time-aggregated ATTs.
