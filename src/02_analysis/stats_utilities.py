@@ -258,11 +258,10 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_D = pd.concat([panel_D], keys=["Panel D: Defendant and Plaintiff Characteristics"])
 
     # Panel E: Case Resolution
-    panel_E_columns = ['dismissed', 'defaulted', 'heard', 'levied', 'issued', 'requested',
-                       'unknown_execution']
+    panel_E_columns = ['dismissed', 'defaulted', 'heard']
     origin_columns = ['disposition_found', 'disposition_found',
-                      'disposition_found', 'execution', 'execution', 'execution', 'execution']
-    target_values = ["Dismissed", "Defaulted", "Heard", "Levied", "Issued", "Requested", None]
+                      'disposition_found']
+    target_values = ["Dismissed", "Defaulted", "Heard"]
 
     for dummy_column, origin_column, target_value in zip(panel_E_columns, origin_columns, target_values):
         df.loc[:, dummy_column] = np.where(df[origin_column] == target_value, 1, 0)
@@ -309,6 +308,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'job_density_2013': "Job density, 2013",
                                    'med_hhinc2016': "Median household income, 2016",
                                    'poor_share2010': "Poverty rate, 2010",
+                                   'share_white2010': "Share white, 2010",
                                    'popdensity2010': "Population density, 2010",
                                    'for_cause': "Filing for cause",
                                    'no_cause': "Filing without cause",

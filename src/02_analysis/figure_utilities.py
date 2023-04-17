@@ -36,7 +36,7 @@ def aggregate_by_event_time_and_plot(att_gt,
     ax.set_ylabel("ATT")
     ax.set_title(title)
     ax.set_xlabel("Month Relative to Treatment")
-    ax.set_xticks(range(start_period, end_period + 1, 6))
+    ax.set_xticks([-5, 0, 6, 12, 18, 24, 30, 36])
     plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
                                         text_y_location_normalized=0.95)
 
@@ -59,7 +59,7 @@ def aggregate_by_event_time_and_plot(att_gt,
     se = round(average_post_treatment_att['EventAggregationOverall'].iloc[0, 1], 2)
     label = f"Avg.\nPost-Treatment\nATT: {point_estimate}\n(SE: {se})"
 
-    plot_labeled_hline(ax, y=point_estimate, size='x-small', text=label, color='black', linestyle='--', zorder=6, text_x_location_normalized=0.085)
+    plot_labeled_hline(ax, y=point_estimate, size='x-small', text=label, color='black', linestyle='--', zorder=6, text_x_location_normalized=1.085)
 
 def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_folder: str, filename: str, title: str):
     # Get time-aggregated ATTs.
