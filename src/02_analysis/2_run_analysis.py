@@ -1,23 +1,18 @@
 #!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
 
 import contextily as cx
 import figure_utilities
-import figure_and_table_constants
 import constants
 from stats_utilities import produce_summary_statistics, select_controls, test_balance
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from panel_utilities import get_value_variable_names, prepare_df_for_DiD
+
 plt.rcParams["figure.dpi"] = 300
 plt.rcParams['savefig.dpi'] = 300
 import os
-from differences import ATTgt, TWFE
+from differences import ATTgt
 import pandas as pd
-import censusdata
 
 # Store paths.
 INPUT_DATA_PANEL = "../../data/03_cleaned/crime_analysis_monthly.parquet"
@@ -32,17 +27,6 @@ df = pd.read_parquet(INPUT_DATA_PANEL)
 
 # So we can use 'case_number' like a column
 df = df.reset_index()
-
-# Get ACS 1-year estimates for Boston
-boston_data = censusdata.download('acs1', 2015, censusdata.censusgeo([('state', '25'), ('place', '07000')]),
-                                   ['B01001_001E', 'B01001_001M'])
-print(boston_data)
-print(not_a_variable)
-
-# # Summary Statistics
-
-# In[ ]:
-
 
 # Plot evictions spatially.
 unrestricted_gdf = gpd.GeoDataFrame(df,
@@ -63,20 +47,17 @@ cx.add_basemap(ax=ax, crs="EPSG:3857", source=cx.providers.Stamen.TonerLite)
 # Color census tracts by poverty rate.
 boston_tracts_gdf = gpd.read_file(INPUT_DATA_BOSTON_TRACTS_SHAPEFILE)[['GEOID10', 'geometry']].set_index('GEOID10')
 boston_tracts_gdf.index = boston_tracts_gdf.index.astype(int)
-tract_poverty_rates_df = pd.read_csv(INPUT_DATA_TRACTS, usecols=['tract_geoid', 'poor_share2010'], index_col='tract_geoid')
+tract_poverty_rates_df = pd.read_csv(INPUT_DATA_TRACTS, usecols=['tract_geoid', 'poor_share2010'],
+                                     index_col='tract_geoid')
 
-boston_tracts_gdf = pd.concat([boston_tracts_gdf, tract_poverty_rates_df], axis=1).dropna(subset=['geometry', 'poor_share2010'])
-boston_tracts_gdf.plot(ax=ax, column=boston_tracts_gdf['poor_share2010'], cmap='OrRd', alpha=0.4, legend=True, legend_kwds={'label': "Poverty Rate of Census Tract",
-                                                                                                                            'orientation': "horizontal",
-                                                                                                                            'shrink': 0.25})
-
-
+boston_tracts_gdf = pd.concat([boston_tracts_gdf, tract_poverty_rates_df], axis=1).dropna(
+    subset=['geometry', 'poor_share2010'])
+boston_tracts_gdf.plot(ax=ax, column=boston_tracts_gdf['poor_share2010'], cmap='OrRd', alpha=0.4, legend=True,
+                       legend_kwds={'label': "Poverty Rate of Census Tract",
+                                    'orientation': "horizontal",
+                                    'shrink': 0.25})
 
 figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "evictions_map.png"))
-
-
-# In[ ]:
-
 
 # Plot the number of eviction filings over time.
 df.loc[:, 'last_day_of_file_month'] = (pd.to_datetime(df['file_date']) +
@@ -85,15 +66,12 @@ filings_per_month = df.groupby('last_day_of_file_month')['case_number'].count()
 
 # Plot eviction filing counts.
 fig, ax = plt.subplots()
-filings_per_month.plot(ax=ax, kind='line', color=figure_and_table_constants.Colors.SUMMARY_STATISTICS_COLOR,
+filings_per_month.plot(ax=ax, kind='line', color='black',
                        zorder=100)
 ax.set_ylabel("Number of Evictions")
 ax.set_xlabel("Month")
 ax.grid(True)
-
-
 figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "filings_over_time.png"))
-
 
 # In[ ]:
 
@@ -101,8 +79,8 @@ figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "filing
 # Produce summary statistics table.
 treatment_date_variable = 'latest_docket_date'
 outcomes_of_interest = ['group_0_crimes_500m']
-summary_statistics_unrestricted, variable_display_names_dict  = produce_summary_statistics(df,
-                                                                                           treatment_date_variable=treatment_date_variable)
+summary_statistics_unrestricted, variable_display_names_dict = produce_summary_statistics(df,
+                                                                                          treatment_date_variable=treatment_date_variable)
 
 # Rename columns.
 summary_statistics_unrestricted.index = summary_statistics_unrestricted.index.set_names(["Panel", "Variable"])
@@ -114,16 +92,18 @@ outcomes = constants.Variables.outcomes.copy()
 for outcome in outcomes:
     if outcome not in outcomes_of_interest:
         if f"pre_treatment_change_in_{outcome}" in summary_statistics_unrestricted.index.get_level_values(1):
-            summary_statistics_unrestricted = summary_statistics_unrestricted.drop(f"pre_treatment_change_in_{outcome}", level=1, axis=0)
+            summary_statistics_unrestricted = summary_statistics_unrestricted.drop(f"pre_treatment_change_in_{outcome}",
+                                                                                   level=1, axis=0)
         if f"total_twenty_seventeen_{outcome}" in summary_statistics_unrestricted.index.get_level_values(1):
-            summary_statistics_unrestricted = summary_statistics_unrestricted.drop(f"total_twenty_seventeen_{outcome}", level=1, axis=0)
+            summary_statistics_unrestricted = summary_statistics_unrestricted.drop(f"total_twenty_seventeen_{outcome}",
+                                                                                   level=1, axis=0)
 
 # Drop Panel F.
-summary_statistics_unrestricted = summary_statistics_unrestricted.drop("Panel F: Post-treatment Outcomes", level=0, axis=0)
+summary_statistics_unrestricted = summary_statistics_unrestricted.drop("Panel F: Post-treatment Outcomes", level=0,
+                                                                       axis=0)
 
 # Drop median column.
 summary_statistics_unrestricted = summary_statistics_unrestricted.drop(columns='50%')
-
 
 # Export to LaTeX.
 filename = os.path.join(OUTPUT_TABLES, "summary_statistics.tex")
@@ -145,7 +125,6 @@ with open(filename, 'w') as file:
     file.write(latex)
 summary_statistics_unrestricted
 
-
 # In[ ]:
 
 
@@ -157,7 +136,8 @@ treatment_timings = (df
                      .fillna(0))
 treatment_timings = treatment_timings.pivot(index='latest_docket_month', columns='judgment_for_plaintiff').fillna(0)
 treatment_timings.columns = ["Cases Won By Defendant", "Cases Won By Plaintiff"]
-portion_of_all_cases = (treatment_timings['Cases Won By Plaintiff'] + treatment_timings['Cases Won By Defendant']) / len(df)
+portion_of_all_cases = (treatment_timings['Cases Won By Plaintiff'] + treatment_timings[
+    'Cases Won By Defendant']) / len(df)
 treatment_timings = pd.concat([treatment_timings, portion_of_all_cases.rename('Portion of All Cases')], axis=1)
 sum_across_filing_date = pd.DataFrame(treatment_timings.sum(axis=0)).T
 sum_across_filing_date.index = ["All Months"]
@@ -168,9 +148,9 @@ treatment_timings.index = treatment_timings.index.rename("Last Docket Date")
 filename = os.path.join(OUTPUT_TABLES, "treatment_timings.tex")
 treatment_timings.style.format(formatter={'Cases Won By Plaintiff': '{:,.0f}',
                                           'Cases Won By Defendant': '{:,.0f}',
-                                          'Portion of All Cases': '{:0.2f}'}).to_latex(filename, column_format="lccc", hrules=True)
+                                          'Portion of All Cases': '{:0.2f}'}).to_latex(filename, column_format="lccc",
+                                                                                       hrules=True)
 treatment_timings
-
 
 # In[ ]:
 
@@ -180,7 +160,6 @@ df = df.loc[df['judgment_for_plaintiff'] == 1, :]
 original_N = len(df)
 cases_in_poor_tracts = len(df.loc[df['poor_share2010'] > 0.20, :])
 cases_in_poor_tracts / original_N
-
 
 # # Main Results
 
@@ -192,13 +171,11 @@ df = pd.read_parquet(INPUT_DATA_PANEL)
 treatment_date_variable = 'latest_docket_month'  # Store treatment date variable.
 analysis = 'group_0_crimes_500m'
 
-
 # In[ ]:
 
 
 # Generate value variables list and dictionaries mapping between months and integers.
 weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(df, analysis)
-
 
 # In[ ]:
 
@@ -208,13 +185,11 @@ covariates_exploration_df = select_controls(df=df, analysis=analysis,
                                             output_directory=OUTPUT_TABLES)
 covariates_exploration_df
 
-
 # In[ ]:
 
 
 balance_table, pre_treatment_covariates = test_balance(df, analysis, covariates_exploration_df, OUTPUT_TABLES)
 balance_table
-
 
 # In[ ]:
 
@@ -229,7 +204,6 @@ df = prepare_df_for_DiD(df=df,
                         value_vars=weekly_value_vars_crime,
                         period_to_int_dictionary=month_to_int_dictionary)
 
-
 # In[ ]:
 
 
@@ -238,12 +212,10 @@ att_gt_all_crimes = ATTgt(data=df, cohort_name=treatment_date_variable, base_per
 formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
 result = att_gt_all_crimes.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
 
-
 # In[ ]:
 
 
 print(att_gt_all_crimes.aggregate('event', 'all')['EventAggregationOverall'].iloc[0, 2])
-
 
 # In[ ]:
 
@@ -255,7 +227,6 @@ figure_utilities.aggregate_by_event_time_and_plot(att_gt_all_crimes, start_perio
                                                   title="", ax=ax)
 
 figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "att_gt_dr_all_crimes.png"))
-
 
 # # Heterogenous Impacts
 
@@ -275,8 +246,10 @@ ci_lowers = []
 for subsample_variable in subsample_variables:
     # Get results on below median subsample.
     below_median_subsample = df[df[subsample_variable] < df[subsample_variable].median()].copy()
-    weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(below_median_subsample, analysis)
-    covariates_exploration_df = select_controls(df=below_median_subsample, analysis=analysis, treatment_date_variable=treatment_date_variable)
+    weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(
+        below_median_subsample, analysis)
+    covariates_exploration_df = select_controls(df=below_median_subsample, analysis=analysis,
+                                                treatment_date_variable=treatment_date_variable)
     balance_table, pre_treatment_covariates = test_balance(below_median_subsample, analysis, covariates_exploration_df)
     below_median_subsample = below_median_subsample.reset_index()
     below_median_subsample = prepare_df_for_DiD(df=below_median_subsample,
@@ -287,11 +260,13 @@ for subsample_variable in subsample_variables:
                                                 value_vars=weekly_value_vars_crime,
                                                 period_to_int_dictionary=month_to_int_dictionary)
     # Run DiD conditional on covariates.
-    att_gt_below_median = ATTgt(data=below_median_subsample, cohort_name=treatment_date_variable, base_period='universal')
+    att_gt_below_median = ATTgt(data=below_median_subsample, cohort_name=treatment_date_variable,
+                                base_period='universal')
     formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
     att_gt_below_median.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
     average_post_treatment_att_below_median = att_gt_below_median.aggregate('event', overall=True)
-    point_estimate_below_median = round(average_post_treatment_att_below_median['EventAggregationOverall'].iloc[0, 0], 2)
+    point_estimate_below_median = round(average_post_treatment_att_below_median['EventAggregationOverall'].iloc[0, 0],
+                                        2)
     ci_upper_below_median = round(average_post_treatment_att_below_median['EventAggregationOverall'].iloc[0, 3], 2)
     ci_lower_below_median = round(average_post_treatment_att_below_median['EventAggregationOverall'].iloc[0, 2], 2)
     point_estimates.append(point_estimate_below_median)
@@ -300,35 +275,34 @@ for subsample_variable in subsample_variables:
 
     # Get results on above median subsample.
     above_median_subsample = df[df[subsample_variable] > df[subsample_variable].median()].copy()
-    weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(above_median_subsample, analysis)
-    covariates_exploration_df = select_controls(df=above_median_subsample, analysis=analysis, treatment_date_variable=treatment_date_variable)
+    weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(
+        above_median_subsample, analysis)
+    covariates_exploration_df = select_controls(df=above_median_subsample, analysis=analysis,
+                                                treatment_date_variable=treatment_date_variable)
     balance_table, pre_treatment_covariates = test_balance(above_median_subsample, analysis, covariates_exploration_df)
     above_median_subsample = above_median_subsample.reset_index()
     above_median_subsample = prepare_df_for_DiD(df=above_median_subsample,
-                            analysis=analysis,
-                            treatment_date_variable=treatment_date_variable,
-                            pre_treatment_covariates=pre_treatment_covariates,
-                            missing_indicators=[],
-                            value_vars=weekly_value_vars_crime,
-                            period_to_int_dictionary=month_to_int_dictionary)
+                                                analysis=analysis,
+                                                treatment_date_variable=treatment_date_variable,
+                                                pre_treatment_covariates=pre_treatment_covariates,
+                                                missing_indicators=[],
+                                                value_vars=weekly_value_vars_crime,
+                                                period_to_int_dictionary=month_to_int_dictionary)
     # Run DiD conditional on covariates.
-    att_gt_above_median = ATTgt(data=above_median_subsample, cohort_name=treatment_date_variable, base_period='universal')
+    att_gt_above_median = ATTgt(data=above_median_subsample, cohort_name=treatment_date_variable,
+                                base_period='universal')
     formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
     att_gt_above_median.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
     average_post_treatment_att_above_median = att_gt_above_median.aggregate('event', overall=True)
-    point_estimate_above_median = round(average_post_treatment_att_above_median['EventAggregationOverall'].iloc[0, 0], 2)
+    point_estimate_above_median = round(average_post_treatment_att_above_median['EventAggregationOverall'].iloc[0, 0],
+                                        2)
     ci_upper_above_median = round(average_post_treatment_att_above_median['EventAggregationOverall'].iloc[0, 3], 2)
     ci_lower_above_median = round(average_post_treatment_att_above_median['EventAggregationOverall'].iloc[0, 2], 2)
     point_estimates.append(point_estimate_above_median)
     ci_uppers.append(ci_upper_above_median)
     ci_lowers.append(ci_lower_above_median)
 
-
-
-
-
 # In[4]:
-
 
 
 fig, ax = plt.subplots()
@@ -337,14 +311,14 @@ figure_utilities.plot_labeled_vline(ax, x=0, text="", color='black', linestyle='
 for i, (ci_lower, ci_upper) in enumerate(zip(ci_lowers, ci_uppers)):
     ax.hlines(y=i, xmin=ci_lower, xmax=ci_upper, color='black')
 ax.scatter(point_estimates, range(len(point_estimates)), color='black', s=7)
-ax.set_yticks(ticks=range(len(point_estimates)), labels=["Below median poverty rate, 2010", "Above median poverty rate, 2010",
-                                                         "Below median share white, 2010", "Above median share white, 2010",
-                                                         "Below median population density, 2010", "Above median population density, 2010"])
+ax.set_yticks(ticks=range(len(point_estimates)),
+              labels=["Below median poverty rate, 2010", "Above median poverty rate, 2010",
+                      "Below median share white, 2010", "Above median share white, 2010",
+                      "Below median population density, 2010", "Above median population density, 2010"])
 ax.set_ylabel("Sample Restriction")
 ax.set_xlabel("Average Post-Treatment ATT")
 
 figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "heterogenous_effects.png"))
-
 
 # # Mechanisms
 
@@ -358,13 +332,11 @@ df = pd.read_parquet(INPUT_DATA_PANEL)
 treatment_date_variable = 'latest_docket_month'  # Store treatment date variable.
 analysis = 'group_1_crimes_500m'
 
-
 # In[ ]:
 
 
 # Generate value variables list and dictionaries mapping between months and integers.
 weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(df, analysis)
-
 
 # In[ ]:
 
@@ -373,13 +345,11 @@ covariates_exploration_df = select_controls(df=df, analysis=analysis,
                                             treatment_date_variable=treatment_date_variable)
 covariates_exploration_df
 
-
 # In[ ]:
 
 
 balance_table, pre_treatment_covariates = test_balance(df, analysis, covariates_exploration_df)
 balance_table
-
 
 # In[ ]:
 
@@ -394,7 +364,6 @@ df = prepare_df_for_DiD(df=df,
                         value_vars=weekly_value_vars_crime,
                         period_to_int_dictionary=month_to_int_dictionary)
 
-
 # In[ ]:
 
 
@@ -402,7 +371,6 @@ df = prepare_df_for_DiD(df=df,
 att_gt_placebo_crimes = ATTgt(data=df, cohort_name=treatment_date_variable, base_period='universal')
 formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
 result = att_gt_placebo_crimes.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
-
 
 # In[ ]:
 
@@ -419,7 +387,6 @@ figure_utilities.aggregate_by_event_time_and_plot(att_gt_placebo_crimes, start_p
 
 figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "att_gt_dr_placebo_crimes.png"))
 
-
 # ## Estimation on Cases Concluding During Warm vs. Cold Months
 
 # In[ ]:
@@ -432,13 +399,11 @@ df = df.loc[df['latest_docket_month'].isin(warm_months), :]
 treatment_date_variable = 'latest_docket_month'  # Store treatment date variable.
 analysis = 'group_0_crimes_500m'
 
-
 # In[ ]:
 
 
 # Generate value variables list and dictionaries mapping between months and integers.
 weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(df, analysis)
-
 
 # In[ ]:
 
@@ -447,13 +412,11 @@ covariates_exploration_df = select_controls(df=df, analysis=analysis,
                                             treatment_date_variable=treatment_date_variable)
 covariates_exploration_df
 
-
 # In[ ]:
 
 
 balance_table, pre_treatment_covariates = test_balance(df, analysis, covariates_exploration_df)
 balance_table
-
 
 # In[ ]:
 
@@ -468,7 +431,6 @@ df = prepare_df_for_DiD(df=df,
                         value_vars=weekly_value_vars_crime,
                         period_to_int_dictionary=month_to_int_dictionary)
 
-
 # In[ ]:
 
 
@@ -476,7 +438,6 @@ df = prepare_df_for_DiD(df=df,
 att_gt_warm = ATTgt(data=df, cohort_name=treatment_date_variable, base_period='universal')
 formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
 result = att_gt_warm.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
-
 
 # In[ ]:
 
@@ -488,13 +449,11 @@ df = df.loc[df['latest_docket_month'].isin(cold_months), :]
 treatment_date_variable = 'latest_docket_month'  # Store treatment date variable.
 analysis = 'group_0_crimes_500m'
 
-
 # In[ ]:
 
 
 # Generate value variables list and dictionaries mapping between months and integers.
 weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(df, analysis)
-
 
 # In[ ]:
 
@@ -503,13 +462,11 @@ covariates_exploration_df = select_controls(df=df, analysis=analysis,
                                             treatment_date_variable=treatment_date_variable)
 covariates_exploration_df
 
-
 # In[ ]:
 
 
 balance_table, pre_treatment_covariates = test_balance(df, analysis, covariates_exploration_df)
 balance_table
-
 
 # In[ ]:
 
@@ -524,7 +481,6 @@ df = prepare_df_for_DiD(df=df,
                         value_vars=weekly_value_vars_crime,
                         period_to_int_dictionary=month_to_int_dictionary)
 
-
 # In[ ]:
 
 
@@ -532,7 +488,6 @@ df = prepare_df_for_DiD(df=df,
 att_gt_cold = ATTgt(data=df, cohort_name=treatment_date_variable, base_period='universal')
 formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
 result = att_gt_cold.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
-
 
 # In[ ]:
 
@@ -549,7 +504,6 @@ figure_utilities.aggregate_by_event_time_and_plot(att_gt_cold, start_period=-5,
 
 figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "att_gt_dr_temperature.png"))
 
-
 # # Robustness
 
 # Read fresh copy of unrestricted dataset into memory.
@@ -557,13 +511,11 @@ df = pd.read_parquet(INPUT_DATA_PANEL)
 treatment_date_variable = 'latest_docket_month'  # Store treatment date variable.
 analysis = 'group_0_crimes_125m'
 
-
 # In[ ]:
 
 
 # Generate value variables list and dictionaries mapping between months and integers.
 weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(df, analysis)
-
 
 # In[ ]:
 
@@ -573,13 +525,11 @@ covariates_exploration_df = select_controls(df=df, analysis=analysis,
                                             output_directory=OUTPUT_TABLES)
 covariates_exploration_df
 
-
 # In[ ]:
 
 
 balance_table, pre_treatment_covariates = test_balance(df, analysis, covariates_exploration_df, OUTPUT_TABLES)
 balance_table
-
 
 # In[ ]:
 
@@ -594,7 +544,6 @@ df = prepare_df_for_DiD(df=df,
                         value_vars=weekly_value_vars_crime,
                         period_to_int_dictionary=month_to_int_dictionary)
 
-
 # In[ ]:
 
 
@@ -602,7 +551,6 @@ df = prepare_df_for_DiD(df=df,
 att_gt_non_payment = ATTgt(data=df, cohort_name=treatment_date_variable, base_period='universal')
 formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
 result = att_gt_non_payment.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
-
 
 # In[ ]:
 
@@ -623,13 +571,11 @@ df = pd.read_parquet(INPUT_DATA_PANEL)
 treatment_date_variable = 'latest_docket_month'  # Store treatment date variable.
 analysis = 'group_0_crimes_250m'
 
-
 # In[ ]:
 
 
 # Generate value variables list and dictionaries mapping between months and integers.
 weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = get_value_variable_names(df, analysis)
-
 
 # In[ ]:
 
@@ -639,13 +585,11 @@ covariates_exploration_df = select_controls(df=df, analysis=analysis,
                                             output_directory=OUTPUT_TABLES)
 covariates_exploration_df
 
-
 # In[ ]:
 
 
 balance_table, pre_treatment_covariates = test_balance(df, analysis, covariates_exploration_df, OUTPUT_TABLES)
 balance_table
-
 
 # In[ ]:
 
@@ -660,7 +604,6 @@ df = prepare_df_for_DiD(df=df,
                         value_vars=weekly_value_vars_crime,
                         period_to_int_dictionary=month_to_int_dictionary)
 
-
 # In[ ]:
 
 
@@ -668,7 +611,6 @@ df = prepare_df_for_DiD(df=df,
 att_gt_non_payment = ATTgt(data=df, cohort_name=treatment_date_variable, base_period='universal')
 formula = f'{analysis} ~ ' + '+'.join(pre_treatment_covariates)
 result = att_gt_non_payment.fit(formula=formula, control_group='never_treated', n_jobs=-1, progress_bar=True)
-
 
 # In[ ]:
 
@@ -681,11 +623,7 @@ figure_utilities.aggregate_by_event_time_and_plot(att_gt_non_payment, start_peri
 
 figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "att_gt_dr_250m.png"))
 
-
 # In[ ]:
 
 
-
-
-
-#%%
+# %%
