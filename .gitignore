@@ -3,3 +3,4 @@ venv/
 research/
 writing/proposal/
 slurm*
+.gitignore
