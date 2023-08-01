@@ -5,3 +5,5 @@ writing/proposal/
 slurm*
 .gitignore
 .idea*
+writing/thank_yous.txt
+*.DS_Store
