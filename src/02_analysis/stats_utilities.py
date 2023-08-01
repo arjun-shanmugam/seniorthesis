@@ -13,16 +13,6 @@ from differences.did.pscore_cal import pscore_mle
 from typing import List
 
 
-def add_missing_indicators(df: pd.DataFrame, missing_variables: List[str], pre_treatment_covariates: List[str]):
-    missing_indicators = []
-    for missing_variable in missing_variables:
-        df.loc[:, missing_variable] = df[missing_variable].fillna(0)
-        df.loc[:, missing_variable + '_missing'] = np.where(df['rent_twobed2015'] == 0, 1, 0)
-        pre_treatment_covariates.append(missing_variable + '_missing')
-        missing_indicators.append(missing_variable + '_missing')
-    return missing_indicators
-
-
 def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.DataFrame, output_directory: str = None):
     # Store pre-treatment panel names.
     pre_treatment_panels = ['Panel A: Pre-treatment Outcomes',

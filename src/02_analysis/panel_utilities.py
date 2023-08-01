@@ -13,33 +13,6 @@ def get_value_variable_names(df, analysis: str):
     period_to_int_dictionary = {v: k for k, v in list(int_to_period_dictionary.items())}
     return value_columns.tolist(), period_to_int_dictionary, int_to_period_dictionary
 
-
-def convert_weekly_panel_to_biweekly_panel(df: pd.DataFrame, treatment_date_variable: str, analyses: Union[List[str], str]):
-    if isinstance(analyses, str):  # If user passes string instead of list of string, create a list.
-        analyses = [analyses]
-    for analysis in analyses:
-        weekly_value_vars_crime, _, _ = get_value_variable_names(df, analysis)
-        for i, value_var in enumerate(weekly_value_vars_crime):
-            # If the index of the current week is odd or if we are at the last week in the panel...
-            if i % 2 == 1:
-                # Drop odd-index column from panel as its crime counts have been subsumed into previous week.
-                df = df.drop(columns=value_var)
-                # Update dictionary so that we can replace file week with the previous week.
-                df.loc[:, treatment_date_variable] = df[treatment_date_variable].replace(value_var.replace(f"_{analysis}", ""),
-                                                                 weekly_value_vars_crime[i - 1].replace(f"_{analysis}", ""))
-                continue
-            if i == len(weekly_value_vars_crime) - 1:
-                # Drop column corresponding to the last week of the panel from the dataset.
-                df = df.drop(columns=value_var)
-                # Drop rows with this week as their file_week.
-                df = df.loc[df[treatment_date_variable] != value_var.replace(f"_{analysis}", ""), :]
-                continue
-
-            # If we are neither at an odd index week nor at the last week in the panel, sum current week's crime counts with next week's crime counts.
-            df.loc[:, value_var] = df.loc[:, value_var] + df.loc[:, weekly_value_vars_crime[i + 1]]
-    return df
-
-
 def prepare_df_for_DiD(df: pd.DataFrame, analysis: str, treatment_date_variable: str,
                        pre_treatment_covariates: List[str],
                        missing_indicators: List[str],

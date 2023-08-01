@@ -15,8 +15,9 @@ from matplotlib.axes import Axes
 import pandas as pd
 from matplotlib.colors import to_rgba
 
-import figure_and_table_constants
+import constants
 import matplotlib.transforms as transforms
+
 
 def aggregate_by_event_time_and_plot(att_gt,
                                      start_period: int,
@@ -38,19 +39,18 @@ def aggregate_by_event_time_and_plot(att_gt,
     ax.set_xlabel("Month Relative to Treatment")
     ax.set_xticks([-5, 0, 6, 12, 18, 24, 30, 36])
     plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
-                                        text_y_location_normalized=0.95)
-
+                       text_y_location_normalized=0.95)
 
     plot_scatter_with_shaded_errors(ax,
-                                                     x.values,
-                                                     y.values,
-                                                     y_upper.values,
-                                                     y_lower.values,
-                                                     point_color='black',
-                                                     error_color='white',
-                                                     edge_color='grey',
-                                                     edge_style='--',
-                                                     zorder=1)
+                                    x.values,
+                                    y.values,
+                                    y_upper.values,
+                                    y_lower.values,
+                                    point_color='black',
+                                    error_color='white',
+                                    edge_color='grey',
+                                    edge_style='--',
+                                    zorder=1)
     plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
 
     # Label graph with average treatment effect across positive relative periods.
@@ -59,39 +59,9 @@ def aggregate_by_event_time_and_plot(att_gt,
     se = round(average_post_treatment_att['EventAggregationOverall'].iloc[0, 1], 2)
     label = f"Avg.\nPost-Treatment\nATT: {point_estimate}\n(SE: {se})"
 
-    plot_labeled_hline(ax, y=point_estimate, size='x-small', text=label, color='black', linestyle='--', zorder=6, text_x_location_normalized=1.085)
+    plot_labeled_hline(ax, y=point_estimate, size='x-small', text=label, color='black', linestyle='--', zorder=6,
+                       text_x_location_normalized=1.085)
 
-def aggregate_by_time_and_plot(att_gt, int_to_month_dictionary: dict, output_folder: str, filename: str, title: str):
-    # Get time-aggregated ATTs.
-    results_df = att_gt.aggregate('time')
-
-    # Plot event study-style plot of ATTs.
-    fig, ax = plt.subplots()
-    results_df = results_df.rename(index=int_to_month_dictionary)
-    x = results_df.index
-    y = results_df.iloc[:, 0]
-    y_upper = results_df.iloc[:, 3]
-    y_lower = results_df.iloc[:, 2]
-    ax.set_xlabel("Month")
-    ax.set_ylabel("ATT")
-    ax.set_xlabel("Month Relative to Treatment")
-    ax.set_title(title)
-    plot_labeled_vline(ax, x=results_df.index.tolist()[0], text="Earliest Treatment Date in Sample",
-                                        color='black', linestyle='-',
-                                        text_y_location_normalized=0.95)
-    plot_scatter_with_shaded_errors(ax,
-                                                     x.values,
-                                                     y.values,
-                                                     y_upper.values,
-                                                     y_lower.values,
-                                                     point_color='black',
-                                                     error_color='white',
-                                                     edge_color='grey',
-                                                     edge_style='--',
-                                                     zorder=1)
-    plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-')
-    plt.show()
-    save_figure_and_close(fig, join(output_folder, filename))
 
 
 def save_figure_and_close(figure: plt.Figure,
@@ -113,12 +83,12 @@ def plot_scatter_with_shaded_errors(ax: plt.Axes,
                                     y_upper: pd.Series,
                                     y_lower: pd.Series,
                                     label: str = "",
-                                    point_color: str = figure_and_table_constants.Colors.P3,
+                                    point_color: str = constants.Colors.P3,
                                     point_size: float = 2,
                                     marker: str = 'o',
-                                    error_color: str = figure_and_table_constants.Colors.P1,
+                                    error_color: str = constants.Colors.P1,
                                     error_opacity: float = 0.5,
-                                    edge_color: str = figure_and_table_constants.Colors.P1,
+                                    edge_color: str = constants.Colors.P1,
                                     edge_style: str = '-',
                                     zorder=None):
     """
@@ -146,54 +116,14 @@ def plot_scatter_with_shaded_errors(ax: plt.Axes,
     else:
         ax.fill_between(x, y_upper, y_lower, color=error_color, alpha=error_opacity, edgecolor=edge_color,
                         linestyle=edge_style, zorder=zorder)
-        ax.axvline(x=x.min(), color='white', zorder=zorder+1)
-        ax.axvline(x=x.max(), color='white', zorder=zorder+1)
-        ax.scatter(x, y, color=point_color, marker=marker, s=point_size, label=label, zorder=zorder+2)
-
-
-
-
-def plot_scatter_with_error_bars(ax: plt.Axes,
-                                 x: pd.Series,
-                                 y: pd.Series,
-                                 y_upper: pd.Series,
-                                 y_lower: pd.Series,
-                                 label: str = "",
-                                 point_color: str = figure_and_table_constants.Colors.P3,
-                                 point_size: float = 2,
-                                 marker: str = 'o',
-                                 error_color: str = figure_and_table_constants.Colors.P1,
-                                 error_opacity: float = 0.5,
-                                 zorder=None):
-    """
-
-    :param marker:
-    :param label:
-    :param ax:
-    :param x:
-    :param y:
-    :param y_upper:
-    :param y_lower:
-    :param point_color:
-    :param point_size:
-    :param error_color:
-    :param error_opacity:
-    :param zorder:
-    """
-    yerr = (y_upper - y_lower) / 2
-    ecolor = to_rgba(error_color, alpha=error_opacity)
-    if zorder is None:
-        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label,
-                    capsize=3)
-    else:
-        ax.errorbar(x, y, yerr=yerr, color=point_color, ms=point_size, ecolor=ecolor, fmt=marker, label=label,
-                    capsize=3, zorder=zorder)
-
+        ax.axvline(x=x.min(), color='white', zorder=zorder + 1)
+        ax.axvline(x=x.max(), color='white', zorder=zorder + 1)
+        ax.scatter(x, y, color=point_color, marker=marker, s=point_size, label=label, zorder=zorder + 2)
 
 def plot_labeled_hline(ax: Axes,
                        y: float,
                        text: str,
-                       color: str = figure_and_table_constants.Colors.P10,
+                       color: str = constants.Colors.P10,
                        linestyle: str = '--',
                        text_x_location_normalized: float = 0.85,
                        size='small',
@@ -235,7 +165,7 @@ def plot_labeled_hline(ax: Axes,
 def plot_labeled_vline(ax: Axes,
                        x: float,
                        text: str,
-                       color: str = figure_and_table_constants.Colors.P10,
+                       color: str = constants.Colors.P10,
                        linestyle: str = '--',
                        text_y_location_normalized: float = 0.85,
                        size='small',
@@ -274,78 +204,3 @@ def plot_labeled_vline(ax: Axes,
             transform=transform,
             zorder=zorder)
 
-
-def plot_histogram(ax: Axes,
-                   x: pd.Series,
-                   title: str,
-                   xlabel: str,
-                   ylabel: str = "Relative Frequency",
-                   edgecolor: str = 'black',
-                   color: str = figure_and_table_constants.Colors.P1,
-                   summary_statistics=None,
-                   summary_statistics_linecolor: str = figure_and_table_constants.Colors.P3,
-                   summary_statistics_text_y_location_normalized: float = 0.15,
-                   decimal_places: int = figure_and_table_constants.Text.DEFAULT_DECIMAL_PLACES,
-                   alpha: float = 1,
-                   label: str = ""):
-    """
-    Plot a histogram.
-    :param ax: An Axes instance on which to plot.
-    :param x: A Series containing data to plot as a histogram.
-    :param title: The title for the Axes instance.
-    :param xlabel: The xlabel for the Axes instance.
-    :param ylabel: The ylabel for the Axes instance.
-    :param edgecolor: The edge color of the histogram's bars.
-    :param color: The fill color of the histogram's bars.
-    :param summary_statistics: The summary statistics to mark on the histogram.
-    :param summary_statistics_linecolor: The color of the lines marking the
-            summary statistics.
-    :param summary_statistics_text_y_location_normalized: The y-coordinate
-            of the text labels for summary statistics lines as a portion of
-            total y-axis length.
-    :param decimal_places: The number of decimal places to include in summary
-            statistic labels.
-    :param alpha: The opacity of the histogram's bars.
-    :param label: The label for the histogram to be used in creating Matplotlib
-            legends.
-    """
-
-    # Check that requested summary statistics are valid.
-    if summary_statistics is None:
-        summary_statistics = ['min', 'med', 'max']
-    else:
-        if len(summary_statistics) > 3:
-            raise ValueError("No more than three summary statistics may be requested.")
-        for summary_statistic in summary_statistics:
-            if (summary_statistic != 'min') and (summary_statistic != 'med') and (summary_statistic != 'max'):
-                raise ValueError("When requesting summary statistics, please specify \'min\', \'med\', or \'max\'.")
-
-    # Plot histogram.
-    ax.hist(x,
-            color=color,
-            edgecolor=edgecolor,
-            weights=np.ones_like(x) / len(x),
-            alpha=alpha,
-            label=label)
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-
-    # Calculate summary statistics.
-    statistics = []
-    labels = []
-    if 'min' in summary_statistics:
-        statistics.append(x.min())
-        labels.append(f"min: {x.min().round(decimal_places)}")
-    if 'med' in summary_statistics:
-        statistics.append(x.median())
-        labels.append(f"med: {x.median().round(decimal_places)}")
-    if 'max' in summary_statistics:
-        statistics.append(x.max())
-        labels.append(f"max: {x.max().round(decimal_places)}")
-    for statistic, label in zip(statistics, labels):
-        plot_labeled_vline(ax=ax,
-                           x=statistic,
-                           text=label,
-                           color=summary_statistics_linecolor,
-                           text_y_location_normalized=summary_statistics_text_y_location_normalized)
