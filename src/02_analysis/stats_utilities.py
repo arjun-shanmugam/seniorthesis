@@ -271,8 +271,8 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     for i in range(start, stop + 1):
         for outcome in outcomes:
             # This column contains the year-month which is i years relative to treatment for each property.
-            offset_docket_month = (df[treatment_date_variable] + pd.tseries.offsets.DateOffset(years=i)) \
-                                      .dt.strftime('%Y-%m').copy() + "_" + outcome
+            offset_docket_month = pd.to_datetime(df.loc[:, treatment_date_variable] +
+                                                 pd.tseries.offsets.DateOffset(years=i)).dt.strftime('%Y-%m').copy() + "_" + outcome
 
             # Some year-months will be outside the range of our data.
             # For instance, we do not have outcomes 2 years post-treatment for evictions which occurred in 2022.
