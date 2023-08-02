@@ -15,7 +15,7 @@ from differences import ATTgt
 import pandas as pd
 
 # Store paths.
-INPUT_DATA_PANEL = "../../data/03_cleaned/crime_analysis_monthly.parquet"
+INPUT_DATA_PANEL = "../../data/03_cleaned/property_crime_panel_monthly.parquet"
 INPUT_DATA_TRACTS = "../../data/02_intermediate/tracts.csv"
 INPUT_DATA_BOSTON_TRACTS_SHAPEFILE = "../../data/01_raw/Census_2010_Tracts"
 
