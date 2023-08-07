@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 import figure_utilities
-from constants import Variables
+import constants
 from differences.did.pscore_cal import pscore_mle
 from typing import List
 
@@ -29,7 +29,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
         df.copy().loc[df['judgment_for_plaintiff'] == 1, :], 'latest_docket_date')
     treatment_means = treatment_means.loc[pre_treatment_panels, :]
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
-    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
+    outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
     outcomes.remove(analysis)  # Remove the one which is being currently studied.
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
@@ -130,7 +130,7 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'latest_docket_date')
 
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
-    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
+    outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
     outcomes.remove(analysis)  # Remove the one which is being currently studied.
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
@@ -206,18 +206,12 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     :return:
     """
     # Panel A: Pre-treatment Outcomes
-    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
+    outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
     panel_A_columns = []
     for outcome in outcomes:
-        # Create alias column for Patchy.
-        columns_from_2017 = [column for column in df.columns if column.startswith('2017') and column.endswith(outcome)]
-        df.loc[:, f'total_twenty_seventeen_{outcome}'] = df[columns_from_2017].sum(axis=1)
         panel_A_columns.append(f'total_twenty_seventeen_{outcome}')
         panel_A_columns.append(f'pre_treatment_change_in_{outcome}')
-        columns_from_2019 = [column for column in df.columns if column.startswith('2019') and column.endswith(outcome)]
-        df.loc[:, f'total_twenty_nineteen_{outcome}'] = df[columns_from_2019].sum(axis=1)
-        df.loc[:, f'pre_treatment_change_in_{outcome}'] = df[f'total_twenty_nineteen_{outcome}'] - df[
-            f'total_twenty_seventeen_{outcome}']
+        panel_A_columns.append(f'relative_pre_treatment_change_in_{outcome}')
     panel_A = df[panel_A_columns].describe().T
     panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
 
@@ -229,16 +223,6 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
 
     # Panel C: Case Initiaton
     panel_C_columns = ['for_cause', 'no_cause', 'non_payment']
-    origin_columns = ['initiating_action', 'initiating_action', 'initiating_action']
-    target_values = [("SP Summons and Complaint - Cause", "SP Transfer - Cause"),
-                     ("SP Summons and Complaint - No Cause", "SP Transfer- No Cause"),
-                     ("SP Summons and Complaint - Non-payment of Rent", "SP Transfer - Non-payment of Rent")]
-
-    for dummy_column, origin_column, target_value in zip(panel_C_columns, origin_columns, target_values):
-        df.loc[:, dummy_column] = np.where((df[origin_column].str.contains(target_value[0])) |
-                                           (df[origin_column].str.contains(target_value[1])),
-                                           1,
-                                           0)
     panel_C = df[sorted(panel_C_columns)].describe().T
     panel_C = pd.concat([panel_C], keys=["Panel C: Case Initiation"])
 
@@ -248,52 +232,18 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_D = pd.concat([panel_D], keys=["Panel D: Defendant and Plaintiff Characteristics"])
 
     # Panel E: Case Resolution
-    panel_E_columns = ['dismissed', 'defaulted', 'heard']
-    origin_columns = ['disposition_found', 'disposition_found',
-                      'disposition_found']
-    target_values = ["Dismissed", "Defaulted", "Heard"]
-
-    for dummy_column, origin_column, target_value in zip(panel_E_columns, origin_columns, target_values):
-        df.loc[:, dummy_column] = np.where(df[origin_column] == target_value, 1, 0)
+    panel_E_columns = ['dismissed', 'defaulted', 'heard', 'case_duration', 'judgment']
     # Add case duration and money judgment to Panel E.
     panel_E_columns.append('case_duration')
     panel_E_columns.append('judgment')
     panel_E = df[sorted(panel_E_columns)].describe().T
     panel_E = pd.concat([panel_E], keys=["Panel E: Case Resolution"])
 
-    # Panel F: Post-treatment Outcomes
-    # Get month of the latest docket date for each row and use to grab outcomes at different times prior to treatment.
-    df.loc[:, treatment_date_variable] = pd.to_datetime(df[treatment_date_variable])
-    df.loc[:, 'nan'] = np.nan
-    panel_F_columns = []
-    start = 1
-    stop = 2
-    for i in range(start, stop + 1):
-        for outcome in outcomes:
-            # This column contains the year-month which is i years relative to treatment for each property.
-            offset_docket_month = pd.to_datetime(df.loc[:, treatment_date_variable] +
-                                                 pd.tseries.offsets.DateOffset(years=i)).dt.strftime('%Y-%m').copy() + "_" + outcome
-
-            # Some year-months will be outside the range of our data.
-            # For instance, we do not have outcomes 2 years post-treatment for evictions which occurred in 2022.
-            # For these observations, the offset docket month needs to map to the column of nans we created earlier.
-            offset_docket_month.loc[~offset_docket_month.isin(df.columns)] = 'nan'
-
-            idx, cols = pd.factorize(offset_docket_month)
-            if i < 0:
-                new_col_name = f'{outcome}_minus{-1 * i}_years_relative_to_treatment'
-            else:
-                new_col_name = f'{outcome}_{i}_years_relative_to_treatment'
-            panel_F_columns.append(new_col_name)
-            df.loc[:, new_col_name] = df.reindex(cols, axis=1).to_numpy()[np.arange(len(df)), idx]
-    panel_F = df[panel_F_columns].describe().T
-    panel_F = pd.concat([panel_F], keys=["Panel F: Post-treatment Outcomes"])
 
     # Concatenate Panels A-E
-    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E, panel_F],
+    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E],
                                    axis=0)[['mean', '50%', 'std', 'count']]
 
-    # TODO: Update display names at the end of project!
     variable_display_names_dict = {'frac_coll_plus2010': "Bachelor's degree, 2010",
                                    'job_density_2013': "Job density, 2013",
                                    'med_hhinc2016': "Median household income, 2016",
@@ -320,7 +270,7 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
                                    'unknown_execution': "Execution status unknown"
 
                                    }
-    outcomes = Variables.outcomes.copy()  # Create list of all outcomes.
+    outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
     for outcome in outcomes:
         if outcome.split('_')[1] == '0':
             pretreatment_change_display_name = f"Change in Crime Incidents, 2017-2019"

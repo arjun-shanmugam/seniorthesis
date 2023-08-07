@@ -9,7 +9,10 @@ class Variables:
                 'group_1_crimes_125m',
                 'group_2_crimes_125m']
 
-
+class Analysis:
+    MAIN_RESULTS_RADIUS = 250
+    MINIMUM_PRE_PERIOD = -12
+    MAXIMUM_POST_PERIOD = 36
 class Colors:
     P1 = "#29B6A4"
     P2 = "#FAA523"
