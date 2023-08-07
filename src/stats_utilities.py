@@ -36,8 +36,9 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
         # Drop related variables from the summary statistics table.
         treatment_means = treatment_means.drop(f'total_twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
         treatment_means = treatment_means.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
+        treatment_means = treatment_means.drop(f'relative_pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
-    treatment_means = (treatment_means.loc[predicts_outcome_mask, 'mean']
+    treatment_means = (treatment_means.loc[:, 'mean']
                        .rename("Cases Won by Plaintiff"))
     # Save pre-treatment covariates for use in D.R. DiD estimator.
     pre_treatment_covariates = treatment_means.index.get_level_values(1).tolist()
@@ -137,6 +138,7 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
         # Drop related variables from the summary statistics table.
         summary_statistics = summary_statistics.drop(f'total_twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
         summary_statistics = summary_statistics.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
+        summary_statistics = summary_statistics.drop(f'relative_pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
     # Store independent and dependent variables.
     independent_variable = 'judgment_for_plaintiff'
