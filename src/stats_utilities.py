@@ -7,22 +7,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
+import statsmodels.api as sm
 import figure_utilities
 import constants
 from differences.did.pscore_cal import pscore_mle
 from typing import List
 
 
-def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.DataFrame, output_directory: str = None):
+def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     # Store pre-treatment panel names.
     pre_treatment_panels = ['Panel A: Pre-treatment Outcomes',
                             'Panel B: Census Tract Characteristics',
                             'Panel C: Case Initiation',
                             'Panel D: Defendant and Plaintiff Characteristics']
-
-    # Balance only on covariates which predict the outcome variable.
-    predicts_outcome_mask = covariate_exploration_df.iloc[:, 0] <= 0.05
-
     # Build treatment mean columns.
     pd.options.mode.chained_assignment = None
     treatment_means, variable_display_names_dict = produce_summary_statistics(
@@ -42,14 +39,17 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
                        .rename("Cases Won by Plaintiff"))
     # Save pre-treatment covariates for use in D.R. DiD estimator.
     pre_treatment_covariates = treatment_means.index.get_level_values(1).tolist()
+    controls = pre_treatment_covariates.copy()
+    [controls.remove(variable) for variable in ['hasAttyD', 'hasAttyP', 'isEntityP', 'isEntityD', 'no_cause', 'for_cause']]
     pd.options.mode.chained_assignment = 'warn'
 
     # Calculate propensity scores for every observation.
-
     df.loc[:, 'propensity_score'] = pd.Series(
-        pscore_mle(df.dropna(subset=pre_treatment_covariates)['judgment_for_plaintiff'],
-                   exog=df.dropna(subset=pre_treatment_covariates)[pre_treatment_covariates],
+        pscore_mle(df.dropna(subset=controls)['judgment_for_plaintiff'],
+                   exog=df.dropna(subset=controls)[controls],
                    weights=None)[0], index=df.index)  # Calculate propensity scores.
+    df.loc[:, 'weight'] = df['propensity_score'] / (1 - df['propensity_score'])
+    df.loc[df['judgment_for_plaintiff'] == 1, 'weight'] = 1
 
     # Build unweighted columns.
     difference_unadjusted = []
@@ -58,9 +58,10 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
         result = smf.ols(formula=f"{covariate} ~ judgment_for_plaintiff",
                          data=df,
                          missing='drop').fit()
+
         difference_unadjusted.append(result.params.loc['judgment_for_plaintiff'])
         p_values_unadjusted.append(result.pvalues.loc['judgment_for_plaintiff'])
-    difference_unadjusted = pd.Series(difference_unadjusted, index=treatment_means.index)
+    difference_unadjusted = pd.Series(difference_unadjusted , index=treatment_means.index)
     p_values_unadjusted = pd.Series(p_values_unadjusted, index=treatment_means.index)
     unweighted_columns = pd.concat([difference_unadjusted, p_values_unadjusted], axis=1)
     unweighted_columns.columns = ['Unweighted', '\\emph{p}']
@@ -69,9 +70,10 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
     differences_propensity_score_adjusted = []
     p_values_propensity_score_adjusted = []
     for covariate in pre_treatment_covariates:
-        propensity_score_adjusted_result = smf.ols(formula=f"{covariate} ~ judgment_for_plaintiff + propensity_score",
-                                                   data=df,
-                                                   missing='drop').fit()
+        propensity_score_adjusted_result = sm.WLS.from_formula(f"{covariate} ~ judgment_for_plaintiff",
+                                                               data=df,
+                                                               missing='drop',
+                                                               weights=df['weight']).fit()
         differences_propensity_score_adjusted.append(
             propensity_score_adjusted_result.params.loc['judgment_for_plaintiff'])
         p_values_propensity_score_adjusted.append(
@@ -119,7 +121,7 @@ def test_balance(df: pd.DataFrame, analysis: str, covariate_exploration_df: pd.D
 
         with open(filename, 'w') as file:
             file.write(latex)
-    return balance_table, pre_treatment_covariates
+    return balance_table, controls
 
 
 def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: str, output_directory: str = None):
