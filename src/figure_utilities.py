@@ -37,7 +37,7 @@ def aggregate_by_event_time_and_plot(att_gt,
     ax.set_ylabel("ATT")
     ax.set_title(title)
     ax.set_xlabel("Month Relative to Treatment")
-    ax.set_xticks([-6, 0, 6, 12, 18, 24, 30, 36])
+    ax.set_xticks([-6, 0, 12, 24, 36])
     plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
                        text_y_location_normalized=0.95)
 
