@@ -6,7 +6,7 @@ class Variables:
                 'group_0_crimes_350m', 'group_1_crimes_350m', 'group_2_crimes_350m',
                 'group_0_crimes_400m', 'group_1_crimes_400m', 'group_2_crimes_400m',
                 'group_0_crimes_450m', 'group_1_crimes_450m', 'group_2_crimes_450m',
-                'group_0_crimes_500m', 'group_1_crimes_500m', 'group_2_crimes_500m']
+                'group_0_crimes_500m', 'group_1_crimes_500m', 'group_2_crimes_500m',]
 
 
 class Analysis:
