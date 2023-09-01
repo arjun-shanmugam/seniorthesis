@@ -18,12 +18,11 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     # Store pre-treatment panel names.
     pre_treatment_panels = ['Panel A: Pre-treatment Outcomes',
                             'Panel B: Census Tract Characteristics',
-                            'Panel C: Case Initiation',
-                            'Panel D: Defendant and Plaintiff Characteristics']
+                            'Panel C: Case Initiation']
     # Build treatment mean columns.
     pd.options.mode.chained_assignment = None
     treatment_means, variable_display_names_dict = produce_summary_statistics(
-        df.copy().loc[df['judgment_for_plaintiff'] == 1, :], 'latest_docket_date')
+        df.copy().loc[df['judgment_for_plaintiff'] == 1, :])
     treatment_means = treatment_means.loc[pre_treatment_panels, :]
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
     outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
@@ -40,7 +39,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     # Save pre-treatment covariates for use in D.R. DiD estimator.
     pre_treatment_covariates = treatment_means.index.get_level_values(1).tolist()
     controls = pre_treatment_covariates.copy()
-    [controls.remove(variable) for variable in ['hasAttyD', 'hasAttyP', 'isEntityP', 'isEntityD', 'no_cause', 'for_cause']]
+    [controls.remove(variable) for variable in ['isEntityD', 'for_cause']]
     pd.options.mode.chained_assignment = 'warn'
 
     # Calculate propensity scores for every observation.
@@ -155,8 +154,7 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     # Build covariate exploration table.
     pre_treatment_panels = ["Panel A: Pre-treatment Outcomes",
                             "Panel B: Census Tract Characteristics",
-                            "Panel C: Case Initiation",
-                            "Panel D: Defendant and Plaintiff Characteristics"]
+                            "Panel C: Case Initiation"]
     summary_statistics = summary_statistics.loc[pre_treatment_panels, :]
     potential_covariates = summary_statistics.index.get_level_values(1)
     p_values = []
@@ -202,7 +200,7 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     return covariate_exploration_df
 
 
-def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
+def produce_summary_statistics(df: pd.DataFrame):
     """
 
     :param df:
@@ -226,26 +224,18 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
     # Panel C: Case Initiaton
-    panel_C_columns = ['for_cause', 'no_cause', 'non_payment']
+    panel_C_columns = ['for_cause', 'non_payment', 'isEntityD']
     panel_C = df[sorted(panel_C_columns)].describe().T
     panel_C = pd.concat([panel_C], keys=["Panel C: Case Initiation"])
 
-    # Panel D: Defendant and Plaintiff Characteristics
-    panel_D_columns = ['hasAttyD', 'isEntityD', 'hasAttyP', 'isEntityP']
-    panel_D = df[sorted(panel_D_columns)].describe().T
-    panel_D = pd.concat([panel_D], keys=["Panel D: Defendant and Plaintiff Characteristics"])
-
     # Panel E: Case Resolution
-    panel_E_columns = ['dismissed', 'defaulted', 'heard', 'case_duration', 'judgment']
-    # Add case duration and money judgment to Panel E.
-    panel_E_columns.append('case_duration')
-    panel_E_columns.append('judgment')
-    panel_E = df[sorted(panel_E_columns)].describe().T
-    panel_E = pd.concat([panel_E], keys=["Panel E: Case Resolution"])
+    panel_D_columns = ['dismissed', 'defaulted', 'case_duration', 'judgment']
+    panel_D = df[sorted(panel_D_columns)].describe().T
+    panel_D = pd.concat([panel_D], keys=["Panel D: Case Resolution"])
 
 
     # Concatenate Panels A-E
-    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D, panel_E],
+    summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D],
                                    axis=0)[['mean', '50%', 'std', 'count']]
 
     variable_display_names_dict = {'frac_coll_plus2010': "Bachelor's degree, 2010",
@@ -277,10 +267,12 @@ def produce_summary_statistics(df: pd.DataFrame, treatment_date_variable: str):
     outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
     for outcome in outcomes:
         if outcome.split('_')[1] == '0':
-            pretreatment_change_display_name = f"Change in Crime Incidents, 2017-2019"
+            pretreatment_change_display_name = f"$\\Delta$ Incidents, 2017-2019"
             variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
-            pretreatment_level_display_name = f"Total Crime Incidents, 2017"
+            pretreatment_level_display_name = f"Total Incidents, 2017"
             variable_display_names_dict[f'total_twenty_seventeen_{outcome}'] = pretreatment_level_display_name
+            pretreatment_level_display_name = f"$\\Delta$ Incidents, 2 Years Pre-Treatment"
+            variable_display_names_dict[f'relative_pre_treatment_change_in_{outcome}'] = pretreatment_level_display_name
             continue
         pretreatment_change_display_name = f"$\Delta$ Group {outcome.split('_')[1]} Incidents, 2017-2019"
         variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
