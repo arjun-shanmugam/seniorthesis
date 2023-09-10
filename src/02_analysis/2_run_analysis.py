@@ -383,7 +383,7 @@ figure_utilities.aggregate_by_event_time_and_plot(att_gt_placebo_crimes, start_p
                                                   end_period=36,
                                                   title="Subset of Crime Incidents as Outcome", ax=ax2)
 
-figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "att_gt_dr_placebo_crimes.png"))
+figure_utilities.save_figure_and_close(fig, os.path.join(OUTPUT_FIGURES, "att_gt_dr_group_1_crimes.png"))
 
 # ## Estimation on Cases Concluding During Warm vs. Cold Months
 
