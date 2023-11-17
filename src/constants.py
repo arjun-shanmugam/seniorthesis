@@ -1,16 +1,15 @@
 class Variables:
-    outcomes = ['group_0_crimes_150m', 'group_1_crimes_150m', 'group_2_crimes_150m',
-                'group_0_crimes_200m', 'group_1_crimes_200m', 'group_2_crimes_200m',
-                'group_0_crimes_250m', 'group_1_crimes_250m', 'group_2_crimes_250m',
+    outcomes = ['group_0_crimes_250m', 'group_1_crimes_250m', 'group_2_crimes_250m',
                 'group_0_crimes_300m', 'group_1_crimes_300m', 'group_2_crimes_300m',
                 'group_0_crimes_350m', 'group_1_crimes_350m', 'group_2_crimes_350m',
-                'group_0_crimes_400m', 'group_1_crimes_400m', 'group_2_crimes_400m',
-                'group_0_crimes_450m', 'group_1_crimes_450m', 'group_2_crimes_450m',
-                'group_0_crimes_500m', 'group_1_crimes_500m', 'group_2_crimes_500m',]
+                'group_0_crimes_250_to_300m', 'group_1_crimes_250_to_300m', 'group_2_crimes_250_to_300m',
+                'group_0_crimes_250_to_350m', 'group_1_crimes_250_to_350m', 'group_2_crimes_250_to_350m',
+                'group_0_crimes_250_to_400m', 'group_1_crimes_250_to_400m', 'group_2_crimes_250_to_400m']
 
 
 class Analysis:
-    MAIN_RESULTS_RADIUS = 300
+    MAIN_RESULTS_RADIUS = 250
+    ROBUSTNESS_RADII = ["250_to_350", "250_to_400"]
     MINIMUM_PRE_PERIOD = -5
     MAXIMUM_POST_PERIOD = 36
 
