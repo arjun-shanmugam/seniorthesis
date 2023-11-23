@@ -35,7 +35,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
         treatment_means = treatment_means.drop(f'relative_pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
     treatment_means = (treatment_means.loc[:, 'mean']
-                       .rename("Cases Won by Plaintiff"))
+                       .rename("Cases Won by Plaintiff (1)"))
     # Save pre-treatment covariates for use in D.R. DiD estimator.
     pre_treatment_covariates = treatment_means.index.get_level_values(1).tolist()
     controls = pre_treatment_covariates.copy()
@@ -63,7 +63,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     difference_unadjusted = pd.Series(difference_unadjusted , index=treatment_means.index)
     p_values_unadjusted = pd.Series(p_values_unadjusted, index=treatment_means.index)
     unweighted_columns = pd.concat([difference_unadjusted, p_values_unadjusted], axis=1)
-    unweighted_columns.columns = ['Unweighted', '\\emph{p}']
+    unweighted_columns.columns = ['Unweighted (2)', '\\emph{p} (3)']
 
     # Build propensity score-weighted columns.
     differences_propensity_score_adjusted = []
@@ -82,7 +82,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     p_values_propensity_score_adjusted = pd.Series(p_values_propensity_score_adjusted, index=treatment_means.index)
     propensity_score_weighted_columns = pd.concat(
         [differences_propensity_score_adjusted, p_values_propensity_score_adjusted], axis=1)
-    propensity_score_weighted_columns.columns = ['Weighted', '\\emph{p}']
+    propensity_score_weighted_columns.columns = ['Weighted (4)', '\\emph{p} (5)']
 
     difference_columns = pd.concat([unweighted_columns, propensity_score_weighted_columns], axis=1)
     table_columns = [treatment_means, difference_columns]
@@ -113,7 +113,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
                            column_format="llccccc",
                            hrules=True,
                            multicol_align='c',
-                           clines="skip-last;data")).replace("{*}", "{.75cm}")
+                           clines="skip-last;data")).replace("{*}", "{2cm}")
         latex = latex.split("\\\\\n")
         latex.insert(1, "\\cline{4-7}\n")
         latex = "\\\\\n".join(latex)
