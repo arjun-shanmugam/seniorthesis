@@ -2,17 +2,52 @@
 Functions useful for analysis.
 """
 from os.path import join
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 import statsmodels.api as sm
-import figure_utilities
 import constants
 from differences.did.pscore_cal import pscore_mle
-from typing import List
+from src.panel_utilities import get_value_variable_names
 
+
+def run_event_study(df: pd.DataFrame, treatment_date_variable: str):
+    # Reshape to long
+    triplet = get_value_variable_names(df, f"group_0_crimes_{constants.Analysis.MAIN_RESULTS_RADIUS}m")
+    weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = triplet
+    df = pd.melt(df,
+                 id_vars=['case_number',
+                          'judgment_for_plaintiff',
+                          treatment_date_variable],
+                 value_vars=weekly_value_vars_crime,
+                 var_name='month')
+    df.loc[:, 'month'] = df['month'].str[:7]  # Drop "_group_0_crimes_500m" from the end of each month
+
+    # Replace months with integers
+    df.loc[:, [treatment_date_variable, 'month']] = df[[treatment_date_variable, 'month']].replace(month_to_int_dictionary)
+
+    # Calculate crime levels during each month relative to treatment, separately for treatment and control gropu
+    df.loc[:, 'treatment_relative_month'] = df['month'] - df[treatment_date_variable]
+
+    # Create column containing calendar month so that we can add dummies to model
+    df.loc[:, 'calendar_month'] = df['month'].replace(int_to_month_dictionary).str[-2:]
+
+    y = df['value']
+    x_variables = []
+    x_variables.append(df['judgment_for_plaintiff'])
+    month_dummies = pd.get_dummies(df['treatment_relative_month'], prefix='month', drop_first=True)
+    x_variables.append(month_dummies)
+    month_times_treatment_indicator_dummies = (month_dummies
+                                               .mul(df['judgment_for_plaintiff'], axis=0))
+    month_times_treatment_indicator_dummies.columns = [col + "_X_treatment_indicator" for col in
+                                                       month_times_treatment_indicator_dummies.columns]
+    x_variables.append(month_times_treatment_indicator_dummies)
+    X = pd.concat(x_variables, axis=1)
+
+    omitted_period = df['treatment_relative_month'].min()
+    omitted_period_control_mean = df.loc[(df['treatment_relative_month'] == omitted_period) &
+                                         (df['judgment_for_plaintiff'] == 0), 'value'].mean()
+
+    return sm.OLS(y, X).fit(), omitted_period_control_mean
 
 def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     # Store pre-treatment panel names.
@@ -30,7 +65,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
         # Drop related variables from the summary statistics table.
-        treatment_means = treatment_means.drop(f'total_twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
+        treatment_means = treatment_means.drop(f'total_twenty_nineteen_{unneeded_outcome}', level=1, axis=0)
         treatment_means = treatment_means.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
         treatment_means = treatment_means.drop(f'relative_pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
@@ -39,7 +74,6 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     # Save pre-treatment covariates for use in D.R. DiD estimator.
     pre_treatment_covariates = treatment_means.index.get_level_values(1).tolist()
     controls = pre_treatment_covariates.copy()
-    [controls.remove(variable) for variable in ['isEntityD', 'for_cause']]
     pd.options.mode.chained_assignment = 'warn'
 
     # Calculate propensity scores for every observation.
@@ -102,11 +136,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
                  .style
                  .format(thousands=",",
                          na_rep='',
-                         formatter={('', 'Cases Won by Plaintiff'): "{:,.2f}",
-                                    ('Difference in Cases Won by Defendant', 'Unweighted'): "{:,.2f}",
-                                    ('Difference in Cases Won by Defendant', '\\emph{p}'): "{:,.2f}",
-                                    ('Difference in Cases Won by Defendant', 'Weighted'): "{:,.2f}",
-                                    ('', 'N'): "{:,.0f}"})
+                         formatter="{:,.2f}")
                  .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
                  .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
                  .to_latex(None,
@@ -137,7 +167,7 @@ def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
         # Drop related variables from the summary statistics table.
-        summary_statistics = summary_statistics.drop(f'total_twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
+        summary_statistics = summary_statistics.drop(f'total_twenty_nineteen_{unneeded_outcome}', level=1, axis=0)
         summary_statistics = summary_statistics.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
         summary_statistics = summary_statistics.drop(f'relative_pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
 
@@ -211,7 +241,7 @@ def produce_summary_statistics(df: pd.DataFrame):
     outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
     panel_A_columns = []
     for outcome in outcomes:
-        panel_A_columns.append(f'total_twenty_seventeen_{outcome}')
+        panel_A_columns.append(f'total_twenty_nineteen_{outcome}')
         panel_A_columns.append(f'pre_treatment_change_in_{outcome}')
         panel_A_columns.append(f'relative_pre_treatment_change_in_{outcome}')
     panel_A = df[panel_A_columns].describe().T
@@ -224,12 +254,12 @@ def produce_summary_statistics(df: pd.DataFrame):
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
     # Panel C: Case Initiaton
-    panel_C_columns = ['for_cause', 'non_payment', 'isEntityD']
+    panel_C_columns = ['for_cause', 'non_payment', 'no_cause', 'hasAttyD', 'hasAttyP']
     panel_C = df[sorted(panel_C_columns)].describe().T
     panel_C = pd.concat([panel_C], keys=["Panel C: Case Initiation"])
 
     # Panel E: Case Resolution
-    panel_D_columns = ['dismissed', 'defaulted', 'case_duration', 'judgment']
+    panel_D_columns = ['dismissed', 'defaulted', 'heard', 'case_duration', 'judgment']
     panel_D = df[sorted(panel_D_columns)].describe().T
     panel_D = pd.concat([panel_D], keys=["Panel D: Case Resolution"])
 
@@ -270,13 +300,13 @@ def produce_summary_statistics(df: pd.DataFrame):
             pretreatment_change_display_name = f"$\\Delta$ Incidents, 2017-2019"
             variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
             pretreatment_level_display_name = f"Total Incidents, 2017"
-            variable_display_names_dict[f'total_twenty_seventeen_{outcome}'] = pretreatment_level_display_name
+            variable_display_names_dict[f'total_twenty_nineteen_{outcome}'] = pretreatment_level_display_name
             pretreatment_level_display_name = f"$\\Delta$ Incidents, 2 Years Pre-Treatment"
             variable_display_names_dict[f'relative_pre_treatment_change_in_{outcome}'] = pretreatment_level_display_name
             continue
         pretreatment_change_display_name = f"$\Delta$ Group {outcome.split('_')[1]} Incidents, 2017-2019"
         variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
         pretreatment_level_display_name = f"Total Group {outcome.split('_')[1]} Incidents, 2017"
-        variable_display_names_dict[f'total_twenty_seventeen_{outcome}'] = pretreatment_level_display_name
+        variable_display_names_dict[f'total_twenty_nineteen_{outcome}'] = pretreatment_level_display_name
 
     return summary_statistics, variable_display_names_dict

@@ -10,7 +10,7 @@ class Variables:
 class Analysis:
     MAIN_RESULTS_RADIUS = 250
     ROBUSTNESS_RADII = ["250_to_350", "250_to_400"]
-    MINIMUM_PRE_PERIOD = -5
+    MINIMUM_PRE_PERIOD = -12
     MAXIMUM_POST_PERIOD = 36
 
 
