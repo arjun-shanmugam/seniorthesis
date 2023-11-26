@@ -10,9 +10,9 @@ from differences.did.pscore_cal import pscore_mle
 from src.panel_utilities import get_value_variable_names
 
 
-def run_event_study(df: pd.DataFrame, treatment_date_variable: str):
+def run_event_study(df: pd.DataFrame, treatment_date_variable: str, analysis: str):
     # Reshape to long
-    triplet = get_value_variable_names(df, f"group_0_crimes_{constants.Analysis.MAIN_RESULTS_RADIUS}m")
+    triplet = get_value_variable_names(df, analysis)
     weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = triplet
     df = pd.melt(df,
                  id_vars=['case_number',
@@ -301,7 +301,7 @@ def produce_summary_statistics(df: pd.DataFrame):
             variable_display_names_dict[f'pre_treatment_change_in_{outcome}'] = pretreatment_change_display_name
             pretreatment_level_display_name = f"Total Incidents, 2017"
             variable_display_names_dict[f'total_twenty_nineteen_{outcome}'] = pretreatment_level_display_name
-            pretreatment_level_display_name = f"$\\Delta$ Incidents, 2 Years Pre-Treatment"
+            pretreatment_level_display_name = f"$\\Delta$ Incidents, 1 Year Pre-Treatment"
             variable_display_names_dict[f'relative_pre_treatment_change_in_{outcome}'] = pretreatment_level_display_name
             continue
         pretreatment_change_display_name = f"$\Delta$ Group {outcome.split('_')[1]} Incidents, 2017-2019"
