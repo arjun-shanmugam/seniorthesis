@@ -26,12 +26,12 @@ class Analysis:
               '2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06',
               '2023-07']
     
-    larceny = [613, 618, 617, 614, 619, 611, 616, 626, 636, 618, 628, 638, 617,
-               627, 637, 614, 624, 634, 619, 629, 639, 621, 611, 631, 612, 622,
-               632, 613, 623, 633, 615, 625, 635, 649]
+    larceny = [633, 623, 632, 622, 612, 631, 621, 611]
 
     motor_vehicle = [3801, 3410, 3810, 3807, 3803, 3805, 3802, 3811, 3820, 3821,
                      3712, 3706, 3702, 3704, 3701, 3709]
+    
+    
     vandalism = [1402, 1415]
     
     
@@ -45,9 +45,9 @@ class Analysis:
     auto_theft = [701, 702, 704, 711, 712, 713, 714, 715, 706,  724,
                   727, 706, 723, 724, 727, 735, 770, 780, 790]
     
-    larceny_motor_vehicle_vandalism = larceny + motor_vehicle + vandalism
+    larceny_motor_vehicle = larceny + motor_vehicle
     
-    assault_investigate_auto_theft = assault + investigate + auto_theft
+    assault_investigate_auto_theft_vandalism = assault + investigate + auto_theft+ vandalism
 
 
 class Colors:
