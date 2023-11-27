@@ -39,15 +39,13 @@ class Analysis:
     assault = [801, 802, 803, 423, 413, 401, 402, 403, 404, 411, 412, 413, 421,
                422, 423,424, 431, 432, 433, 3301, 2647]
 
-    investigate = [3114, 3115]
-
 
     auto_theft = [701, 702, 704, 711, 712, 713, 714, 715, 706,  724,
                   727, 706, 723, 724, 727, 735, 770, 780, 790]
     
     larceny_motor_vehicle = larceny + motor_vehicle
     
-    assault_investigate_auto_theft_vandalism = assault + investigate + auto_theft+ vandalism
+    assault_investigate_auto_theft_vandalism = assault + auto_theft+ vandalism
 
 
 class Colors:
