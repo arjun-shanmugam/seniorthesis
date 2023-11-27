@@ -1,5 +1,5 @@
 class Variables:
-    outcomes = [f"group_{group}_crimes_{range}m" for group in range(5) for range in [250, 300, 350, '250_to_300', '250_to_350', '250_to_400']]
+    outcomes = [f"group_{group}_crimes_{range}m" for group in range(8) for range in [250, 300, 350, '250_to_300', '250_to_350', '250_to_400']]
 
 class Analysis:
     MAIN_RESULTS_RADIUS = 250
