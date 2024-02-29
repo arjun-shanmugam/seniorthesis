@@ -1,11 +1,69 @@
 class Variables:
-    outcomes = [f"group_{group}_crimes_{range}m" for group in range(8) for range in [250, 300, 350, '250_to_300', '250_to_350', '250_to_400']]
+
+    
+    pre_treatment_covariates_to_include = ['total_twenty_seventeen_group_0_crimes_250m',
+                                            'month_neg_twelve_group_0_crimes_250m',
+                                            'month_neg_six_group_0_crimes_250m',
+                                            'med_hhinc2016',
+                                            'poor_share2010',
+                                            'popdensity2010',
+                                            'share_white2010',
+                                            'non_payment',
+                                             ]
+    
+    outcomes = [f"group_{group}_crimes_{range}m" for group in range(8) for range in [250, 300, '250_to_300', '250_to_350', '250_to_400']]
+    
+    variable_display_names_dict = \
+    {
+        "total_twenty_seventeen_group_0_crimes_250m": "All Crime Reports, 2017",
+        "month_neg_twelve_group_0_crimes_250m": "All Crime Reports, Month -12",
+        "month_neg_six_group_0_crimes_250m": "All Crime Reports, Month -6",
+    
+        "total_twenty_seventeen_group_1_crimes_250m": "Larceny Reports, 2017",
+        "month_neg_twelve_group_1_crimes_250m": "Larceny Reports, Month -12",
+        "month_neg_six_group_1_crimes_250m": "Larceny Reports, Month -6",
+            
+        "total_twenty_seventeen_group_2_crimes_250m": "M.V. Accidents, 2017",
+        "month_neg_twelve_group_2_crimes_250m": "M.V. Accidents, Month -12",
+        "month_neg_six_group_2_crimes_250m": "M.V. Accidents, Month -6",
+    
+        "total_twenty_seventeen_group_3_crimes_250m": "Vandalism Reports, 2017",
+        "month_neg_twelve_group_3_crimes_250m": "Vandalism Reports, Month -12",
+        "month_neg_six_group_3_crimes_250m": "Vandalism Reports, Month -6",
+    
+    
+        "total_twenty_seventeen_group_4_crimes_250m": "Assault Reports, 2017",
+        "month_neg_twelve_group_4_crimes_250m": "Assault Reports, Month -12",
+        "month_neg_six_group_4_crimes_250m": "Assault Reports, Month -6",
+    
+    
+        "total_twenty_seventeen_group_5_crimes_250m": "Auto Theft Reports, 2017",
+        "month_neg_twelve_group_5_crimes_250m": "Auto Theft Reports, Month -12",
+        "month_neg_six_group_5_crimes_250m": "Auto Theft Reports, Month -6",
+            
+    
+        "med_hhinc2016": "Median household income, 2016",
+        "poor_share2010": "Poverty rate, 2010",
+        "popdensity2010": "Population density, 2010",
+        "share_white2010": "Share white, 2010",
+    
+        "non_payment": "Filing for nonpayment",
+        "hasAttyD": "Defendant has attorney",
+        "hasAttyP": "Plaintiff has attorney",
+        "isEntityP": "Plaintiff is entity",
+        "case_duration": "Case duration",
+        "defaulted": "Judgment by default",
+        "dismissed": "Case dismissed",
+        "heard": "Case heard",
+        "judgment": "Money judgment",
+    }
+
 
 class Analysis:
     MAIN_RESULTS_RADIUS = 250
-    ROBUSTNESS_RADII = ["250_to_350", "250_to_400"]
+    ROBUSTNESS_RADII = ["250_to_300", "250_to_350", "250_to_400"]
     MINIMUM_PRE_PERIOD = -12
-    MAXIMUM_POST_PERIOD = 36
+    MAXIMUM_POST_PERIOD = 24
 
     months = ['2015-06',
               '2015-07', '2015-08', '2015-09', '2015-10', '2015-11', '2015-12',
@@ -26,10 +84,18 @@ class Analysis:
               '2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06',
               '2023-07']
     
-    larceny = [633, 623, 632, 622, 612, 631, 621, 611]
+    larceny = [633, 623, 632, 622, 612, 631, 621, 611,
+               613, 617, 627, 637, 614, 624, 634, 619,
+               615, 625, 635, 629, 639, 649]
 
-    motor_vehicle = [3801, 3410, 3810, 3807, 3803, 3805, 3802, 3811, 3820, 3821,
-                     3712, 3706, 3702, 3704, 3701, 3709]
+    drugs = [1843, 1844, 1845, 1846, 1870, 1874,
+             1842, 1841, 1849, 1847, 1848, 1850,
+             2631, 1805, 1806, 1807, 1825, 1815,
+             1832, 1831, 2609, 1810, 1830, 1870,
+             2609, 1874, 1842, 1841, 1849, 1848,
+             1858, 1855, 1864, 1863, 1866, 1868,
+             1843, 3023, 3021, 1875, 3022, 1847, 
+             1840, 1873, 1843, 1844, 1845, 1846]
     
     
     vandalism = [1402, 1415]
@@ -43,9 +109,12 @@ class Analysis:
     auto_theft = [701, 702, 704, 711, 712, 713, 714, 715, 706,  724,
                   727, 706, 723, 724, 727, 735, 770, 780, 790]
     
-    larceny_motor_vehicle = larceny + motor_vehicle
+    assault_auto_theft_vandalism_larceny = assault + auto_theft+ vandalism + larceny
     
-    assault_investigate_auto_theft_vandalism = assault + auto_theft+ vandalism
+
+    
+    
+    
 
 
 class Colors:
