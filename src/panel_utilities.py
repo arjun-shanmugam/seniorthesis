@@ -6,7 +6,7 @@ from typing import List, Union
 
 
 def get_value_variable_names(df, analysis: str):
-    value_columns = pd.Series([f'{month}_{analysis}' for month in Analysis.months])
+    value_columns = pd.Series([f'{month}_{analysis}' for month in Analysis.months], index=range(1, len(Analysis.months) + 1))
     int_to_period_dictionary = value_columns.str.replace(f"_{analysis}", "", regex=False).to_dict()
     period_to_int_dictionary = {v: k for k, v in list(int_to_period_dictionary.items())}
     return value_columns.tolist(), period_to_int_dictionary, int_to_period_dictionary
@@ -28,18 +28,11 @@ def prepare_df_for_DiD(df: pd.DataFrame, analysis: str, treatment_date_variable:
                           .astype(int))
     df.loc[:, treatment_date_variable] = df[treatment_date_variable].replace(period_to_int_dictionary)
 
-    # # Restrict by event-time.
-    # treatment_relative_month = df['month'] - df[treatment_date_variable]
-    # df = df.loc[(treatment_relative_month >= Analysis.MINIMUM_PRE_PERIOD)
-    #             & (treatment_relative_month <= Analysis.MAXIMUM_POST_PERIOD), :]
-
-    # Set treatment month to np.NaN for untreated observations.
+    # Set treatment month to 0 for untreated observations.
     never_treated_mask = (df['judgment_for_plaintiff'] == 0)
-    df.loc[never_treated_mask, treatment_date_variable] = np.NaN
+    df.loc[never_treated_mask, treatment_date_variable] = 0
 
     # Generate numeric version of case_number.
     df.loc[:, 'case_number_numeric'] = df['case_number'].astype('category').cat.codes.astype(int)
-
-    # Set index.
-    df = df.set_index(['case_number_numeric', 'month'])
+    df.loc[:, 'case_number_numeric'] = df['case_number_numeric'] + 1
     return df

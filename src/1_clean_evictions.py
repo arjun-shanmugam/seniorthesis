@@ -5,11 +5,15 @@ Cleans eviction dataset from MassLandlords.
 """
 import pandas as pd
 
-INPUT_DATA_EVICTIONS = "../../data/01_raw/all_gathered_as_of_2023-01-19_aug.csv"
-OUTPUT_DATA = "../../data/02_intermediate/evictions.csv"
+# Set paths here 
+INPUT_DATA_EVICTIONS = ""
+OUTPUT_DATA = ""
+
+# Read data
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, encoding='unicode_escape')
 original_N = len(evictions_df)
 VERBOSE = True
+
 # Clean court division.
 court_division_replacement_dict = {"central": "Central",
                                    "eastern": "Eastern",
@@ -69,3 +73,4 @@ if VERBOSE:
 evictions_df.to_csv(OUTPUT_DATA, index=False)
 
 # NOTE: After this file was run, I manually ran evictions.csv through Geocod.io to get the 2010 Census Tract in which each property is located.
+# Follow instructions in README to do this. 

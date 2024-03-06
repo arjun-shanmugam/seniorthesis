@@ -5,8 +5,9 @@ Cleans census tract level data from Opportunity Insights.
 """
 import pandas as pd
 
-INPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/01_raw/tract_covariates.csv"
-OUTPUT_DATA = "/Users/arjunshanmugam/Documents/GitHub/seniorthesis/data/02_intermediate/tracts.csv"
+# Set paths here
+INPUT_DATA = ""
+OUTPUT_DATA = ""
 
 # Load data.
 tracts_df = pd.read_csv(INPUT_DATA)
@@ -24,4 +25,3 @@ tracts_df.loc[:, 'tract_geoid'] = tracts_df['state'].astype(str) + tracts_df['co
 columns_to_keep = ['tract_geoid', 'med_hhinc2016', 'popdensity2010', 'share_white2010', 'frac_coll_plus2010', 'job_density_2013',
                    'poor_share2010', 'traveltime15_2010', 'rent_twobed2015', 'czname']
 tracts_df[columns_to_keep].to_csv(OUTPUT_DATA)
-#%%

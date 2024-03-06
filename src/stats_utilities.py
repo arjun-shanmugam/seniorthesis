@@ -7,10 +7,246 @@ import statsmodels.formula.api as smf
 import statsmodels.api as sm
 import constants
 from differences.did.pscore_cal import pscore_mle
-from src.panel_utilities import get_value_variable_names
+from panel_utilities import get_value_variable_names, prepare_df_for_DiD
+import rpy2.robjects.packages as rpackages
+import rpy2.robjects as robjects
+from rpy2.robjects import pandas2ri, Formula, numpy2ri
+from rpy2.robjects.packages import importr
+from rpy2.robjects.vectors import StrVector
+from typing import List
+import numpy as np
 
 
-def run_event_study(df: pd.DataFrame, treatment_date_variable: str, analysis: str, use_calendar_months=False):
+def run_sensitivity_analysis_in_R(df: pd.DataFrame,
+                 analysis: str,
+                 treatment_date_variable: str, 
+                 pre_treatment_covariates: List[str],
+                 value_vars: List[str],
+                 period_to_int_dictionary: dict,
+                 event_time: int,
+                 type_and_vector_string: str,                
+                 min_e: int=constants.Analysis.MINIMUM_PRE_PERIOD,
+                 max_e: int=constants.Analysis.MAXIMUM_POST_PERIOD):
+    # Reshape DF to long
+    long_df = prepare_df_for_DiD(df=df,
+                                 analysis=analysis,
+                                 treatment_date_variable=treatment_date_variable,
+                                 pre_treatment_covariates=pre_treatment_covariates,
+                                 value_vars=value_vars,
+                                 period_to_int_dictionary=period_to_int_dictionary)
+
+    # install necessary R packages
+    utils = rpackages.importr('utils')
+    utils.chooseCRANmirror(ind=1)
+    packnames = ['did']
+    names_to_install = [x for x in packnames if not rpackages.isinstalled(x)]
+    if len(names_to_install) > 0:
+        utils.install_packages(StrVector(names_to_install))
+        
+    # run DiD
+    
+    base = importr('base')
+    did = importr('did')
+    if len(pre_treatment_covariates) == 0:
+        formula = Formula("~1")
+    else:
+        formula = Formula(f"~{'+'.join(pre_treatment_covariates)}")
+        
+    with (robjects.default_converter + pandas2ri.converter).context():
+        long_df_R = robjects.conversion.get_conversion().py2rpy(long_df)
+        robjects.r('''
+                   options(warn=1)
+                   att_gt_result <- att_gt(yname = "{yname}",
+                                           tname = "month",
+                                           idname = "case_number_numeric",
+                                           gname = "{tname}",
+                                           xformla = {xformla},
+                                           data = {data},
+                                           cband=FALSE,
+                                           bstrap=FALSE,
+                                           base_period = "universal",
+                                           pl=TRUE,
+                                           cores=10)
+                   att_e_result  <- aggte(att_gt_result,
+                                          type = "dynamic", 
+                                          cband=FALSE,
+                                          bstrap=FALSE,
+                                          min_e={min_e},
+                                          max_e={max_e})
+                   att_e_result_tidy <- tidy(att_e_result)
+               
+                   '''.format(**{'yname': analysis,
+                                 'tname': treatment_date_variable,
+                                 'min_e': min_e,
+                                 'max_e': max_e,
+                                 'xformla': formula.r_repr(), 
+                                 'data': long_df_R.r_repr()}))
+    
+    robjects.r('''
+
+            honest_did <- function(...) UseMethod("honest_did")
+            honest_did.AGGTEobj <- function(es,
+            e          = 0,
+            type       = c("smoothness", "relative_magnitude"),
+            gridPoints = 100,
+            ...) {
+
+            type <- match.arg(type)
+
+            # Make sure that user is passing in an event study
+            if (es$type != "dynamic") {
+            stop("need to pass in an event study")
+            }
+
+            # Check if used universal base period and warn otherwise
+            if (es$DIDparams$base_period != "universal") {
+            stop("Use a universal base period for honest_did")
+            }
+
+            # Recover influence function for event study estimates
+            es_inf_func <- es$inf.function$dynamic.inf.func.e
+
+            # Recover variance-covariance matrix
+            n <- nrow(es_inf_func)
+            V <- t(es_inf_func) %*% es_inf_func / n / n
+
+            # Check time vector is consecutive with referencePeriod = -1
+            referencePeriod <- -1
+            consecutivePre  <- !all(diff(es$egt[es$egt <= referencePeriod]) == 1)
+            consecutivePost <- !all(diff(es$egt[es$egt >= referencePeriod]) == 1)
+            if ( consecutivePre | consecutivePost ) {
+            msg <- "honest_did expects a time vector with consecutive time periods;"
+            msg <- paste(msg, "please re-code your event study and interpret the results accordingly.", sep="\n")
+            stop(msg)
+            }
+
+            # Remove the coefficient normalized to zero
+            hasReference <- any(es$egt == referencePeriod)
+            if ( hasReference ) {
+            referencePeriodIndex <- which(es$egt == referencePeriod)
+            V    <- V[-referencePeriodIndex,-referencePeriodIndex]
+            beta <- es$att.egt[-referencePeriodIndex]
+            } else {
+            beta <- es$att.egt
+            }
+
+            nperiods <- nrow(V)
+            npre     <- sum(1*(es$egt < referencePeriod))
+            npost    <- nperiods - npre
+            if ( !hasReference & (min(c(npost, npre)) <= 0) ) {
+            if ( npost <= 0 ) {
+            msg <- "not enough post-periods"
+            } else {
+            msg <- "not enough pre-periods"
+            }
+            msg <- paste0(msg, " (check your time vector; note honest_did takes -1 as the reference period)")
+            stop(msg)
+            }
+            baseVec1 <- HonestDiD::basisVector(index=(e+1),size=npost)
+            orig_ci  <- HonestDiD::constructOriginalCS(betahat        = beta,
+            sigma          = V,
+            numPrePeriods  = npre,
+            numPostPeriods = npost,
+            l_vec          = baseVec1)
+
+            if (type=="relative_magnitude") {
+            robust_ci <- HonestDiD::createSensitivityResults_relativeMagnitudes(betahat        = beta,
+                                     sigma          = V,
+                                     numPrePeriods  = npre,
+                                     numPostPeriods = npost,
+                                     l_vec          = baseVec1,
+                                     gridPoints     = gridPoints,
+                                     ...)
+
+            } else if (type == "smoothness") {
+            robust_ci <- HonestDiD::createSensitivityResults(betahat        = beta,
+                  sigma          = V,
+                  numPrePeriods  = npre,
+                  numPostPeriods = npost,
+                  l_vec          = baseVec1,   
+                  ...)
+            }
+
+            return(list(robust_ci=robust_ci, orig_ci=orig_ci, type=type))
+            }
+            
+            
+            sensitivity_results <- honest_did(att_e_result,
+                                              e=to_replace,
+                                              type_and_vector_parameters)
+            '''.replace("to_replace", str(event_time)).replace("type_and_vector_parameters", type_and_vector_string))
+
+    return robjects.r['sensitivity_results'][0]
+    
+    
+
+def run_did_in_R(df: pd.DataFrame,
+                 analysis: str,
+                 treatment_date_variable: str, 
+                 pre_treatment_covariates: List[str],
+                 value_vars: List[str],
+                 period_to_int_dictionary: dict,
+                 min_e: int=constants.Analysis.MINIMUM_PRE_PERIOD,
+                 max_e: int=constants.Analysis.MAXIMUM_POST_PERIOD):
+    # Reshape DF to long
+    long_df = prepare_df_for_DiD(df=df,
+                                 analysis=analysis,
+                                 treatment_date_variable=treatment_date_variable,
+                                 pre_treatment_covariates=pre_treatment_covariates,
+                                 value_vars=value_vars,
+                                 period_to_int_dictionary=period_to_int_dictionary)
+
+    # install necessary R packages
+    utils = rpackages.importr('utils')
+    utils.chooseCRANmirror(ind=1)
+    packnames = ['did']
+    names_to_install = [x for x in packnames if not rpackages.isinstalled(x)]
+    if len(names_to_install) > 0:
+        utils.install_packages(StrVector(names_to_install))
+        
+    # run DiD
+    
+    base = importr('base')
+    did = importr('did')
+    if len(pre_treatment_covariates) == 0:
+        formula = Formula("~1")
+    else:
+        formula = Formula(f"~{'+'.join(pre_treatment_covariates)}")
+        
+    with (robjects.default_converter + pandas2ri.converter).context():
+        long_df_R = robjects.conversion.get_conversion().py2rpy(long_df)
+        robjects.r('''
+                   options(warn=1)
+                   att_gt_result <- att_gt(yname = "{yname}",
+                                           tname = "month",
+                                           idname = "case_number_numeric",
+                                           gname = "{tname}",
+                                           xformla = {xformla},
+                                           data = {data},
+                                           base_period = "universal",
+                                           
+                                           pl=TRUE,
+                                           cores=10)
+                   att_e_result  <- aggte(att_gt_result,
+                                          type = "dynamic",
+                                          min_e={min_e},
+                                          max_e={max_e},
+                                          bstrap=FALSE,
+                                          cband=FALSE)
+                   att_e_result_tidy <- tidy(att_e_result)
+               
+                   '''.format(**{'yname': analysis,
+                                 'tname': treatment_date_variable,
+                                 'min_e': min_e,
+                                 'max_e': max_e,
+                                 'xformla': formula.r_repr(), 
+                                 'data': long_df_R.r_repr()}))
+        att_e_result_tidy = robjects.conversion.get_conversion().rpy2py(robjects.r['att_e_result_tidy'])
+        att_e_result = robjects.r['att_e_result']
+    return att_e_result_tidy, att_e_result  
+
+
+def run_event_study(df: pd.DataFrame, treatment_date_variable: str, analysis: str):
     # Reshape to long
     triplet = get_value_variable_names(df, analysis)
     weekly_value_vars_crime, month_to_int_dictionary, int_to_month_dictionary = triplet
@@ -28,53 +264,34 @@ def run_event_study(df: pd.DataFrame, treatment_date_variable: str, analysis: st
     # Calculate crime levels during each month relative to treatment, separately for treatment and control gropu
     df.loc[:, 'treatment_relative_month'] = df['month'] - df[treatment_date_variable]
 
-    # Create column containing calendar month
-    df.loc[:, 'calendar_month'] = df['month'].replace(int_to_month_dictionary)
+    # Restrict to the treatment relative months we care about
+    df = df.loc[df['treatment_relative_month'].between(constants.Analysis.MINIMUM_PRE_PERIOD, constants.Analysis.MAXIMUM_POST_PERIOD), :]
+    
+    y = df['value']
+    x_variables = []
+    x_variables.append(df['judgment_for_plaintiff'])
+    month_dummies = pd.get_dummies(df['treatment_relative_month'], prefix='month')
+    month_dummies = month_dummies.drop(columns='month_-1')
+    x_variables.append(month_dummies)
+    month_times_treatment_indicator_dummies = (month_dummies
+                                               .mul(df['judgment_for_plaintiff'], axis=0))
+    month_times_treatment_indicator_dummies.columns = [col + "_X_treatment_indicator" for col in
+                                                       month_times_treatment_indicator_dummies.columns]
+    x_variables.append(month_times_treatment_indicator_dummies)
+    X = pd.concat(x_variables, axis=1)
 
-    if use_calendar_months:
-        y = df['value']
-        x_variables = []
-        x_variables.append(df['judgment_for_plaintiff'])
-        month_dummies = pd.get_dummies(df['calendar_month'], prefix='month', drop_first=True)
-        x_variables.append(month_dummies)
-        month_times_treatment_indicator_dummies = (month_dummies
-                                                   .mul(df['judgment_for_plaintiff'], axis=0))
-        month_times_treatment_indicator_dummies.columns = [col + "_X_treatment_indicator" for col in
-                                                           month_times_treatment_indicator_dummies.columns]
-        x_variables.append(month_times_treatment_indicator_dummies)
-        X = pd.concat(x_variables, axis=1)
 
-        omitted_period = df['calendar_month'].iloc[0]
-        omitted_period_control_mean = df.loc[(df['calendar_month'] == omitted_period) &
-                                             (df['judgment_for_plaintiff'] == 0), 'value'].mean()
-    else:
-        y = df['value']
-        x_variables = []
-        x_variables.append(df['judgment_for_plaintiff'])
-        month_dummies = pd.get_dummies(df['treatment_relative_month'], prefix='month', drop_first=True)
-        x_variables.append(month_dummies)
-        month_times_treatment_indicator_dummies = (month_dummies
-                                                   .mul(df['judgment_for_plaintiff'], axis=0))
-        month_times_treatment_indicator_dummies.columns = [col + "_X_treatment_indicator" for col in
-                                                           month_times_treatment_indicator_dummies.columns]
-        x_variables.append(month_times_treatment_indicator_dummies)
-        X = pd.concat(x_variables, axis=1)
-
-        omitted_period = df['treatment_relative_month'].min()
-        omitted_period_control_mean = df.loc[(df['treatment_relative_month'] == omitted_period) &
-                                             (df['judgment_for_plaintiff'] == 0), 'value'].mean()
-
-    return sm.OLS(y, X).fit(), omitted_period_control_mean
+    return sm.OLS(y, sm.add_constant(X)).fit()
 
 def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     # Store pre-treatment panel names.
-    pre_treatment_panels = ['Panel A: Pre-treatment Outcomes',
+    pre_treatment_panels = ['Panel A: Pre-Treatment Crime Levels',
                             'Panel B: Census Tract Characteristics',
                             'Panel C: Case Initiation']
     # Build treatment mean columns.
     pd.options.mode.chained_assignment = None
-    treatment_means, variable_display_names_dict = produce_summary_statistics(
-        df.copy().loc[df['judgment_for_plaintiff'] == 1, :])
+    treatment_means = produce_summary_statistics(
+        df.copy().loc[df['judgment_for_plaintiff'] == 0, :])
     treatment_means = treatment_means.loc[pre_treatment_panels, :]
     # Do not include rows corresponding to other outcomes in the covariate exploration table.
     outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
@@ -83,22 +300,25 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     unneeded_outcomes = outcomes
     for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
         # Drop related variables from the summary statistics table.
-        treatment_means = treatment_means.drop(f'total_twenty_eighteen_{unneeded_outcome}', level=1, axis=0)
-        treatment_means = treatment_means.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
-        treatment_means = treatment_means.drop(f'relative_pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
-
+        treatment_means = treatment_means.drop(f'total_twenty_seventeen_{unneeded_outcome}', level=1, axis=0)
+        treatment_means = treatment_means.drop(f'month_neg_twelve_{unneeded_outcome}', level=1, axis=0)
+        treatment_means = treatment_means.drop(f'month_neg_six_{unneeded_outcome}', level=1, axis=0)
+        continue
+    
     treatment_means = (treatment_means.loc[:, 'mean']
-                       .rename("Cases Won by Plaintiff (1)"))
+                       .rename("Cases Won by Defendant"))
+    
     # Save pre-treatment covariates for use in D.R. DiD estimator.
     pre_treatment_covariates = treatment_means.index.get_level_values(1).tolist()
-    controls = pre_treatment_covariates.copy()
     pd.options.mode.chained_assignment = 'warn'
 
     # Calculate propensity scores for every observation.
-    df.loc[:, 'propensity_score'] = pd.Series(
-        pscore_mle(df.dropna(subset=controls)['judgment_for_plaintiff'],
-                   exog=df.dropna(subset=controls)[controls],
-                   weights=None)[0], index=df.index)  # Calculate propensity scores.
+    pscores = (sm.Logit(df['judgment_for_plaintiff'],
+                             exog=df[constants.Variables.pre_treatment_covariates_to_include])
+                    .fit()
+                    .predict(df[constants.Variables.pre_treatment_covariates_to_include]))
+    print(constants.Variables.pre_treatment_covariates_to_include)
+    df.loc[:, 'propensity_score'] = pd.Series(pscores, index=df.index)
     df.loc[:, 'weight'] = df['propensity_score'] / (1 - df['propensity_score'])
     df.loc[df['judgment_for_plaintiff'] == 1, 'weight'] = 1
 
@@ -106,6 +326,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     difference_unadjusted = []
     p_values_unadjusted = []
     for covariate in pre_treatment_covariates:
+
         result = smf.ols(formula=f"{covariate} ~ judgment_for_plaintiff",
                          data=df,
                          missing='drop').fit()
@@ -115,12 +336,13 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     difference_unadjusted = pd.Series(difference_unadjusted , index=treatment_means.index)
     p_values_unadjusted = pd.Series(p_values_unadjusted, index=treatment_means.index)
     unweighted_columns = pd.concat([difference_unadjusted, p_values_unadjusted], axis=1)
-    unweighted_columns.columns = ['Unweighted (2)', '\\emph{p} (3)']
+    unweighted_columns.columns = ['Unweighted', '\\emph{p}']
 
     # Build propensity score-weighted columns.
     differences_propensity_score_adjusted = []
     p_values_propensity_score_adjusted = []
     for covariate in pre_treatment_covariates:
+        
         propensity_score_adjusted_result = sm.WLS.from_formula(f"{covariate} ~ judgment_for_plaintiff",
                                                                data=df,
                                                                missing='drop',
@@ -134,23 +356,25 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     p_values_propensity_score_adjusted = pd.Series(p_values_propensity_score_adjusted, index=treatment_means.index)
     propensity_score_weighted_columns = pd.concat(
         [differences_propensity_score_adjusted, p_values_propensity_score_adjusted], axis=1)
-    propensity_score_weighted_columns.columns = ['Weighted (4)', '\\emph{p} (5)']
+    propensity_score_weighted_columns.columns = ['Weighted', '\\emph{p}']
 
     difference_columns = pd.concat([unweighted_columns, propensity_score_weighted_columns], axis=1)
     table_columns = [treatment_means, difference_columns]
-    balance_table = pd.concat(table_columns, axis=1, keys=['', 'Difference in Cases Won by Defendant'])
+    balance_table = pd.concat(table_columns, axis=1, keys=['', 'Difference in Cases Won by Plaintiff'])
 
-    balance_table = balance_table.rename(index=variable_display_names_dict)
+    balance_table = balance_table.rename(index=constants.Variables.variable_display_names_dict)
     # TODO: Figure out how to make the outermost index labels wrap in LaTeX so that I don't have to shorten the panel labels below!
-    balance_table = balance_table.rename(index={"Panel A: Pre-treatment Outcomes": "Panel A",
+    balance_table = balance_table.rename(index={"Panel A: Pre-Treatment Crime Levels": "Panel A",
                                                 "Panel B: Census Tract Characteristics": "Panel B",
                                                 "Panel C: Case Initiation": "Panel C",
                                                 "Panel D: Defendant and Plaintiff Characteristics": "Panel D"})
+
+    
     if output_directory is not None:
         # Export to LaTeX.
         filename = join(output_directory, "balance_table.tex")
         latex = (balance_table
-                 .rename(index=variable_display_names_dict)
+                 .rename(index=constants.Variables.variable_display_names_dict)
                  .style
                  .format(thousands=",",
                          na_rep='',
@@ -161,91 +385,15 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
                            column_format="llccccc",
                            hrules=True,
                            multicol_align='c',
-                           clines="skip-last;data")).replace("{*}", "{2cm}")
+                           clines="skip-last;data")).replace("{*}", "{3cm}")
         latex = latex.split("\\\\\n")
         latex.insert(1, "\\cline{4-7}\n")
         latex = "\\\\\n".join(latex)
 
         with open(filename, 'w') as file:
             file.write(latex)
-    return balance_table, controls
+    return balance_table
 
-
-def select_controls(df: pd.DataFrame, treatment_date_variable: str, analysis: str, output_directory: str = None):
-    """Choose covariates to include in D.R. model."""
-    covariate_exploration_table_columns = ["Change in Crime Incidents, April 2019-March 2020",
-                                           "Treated Property"]  # TODO: Add column naming logic.
-
-    # Run produce summary statistics on the DataFrame to get names of column names of potential pre-treatment covaiates.
-    summary_statistics, variable_display_names_dict = produce_summary_statistics(df, 'latest_docket_date')
-
-    # Do not include rows corresponding to other outcomes in the covariate exploration table.
-    outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
-    outcomes.remove(analysis)  # Remove the one which is being currently studied.
-    unneeded_outcomes = outcomes
-    for unneeded_outcome in unneeded_outcomes:  # For each outcome not currently being studied...
-        # Drop related variables from the summary statistics table.
-        summary_statistics = summary_statistics.drop(f'total_twenty_eighteen_{unneeded_outcome}', level=1, axis=0)
-        summary_statistics = summary_statistics.drop(f'pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
-        summary_statistics = summary_statistics.drop(f'relative_pre_treatment_change_in_{unneeded_outcome}', level=1, axis=0)
-
-    # Store independent and dependent variables.
-    independent_variable = 'judgment_for_plaintiff'
-    dependent_variable = f'change_in_{analysis}_over_all_treated_weeks'
-    if "month" in treatment_date_variable:
-        last_week_in_panel = '2020-03'
-    else:
-        last_week_in_panel = '2023-00'
-    first_treated_week = df[treatment_date_variable].sort_values().iloc[0]
-    df.loc[:, dependent_variable] = df[f'{last_week_in_panel}_{analysis}'] - df[f'{first_treated_week}_{analysis}']
-
-    # Build covariate exploration table.
-    pre_treatment_panels = ["Panel A: Pre-treatment Outcomes",
-                            "Panel B: Census Tract Characteristics",
-                            "Panel C: Case Initiation"]
-    summary_statistics = summary_statistics.loc[pre_treatment_panels, :]
-    potential_covariates = summary_statistics.index.get_level_values(1)
-    p_values = []
-    for potential_covariate in potential_covariates:
-        # Get p-value from regression of outcome on covariates.
-        p_y = (smf.ols(formula=f"{dependent_variable} ~ {potential_covariate}",
-                       data=df,
-                       missing='drop')
-        .fit().pvalues.loc[potential_covariate])
-        # Get p-value from regression of treatment on covariates.
-        p_x = (smf.ols(formula=f"{independent_variable} ~ {potential_covariate}",
-                       data=df,
-                       missing='drop')
-        .fit().pvalues.loc[potential_covariate])
-        p_values.append((p_y, p_x))
-    covariate_exploration_df = (pd.DataFrame(p_values,
-                                             columns=covariate_exploration_table_columns,
-                                             index=summary_statistics.index))
-    covariate_exploration_df = pd.concat([covariate_exploration_df], axis=1, keys=['Dependent Variable'])
-    covariate_exploration_df.index = covariate_exploration_df.index.set_names(['',
-                                                                               '\\emph{Independent Variable}'])
-    if output_directory != None:
-        # Export to LaTeX.
-        filename = join(output_directory, "pre_treatment_covariate_tests.tex")
-        latex = (covariate_exploration_df
-                 .rename(index=variable_display_names_dict)
-                 .style
-                 .format(formatter="{:0.2f}")
-                 .format_index("\\textit{{{}}}", escape="latex", axis=0, level=0)
-                 .format_index("\\textit{{{}}}", escape="latex", axis=1, level=0)
-                 .to_latex(None,
-                           column_format="llcc",
-                           hrules=True,
-                           multicol_align='c',
-                           clines="skip-last;data")
-                 .replace("{*}", "{3cm}"))
-        latex = latex.split("\\\\\n")
-        latex.insert(1, "\\cline{3-4}\n")
-        latex = "\\\\\n".join(latex)
-
-        with open(filename, 'w') as file:
-            file.write(latex)
-    return covariate_exploration_df
 
 
 def produce_summary_statistics(df: pd.DataFrame):
@@ -255,28 +403,30 @@ def produce_summary_statistics(df: pd.DataFrame):
     :param treatment_date_variable:
     :return:
     """
-    # Panel A: Pre-treatment Outcomes
+    # Panel A: Total Incidents in 2017
     outcomes = constants.Variables.outcomes.copy()  # Create list of all outcomes.
     panel_A_columns = []
     for outcome in outcomes:
-        panel_A_columns.append(f'total_twenty_eighteen_{outcome}')
-        panel_A_columns.append(f'pre_treatment_change_in_{outcome}')
-        panel_A_columns.append(f'relative_pre_treatment_change_in_{outcome}')
+        panel_A_columns.append(f'total_twenty_seventeen_{outcome}')
+        panel_A_columns.append(f'month_neg_twelve_{outcome}')
+        panel_A_columns.append(f'month_neg_six_{outcome}')
+        
     panel_A = df[panel_A_columns].describe().T
-    panel_A = pd.concat([panel_A], keys=["Panel A: Pre-treatment Outcomes"])
+    panel_A = pd.concat([panel_A], keys=["Panel A: Pre-Treatment Crime Levels"])
+    
 
     # Panel B: Census Tract Characteristics
-    panel_B_columns = ['med_hhinc2016', 'popdensity2010', 'frac_coll_plus2010', 'job_density_2013',
+    panel_B_columns = ['med_hhinc2016', 'popdensity2010',
                        'poor_share2010', 'share_white2010']
     panel_B = df[sorted(panel_B_columns)].describe().T
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
     # Panel C: Case Initiaton
-    panel_C_columns = ['for_cause', 'non_payment', 'no_cause', 'hasAttyD', 'hasAttyP']
+    panel_C_columns = ['non_payment', 'hasAttyD']
     panel_C = df[sorted(panel_C_columns)].describe().T
     panel_C = pd.concat([panel_C], keys=["Panel C: Case Initiation"])
 
-    # Panel E: Case Resolution
+    # Panel D: Case Resolution
     panel_D_columns = ['dismissed', 'defaulted', 'heard', 'case_duration', 'judgment']
     panel_D = df[sorted(panel_D_columns)].describe().T
     panel_D = pd.concat([panel_D], keys=["Panel D: Case Resolution"])
@@ -284,31 +434,9 @@ def produce_summary_statistics(df: pd.DataFrame):
 
     # Concatenate Panels A-E
     summary_statistics = pd.concat([panel_A, panel_B, panel_C, panel_D],
-                                   axis=0)[['mean', '50%', 'std', 'count']]
+                                   axis=0)[['mean', 'std', '50%']]
 
-    variable_display_names_dict = {'total_twenty_eighteen_group_0_crimes_250m': "Total Incidents, 2018",
-                                   'relative_pre_treatment_change_in_group_0_crimes_250m': "Total Incidents, Month -12 - Total Incidents, Month 0",
-                                   'pre_treatment_change_in_group_0_crimes_250m': "Total Incidents, 2019 - Total Incidents, 2018",
 
-                                   'frac_coll_plus2010': "Bachelor's degree, 2010",
-                                   'job_density_2013': "Job density, 2013",
-                                   'med_hhinc2016': "Median household income, 2016",
-                                   'poor_share2010': "Poverty rate, 2010",
-                                   'popdensity2010': "Population density, 2010",
-                                   'share_white2010': "Share white, 2010",
 
-                                   'for_cause': "Filing for cause",
-                                   'no_cause': "Filing without cause",
-                                   'non_payment': "Filing for nonpayment",
-                                   'hasAttyD': "Defendant has attorney",
-                                   'hasAttyP': "Plaintiff has attorney",
 
-                                   "case_duration": "Case duration",
-                                   "defaulted": "Judgment by default",
-                                   'dismissed': "Case dismissed",
-                                   "heard": "Case heard",
-                                   "judgment": "Money judgment",
-
-                                   }
-
-    return summary_statistics, variable_display_names_dict
+    return summary_statistics

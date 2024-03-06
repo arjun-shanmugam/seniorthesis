@@ -18,6 +18,74 @@ from matplotlib.colors import to_rgba
 import constants
 import matplotlib.transforms as transforms
 
+def add_column_numbers(table: pd.DataFrame):
+    df = table.copy()
+    arrays = [df.columns.get_level_values(n) for n in range(df.columns.nlevels)] + [[f'({column_number})' for column_number in range(1, 1 + len(df.columns))]]
+    df.columns = pd.MultiIndex.from_arrays(arrays)
+
+    return df
+
+def build_pretrends_table(att_e_result_tidy: pd.DataFrame):
+    pretrend_test = (att_e_result_tidy.
+                 loc[att_e_result_tidy['event.time'].between(constants.Analysis.MINIMUM_PRE_PERIOD,
+                                                             -2,
+                                                             inclusive='both'), :]
+                 .loc[:, ['event.time', 'estimate', 'conf.low', 'conf.high', 'std.error']]
+                 .rename(columns={'event.time': '$e$',
+                                  'estimate': 'ATT(e)'}))
+    pretrend_test.loc[:, '95\% C.I.'] = ("(" +
+                                        pretrend_test['conf.low'].round(2).astype(str) +
+                                        ", " +
+                                        pretrend_test['conf.high'].round(2).astype(str) +
+                                        ")")
+    pretrend_test.loc[:, 'C.I. includes zero?'] = "Yes"
+    pretrend_test = pretrend_test.drop(columns=['conf.low', 'conf.high', 'std.error'])
+    pretrend_test = pretrend_test.set_index('$e$')
+    return pretrend_test
+
+def plot_att_e(att_e: pd.DataFrame,
+               overall_att: float,
+               overall_att_se: float,
+               ax: Axes,
+               title: str="",
+               start_period: int=constants.Analysis.MINIMUM_PRE_PERIOD,
+               end_period: int=constants.Analysis.MAXIMUM_POST_PERIOD):
+    # CIs for event time -1 are currently NaN, replace them with zeroes 
+    att_e.loc[att_e['event.time'] == -1, ['conf.low', 'conf.high', 'point.conf.low', 'point.conf.high']] = [0, 0, 0, 0]
+    
+    att_e = att_e.loc[att_e['event.time'].between(start_period, end_period, inclusive='both'), :]
+    x = att_e['event.time']
+    y = att_e['estimate']
+    y_upper = att_e['conf.high']
+    y_lower = att_e['conf.low']
+    
+    ax.set_ylabel("ATT")
+    ax.set_title(title)
+    ax.set_xlabel("Month Relative to Treatment")
+    ax.set_xticks([-12, -6, 0, 6, 12, 18, 24, 30, 36])
+    plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
+                       text_y_location_normalized=0.95)
+    plot_scatter_with_shaded_errors(ax,
+                                    x,
+                                    y,
+                                    y_upper,
+                                    y_lower,
+                                    point_color='black',
+                                    error_color='white',
+                                    edge_color='grey',
+                                    edge_style='--',
+                                    zorder=1)
+    plot_labeled_hline(ax, y=0, text="", color='black', linestyle='-', zorder=6)
+    
+
+    
+     # Label graph with average treatment effect across positive relative periods.
+    point_estimate = round(overall_att, 2)
+    se = round(overall_att_se, 2)
+    label = f"Avg.\nPost-Treatment\nATT: {point_estimate}\n(SE: {se})"
+    plot_labeled_hline(ax, y=point_estimate, size='x-small', text=label, color='black', linestyle='--', zorder=6,
+                       text_x_location_normalized=1.085)
+
 
 def aggregate_by_event_time_and_plot(att_gt,
                                      start_period: int,
@@ -37,15 +105,15 @@ def aggregate_by_event_time_and_plot(att_gt,
     ax.set_ylabel("ATT")
     ax.set_title(title)
     ax.set_xlabel("Month Relative to Treatment")
-    ax.set_xticks([-6, 0, 12, 24, 36])
-    plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
+    ax.set_xticks([-12, -6, 0, 12, 24, 36])
+    plot_labeled_vline(ax, x=0, text="Treatment Month", color='black', linestyle='-',
                        text_y_location_normalized=0.95)
 
     plot_scatter_with_shaded_errors(ax,
-                                    x.values,
-                                    y.values,
-                                    y_upper.values,
-                                    y_lower.values,
+                                    x,
+                                    y,
+                                    y_upper,
+                                    y_lower,
                                     point_color='black',
                                     error_color='white',
                                     edge_color='grey',

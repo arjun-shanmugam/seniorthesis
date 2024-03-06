@@ -11,7 +11,7 @@ class Variables:
                                             'non_payment',
                                              ]
     
-    outcomes = [f"group_{group}_crimes_{range}m" for group in range(8) for range in [250, 300, '250_to_300', '250_to_350', '250_to_400']]
+    outcomes = [f"group_{group}_crimes_{range}m" for group in range(7) for range in [250, 300, '250_to_300', '250_to_350', '250_to_400']]
     
     variable_display_names_dict = \
     {
@@ -19,13 +19,13 @@ class Variables:
         "month_neg_twelve_group_0_crimes_250m": "All Crime Reports, Month -12",
         "month_neg_six_group_0_crimes_250m": "All Crime Reports, Month -6",
     
+        "total_twenty_seventeen_group_2_crimes_250m": "Drug Crime Reports, 2017",
+        "month_neg_twelve_group_2_crimes_250m": "Drug Crime Reports, Month -12",
+        "month_neg_six_group_2_crimes_250m": "Drug Crime Reports, Month -6",
+            
         "total_twenty_seventeen_group_1_crimes_250m": "Larceny Reports, 2017",
         "month_neg_twelve_group_1_crimes_250m": "Larceny Reports, Month -12",
         "month_neg_six_group_1_crimes_250m": "Larceny Reports, Month -6",
-            
-        "total_twenty_seventeen_group_2_crimes_250m": "M.V. Accidents, 2017",
-        "month_neg_twelve_group_2_crimes_250m": "M.V. Accidents, Month -12",
-        "month_neg_six_group_2_crimes_250m": "M.V. Accidents, Month -6",
     
         "total_twenty_seventeen_group_3_crimes_250m": "Vandalism Reports, 2017",
         "month_neg_twelve_group_3_crimes_250m": "Vandalism Reports, Month -12",
@@ -109,12 +109,7 @@ class Analysis:
     auto_theft = [701, 702, 704, 711, 712, 713, 714, 715, 706,  724,
                   727, 706, 723, 724, 727, 735, 770, 780, 790]
     
-    assault_auto_theft_vandalism_larceny = assault + auto_theft+ vandalism + larceny
-    
-
-    
-    
-    
+    assault_auto_theft_vandalism_larceny = assault + auto_theft + vandalism + larceny
 
 
 class Colors:
