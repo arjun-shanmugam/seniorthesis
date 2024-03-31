@@ -11,7 +11,7 @@ class Variables:
                                             'non_payment',
                                              ]
     
-    outcomes = [f"group_{group}_crimes_{range}m" for group in range(7) for range in [250, 300, '250_to_300', '250_to_350', '250_to_400']]
+    outcomes = [f"group_{group}_crimes_{range}m" for group in range(5) for range in [250, 300, '250_to_300', '250_to_350', '250_to_400']]
     
     variable_display_names_dict = \
     {
@@ -53,6 +53,7 @@ class Variables:
         "isEntityP": "Plaintiff is entity",
         "case_duration": "Case duration",
         "defaulted": "Judgment by default",
+        "mediated": "Case mediated", 
         "dismissed": "Case dismissed",
         "heard": "Case heard",
         "judgment": "Money judgment",

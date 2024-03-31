@@ -427,7 +427,7 @@ def produce_summary_statistics(df: pd.DataFrame):
     panel_C = pd.concat([panel_C], keys=["Panel C: Case Initiation"])
 
     # Panel D: Case Resolution
-    panel_D_columns = ['dismissed', 'defaulted', 'heard', 'case_duration', 'judgment']
+    panel_D_columns = ['dismissed', 'defaulted', 'mediated', 'heard', 'case_duration', 'judgment']
     panel_D = df[sorted(panel_D_columns)].describe().T
     panel_D = pd.concat([panel_D], keys=["Panel D: Case Resolution"])
 
