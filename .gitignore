@@ -12,3 +12,4 @@ writing/thank_yous.txt
 *.pyc
 writing/
 **/*.DS_Store
+**/*.pyc
