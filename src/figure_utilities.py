@@ -49,7 +49,9 @@ def plot_att_e(att_e: pd.DataFrame,
                ax: Axes,
                title: str="",
                start_period: int=constants.Analysis.MINIMUM_PRE_PERIOD,
-               end_period: int=constants.Analysis.MAXIMUM_POST_PERIOD):
+               end_period: int=constants.Analysis.MAXIMUM_POST_PERIOD,
+               xlabel: str="Month Relative to Treatment",
+               ylabel: str="ATT"):
     # CIs for event time -1 are currently NaN, replace them with zeroes 
     att_e.loc[att_e['event.time'] == -1, ['conf.low', 'conf.high', 'point.conf.low', 'point.conf.high']] = [0, 0, 0, 0]
     
@@ -59,9 +61,9 @@ def plot_att_e(att_e: pd.DataFrame,
     y_upper = att_e['conf.high']
     y_lower = att_e['conf.low']
     
-    ax.set_ylabel("ATT")
+    ax.set_ylabel(ylabel)
     ax.set_title(title)
-    ax.set_xlabel("Month Relative to Treatment")
+    ax.set_xlabel(xlabel)
     ax.set_xticks([-12, -6, 0, 6, 12, 18, 24, 30, 36])
     ax.axvline(0, color='black')
     plot_scatter_with_shaded_errors(ax,
