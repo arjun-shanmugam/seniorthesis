@@ -1,4 +1,4 @@
-.ipynb_checkpoints/
+**/.ipynb_checkpoints/
 output/
 data/
 venv/
@@ -8,5 +8,5 @@ slurm*
 .gitignore
 .idea*
 writing/thank_yous.txt
-*.DS_Store
-*.pyc
+**/*.DS_Store
+**/*.pyc
