@@ -6,8 +6,8 @@ Cleans eviction dataset from MassLandlords.
 import pandas as pd
 
 # Set paths here 
-INPUT_DATA_EVICTIONS = ""
-OUTPUT_DATA = ""
+INPUT_DATA_EVICTIONS = "/Users/ashanmu1/Documents/GitHub/seniorthesis/data/01_raw/2024-07-23_aug_v2.csv"
+OUTPUT_DATA = "/Users/ashanmu1/Documents/GitHub/seniorthesis/data/02_intermediate/evictions.csv"
 
 # Read data
 evictions_df = pd.read_csv(INPUT_DATA_EVICTIONS, encoding='unicode_escape')
