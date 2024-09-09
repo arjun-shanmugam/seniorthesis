@@ -13,3 +13,4 @@ writing/thank_yous.txt
 writing/
 **/*.DS_Store
 **/*.pyc
+.idea/
