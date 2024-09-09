@@ -195,6 +195,9 @@ def run_did_in_R(df: pd.DataFrame,
                                  pre_treatment_covariates=pre_treatment_covariates,
                                  value_vars=value_vars,
                                  period_to_int_dictionary=period_to_int_dictionary)
+    
+    # Drop rows with missing values of covariates
+    long_df = long_df.dropna(subset=pre_treatment_covariates)
 
     # install necessary R packages
     utils = rpackages.importr('utils')
@@ -285,10 +288,10 @@ def run_event_study(df: pd.DataFrame, treatment_date_variable: str, analysis: st
 
 def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
     # Store pre-treatment panel names.
-    pre_treatment_panels = ['Panel A: Pre-Treatment Crime Levels',
+    pre_treatment_panels = ['Panel A: Pre-Treatment Police Response Levels',
                             'Panel B: Census Tract Characteristics',
                             'Panel C: Case Initiation']
-    # Build treatment mean columns.
+    # Build control mean columns.
     pd.options.mode.chained_assignment = None
     treatment_means = produce_summary_statistics(
         df.copy().loc[df['judgment_for_plaintiff'] == 0, :])
@@ -314,10 +317,11 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
 
     # Calculate propensity scores for every observation.
     pscores = (sm.Logit(df['judgment_for_plaintiff'],
-                             exog=df[constants.Variables.pre_treatment_covariates_to_include])
+                        exog=df[constants.Variables.pre_treatment_covariates_to_include],
+                        missing='drop')
                     .fit()
                     .predict(df[constants.Variables.pre_treatment_covariates_to_include]))
-    print(constants.Variables.pre_treatment_covariates_to_include)
+
     df.loc[:, 'propensity_score'] = pd.Series(pscores, index=df.index)
     df.loc[:, 'weight'] = df['propensity_score'] / (1 - df['propensity_score'])
     df.loc[df['judgment_for_plaintiff'] == 1, 'weight'] = 1
@@ -364,7 +368,7 @@ def test_balance(df: pd.DataFrame, analysis: str, output_directory: str = None):
 
     balance_table = balance_table.rename(index=constants.Variables.variable_display_names_dict)
     # TODO: Figure out how to make the outermost index labels wrap in LaTeX so that I don't have to shorten the panel labels below!
-    balance_table = balance_table.rename(index={"Panel A: Pre-Treatment Crime Levels": "Panel A",
+    balance_table = balance_table.rename(index={"Panel A: Pre-Treatment Police Response Levels": "Panel A",
                                                 "Panel B: Census Tract Characteristics": "Panel B",
                                                 "Panel C: Case Initiation": "Panel C",
                                                 "Panel D: Defendant and Plaintiff Characteristics": "Panel D"})
@@ -412,7 +416,7 @@ def produce_summary_statistics(df: pd.DataFrame):
         panel_A_columns.append(f'month_neg_six_{outcome}')
         
     panel_A = df[panel_A_columns].describe().T
-    panel_A = pd.concat([panel_A], keys=["Panel A: Pre-Treatment Crime Levels"])
+    panel_A = pd.concat([panel_A], keys=["Panel A: Pre-Treatment Police Response Levels"])
     
 
     # Panel B: Census Tract Characteristics
@@ -422,7 +426,7 @@ def produce_summary_statistics(df: pd.DataFrame):
     panel_B = pd.concat([panel_B], keys=["Panel B: Census Tract Characteristics"])
 
     # Panel C: Case Initiaton
-    panel_C_columns = ['non_payment', 'hasAttyD']
+    panel_C_columns = ['non_payment']
     panel_C = df[sorted(panel_C_columns)].describe().T
     panel_C = pd.concat([panel_C], keys=["Panel C: Case Initiation"])
 

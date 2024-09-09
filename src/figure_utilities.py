@@ -63,8 +63,7 @@ def plot_att_e(att_e: pd.DataFrame,
     ax.set_title(title)
     ax.set_xlabel("Month Relative to Treatment")
     ax.set_xticks([-12, -6, 0, 6, 12, 18, 24, 30, 36])
-    plot_labeled_vline(ax, x=0, text="Treatment", color='black', linestyle='-',
-                       text_y_location_normalized=0.95)
+    ax.axvline(0, color='black')
     plot_scatter_with_shaded_errors(ax,
                                     x,
                                     y,
@@ -83,8 +82,7 @@ def plot_att_e(att_e: pd.DataFrame,
     point_estimate = round(overall_att, 2)
     se = round(overall_att_se, 2)
     label = f"Avg.\nPost-Treatment\nATT: {point_estimate}\n(SE: {se})"
-    plot_labeled_hline(ax, y=point_estimate, size='x-small', text=label, color='black', linestyle='--', zorder=6,
-                       text_x_location_normalized=1.085)
+    
 
 
 def aggregate_by_event_time_and_plot(att_gt,
