@@ -140,6 +140,7 @@ def save_figure_and_close(figure: plt.Figure,
     :param bbox_inches: How to crop figure before saving.
     """
     figure.savefig(filename, bbox_inches=bbox_inches)
+    plt.show()
     plt.close(figure)
 
 
