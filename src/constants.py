@@ -11,35 +11,63 @@ class Variables:
                                             'non_payment',
                                              ]
     
-    outcomes = [f"group_{group}_crimes_{range}m" for group in range(5) for range in [250, 300, '250_to_300', '250_to_350', '250_to_400']]
+    pre_treatment_covariates_to_include_violent = ['total_twenty_seventeen_group_1_crimes_250m',
+                                            'month_neg_twelve_group_1_crimes_250m',
+                                            'month_neg_six_group_1_crimes_250m',
+                                            'med_hhinc2016',
+                                            'poor_share2010',
+                                            'popdensity2010',
+                                            'share_white2010',
+                                            'non_payment',
+                                             ]
+    
+    pre_treatment_covariates_to_include_non_violent = ['total_twenty_seventeen_group_2_crimes_250m',
+                                            'month_neg_twelve_group_2_crimes_250m',
+                                            'month_neg_six_group_2_crimes_250m',
+                                            'med_hhinc2016',
+                                            'poor_share2010',
+                                            'popdensity2010',
+                                            'share_white2010',
+                                            'non_payment',
+                                             ]
+    
+    pre_treatment_covariates_to_include_vandalism = ['total_twenty_seventeen_group_3_crimes_250m',
+                                            'month_neg_twelve_group_3_crimes_250m',
+                                            'month_neg_six_group_3_crimes_250m',
+                                            'med_hhinc2016',
+                                            'poor_share2010',
+                                            'popdensity2010',
+                                            'share_white2010',
+                                            'non_payment',
+                                             ]
+    
+    pre_treatment_covariates_to_include_trespassing = ['total_twenty_seventeen_group_6_crimes_250m',
+                                            'month_neg_twelve_group_6_crimes_250m',
+                                            'month_neg_six_group_6_crimes_250m',
+                                            'med_hhinc2016',
+                                            'poor_share2010',
+                                            'popdensity2010',
+                                            'share_white2010',
+                                            'non_payment',
+                                             ]
+    
+    outcomes = [f"group_{group}_crimes_{range}m" for group in range(3) for range in [250, 300, '250_to_300', '250_to_350', '250_to_400']]
     
     variable_display_names_dict = \
     {
-        "total_twenty_seventeen_group_0_crimes_250m": "All Crime Reports, 2017",
-        "month_neg_twelve_group_0_crimes_250m": "All Crime Reports, Month -12",
-        "month_neg_six_group_0_crimes_250m": "All Crime Reports, Month -6",
+        "total_twenty_seventeen_group_0_crimes_250m": "All Police Responses, 2017",
+        "month_neg_twelve_group_0_crimes_250m": "All Police Responses, Month -12",
+        "month_neg_six_group_0_crimes_250m": "All Police Responses, Month -6",
     
-        "total_twenty_seventeen_group_2_crimes_250m": "Drug Crime Reports, 2017",
-        "month_neg_twelve_group_2_crimes_250m": "Drug Crime Reports, Month -12",
-        "month_neg_six_group_2_crimes_250m": "Drug Crime Reports, Month -6",
+        "total_twenty_seventeen_group_2_crimes_250m": "Police Responses to Non-Violent Incidents, 2017",
+        "month_neg_twelve_group_2_crimes_250m": "Police Responses to Non-Violent Incidents, Month -12",
+        "month_neg_six_group_2_crimes_250m": "Police Responses to Non-Violent Incidents, Month -6",
             
-        "total_twenty_seventeen_group_1_crimes_250m": "Larceny Reports, 2017",
-        "month_neg_twelve_group_1_crimes_250m": "Larceny Reports, Month -12",
-        "month_neg_six_group_1_crimes_250m": "Larceny Reports, Month -6",
+        "total_twenty_seventeen_group_1_crimes_250m": "Police Responses to Violent Incidents, 2017",
+        "month_neg_twelve_group_1_crimes_250m": "Police Responses to Violent Incidents, Month -12",
+        "month_neg_six_group_1_crimes_250m": "Police Responses to Violent Incidents, Month -6",
     
-        "total_twenty_seventeen_group_3_crimes_250m": "Vandalism Reports, 2017",
-        "month_neg_twelve_group_3_crimes_250m": "Vandalism Reports, Month -12",
-        "month_neg_six_group_3_crimes_250m": "Vandalism Reports, Month -6",
-    
-    
-        "total_twenty_seventeen_group_4_crimes_250m": "Assault Reports, 2017",
-        "month_neg_twelve_group_4_crimes_250m": "Assault Reports, Month -12",
-        "month_neg_six_group_4_crimes_250m": "Assault Reports, Month -6",
-    
-    
-        "total_twenty_seventeen_group_5_crimes_250m": "Auto Theft Reports, 2017",
-        "month_neg_twelve_group_5_crimes_250m": "Auto Theft Reports, Month -12",
-        "month_neg_six_group_5_crimes_250m": "Auto Theft Reports, Month -6",
+
             
     
         "med_hhinc2016": "Median household income, 2016",
