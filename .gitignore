@@ -10,3 +10,4 @@ slurm*
 writing/thank_yous.txt
 **/*.DS_Store
 **/*.pyc
+**/*.out
